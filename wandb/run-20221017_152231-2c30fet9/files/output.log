@@ -1,0 +1,50 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 44%|██████████████████████████████████████████████████▌                                                                | 22/50 [11:37<14:47, 31.71s/it]
+Traceback (most recent call last):
+  File "train_gc_spirl.py", line 45, in <module>
+    main()
+  File "train_gc_spirl.py", line 42, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 185, in fit
+    train_loss_dict  = self.train_one_epoch(train_loader, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 256, in train_one_epoch
+    loss = self.model.optimize(batch, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/gcspirl.py", line 238, in optimize
+    outputs, N, T = self(states, actions)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/gcspirl.py", line 203, in forward
+    g_hat_dist = self.goal_generator.dist(states[:, 0])
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/subnetworks.py", line 141, in dist
+    dist = get_dist(self(mixed_states))
+  File "/home/magenta1223/skill-based/SiMPL/proposed/utils.py", line 32, in get_dist
+    dist = torch_dist.Normal(mu, scale)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/distributions/normal.py", line 54, in __init__
+    super(Normal, self).__init__(batch_shape, validate_args=validate_args)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/distributions/distribution.py", line 53, in __init__
+    valid = constraint.check(value)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/distributions/constraints.py", line 308, in check
+    return value == value  # False for NANs.
+KeyboardInterrupt

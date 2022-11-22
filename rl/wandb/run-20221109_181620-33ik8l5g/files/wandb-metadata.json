@@ -1,0 +1,21 @@
+{
+    "os": "Linux-5.15.0-52-generic-x86_64-with-debian-bullseye-sid",
+    "python": "3.7.13",
+    "heartbeatAt": "2022-11-09T09:16:20.995499",
+    "startedAt": "2022-11-09T09:16:20.379717",
+    "docker": null,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "gpu_count": 1,
+    "cpu_count": 24,
+    "cuda": null,
+    "args": [
+        "-p",
+        "proposed/weights/log39_30.bin"
+    ],
+    "state": "running",
+    "program": "sac_scripts/hrl_gcid.py",
+    "codePath": "sac_scripts/hrl_gcid.py",
+    "host": "magenta1223-MS-7D42",
+    "username": "magenta1223",
+    "executable": "/home/magenta1223/anaconda3/envs/skill/bin/python"
+}

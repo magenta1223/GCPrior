@@ -1,0 +1,783 @@
+2022-10-17 20:01:26,233 INFO    StreamThr :222658 [internal.py:wandb_internal():91] W&B internal server running at pid: 222658, started at: 2022-10-17 20:01:26.232767
+2022-10-17 20:01:26,235 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: status
+2022-10-17 20:01:26,236 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: status
+2022-10-17 20:01:26,237 DEBUG   SenderThread:222658 [sender.py:send():301] send: header
+2022-10-17 20:01:26,237 INFO    WriterThread:222658 [datastore.py:open_for_write():75] open: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/run-dwkqgobs.wandb
+2022-10-17 20:01:26,281 DEBUG   SenderThread:222658 [sender.py:send():301] send: run
+2022-10-17 20:01:26,815 INFO    SenderThread:222658 [dir_watcher.py:__init__():216] watching files in: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files
+2022-10-17 20:01:26,816 INFO    SenderThread:222658 [sender.py:_start_run_threads():915] run started: dwkqgobs with start time 1666004486.225793
+2022-10-17 20:01:26,817 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:01:26,818 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:01:26,818 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: check_version
+2022-10-17 20:01:26,818 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: check_version
+2022-10-17 20:01:26,889 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: run_start
+2022-10-17 20:01:26,893 DEBUG   HandlerThread:222658 [meta.py:__init__():34] meta init
+2022-10-17 20:01:26,893 DEBUG   HandlerThread:222658 [meta.py:__init__():49] meta init done
+2022-10-17 20:01:26,893 DEBUG   HandlerThread:222658 [meta.py:probe():215] probe
+2022-10-17 20:01:26,898 DEBUG   HandlerThread:222658 [meta.py:_setup_git():205] setup git
+2022-10-17 20:01:26,905 DEBUG   HandlerThread:222658 [meta.py:_setup_git():212] setup git done
+2022-10-17 20:01:26,906 DEBUG   HandlerThread:222658 [meta.py:_save_pip():53] save pip
+2022-10-17 20:01:26,906 DEBUG   HandlerThread:222658 [meta.py:_save_pip():67] save pip done
+2022-10-17 20:01:26,906 DEBUG   HandlerThread:222658 [meta.py:_save_conda():74] save conda
+2022-10-17 20:01:27,816 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_created():275] file/dir created: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/requirements.txt
+2022-10-17 20:01:27,817 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_created():275] file/dir created: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/conda-environment.yaml
+2022-10-17 20:01:27,817 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_created():275] file/dir created: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:01:30,356 DEBUG   HandlerThread:222658 [meta.py:_save_conda():84] save conda done
+2022-10-17 20:01:30,357 DEBUG   HandlerThread:222658 [meta.py:probe():253] probe done
+2022-10-17 20:01:30,358 DEBUG   SenderThread:222658 [sender.py:send():301] send: files
+2022-10-17 20:01:30,359 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-metadata.json with policy now
+2022-10-17 20:01:30,362 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:01:30,362 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:01:30,596 DEBUG   SenderThread:222658 [sender.py:send():301] send: telemetry
+2022-10-17 20:01:30,816 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/conda-environment.yaml
+2022-10-17 20:01:30,817 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_created():275] file/dir created: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-metadata.json
+2022-10-17 20:01:30,817 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_created():275] file/dir created: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:01:31,012 INFO    Thread-17 :222658 [upload_job.py:push():139] Uploaded file /tmp/tmpa_mtm4evwandb/b0pq047c-wandb-metadata.json
+2022-10-17 20:01:32,817 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:01:45,661 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:01:45,661 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:01:55,075 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:01:57,823 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/config.yaml
+2022-10-17 20:02:00,896 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:02:00,896 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:02:02,593 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:02:02,593 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:02:04,824 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:02:16,131 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:02:16,131 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:02:25,257 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:02:31,364 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:02:31,364 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:02:34,773 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:02:34,775 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:02:34,775 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:02:34,776 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:02:34,776 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:02:34,831 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:02:36,832 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:02:46,600 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:02:46,601 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:02:55,446 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:03:01,830 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:03:01,830 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:03:06,551 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:03:06,552 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:03:06,552 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:03:06,553 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:03:06,555 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:03:06,838 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:03:08,839 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:03:17,077 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:03:17,077 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:03:25,634 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:03:32,312 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:03:32,312 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:03:38,426 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:03:38,427 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:03:38,427 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:03:38,427 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:03:38,469 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:03:38,846 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:03:40,847 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:03:47,546 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:03:47,547 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:03:55,832 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:04:02,781 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:04:02,782 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:04:10,141 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:04:10,142 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:04:10,142 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:04:10,143 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:04:10,188 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:04:10,853 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:04:10,854 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:04:18,014 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:04:18,015 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:04:26,036 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:04:33,246 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:04:33,247 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:04:42,384 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:04:42,384 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:04:42,385 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:04:42,385 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:04:42,425 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:04:42,861 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:04:44,861 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:04:48,478 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:04:48,478 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:04:56,221 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:05:03,713 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:05:03,714 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:05:14,266 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:05:14,267 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:05:14,267 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:05:14,267 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:05:14,313 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:05:14,868 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:05:14,868 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:05:18,944 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:05:18,944 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:05:26,399 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:05:34,185 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:05:34,185 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:05:46,691 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:05:46,692 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:05:46,692 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:05:46,694 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:05:46,737 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:05:46,875 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:05:48,876 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:05:49,420 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:05:49,421 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:05:56,569 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:06:04,652 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:06:04,653 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:06:19,097 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:06:19,098 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:06:19,098 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:06:19,100 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:06:19,141 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:06:19,882 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:06:19,886 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:06:19,887 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:06:20,882 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:06:26,749 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:06:35,121 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:06:35,121 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:06:50,356 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:06:50,356 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:06:51,587 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:06:51,588 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:06:51,588 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:06:51,589 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:06:51,590 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:06:51,889 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:06:53,890 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:06:56,928 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:07:05,589 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:07:05,590 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:07:20,830 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:07:20,830 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:07:23,856 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:07:23,856 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:07:23,857 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:07:23,857 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:07:23,859 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:07:23,896 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:07:25,897 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:07:27,112 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:07:36,062 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:07:36,062 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:07:51,290 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:07:51,290 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:07:56,378 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:07:56,379 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:07:56,379 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:07:56,379 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:07:56,381 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:07:56,904 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:07:57,314 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:07:57,905 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:08:06,533 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:08:06,533 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:08:21,888 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:08:21,888 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:08:27,488 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:08:29,032 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:08:29,032 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:08:29,033 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:08:29,033 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:08:29,077 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:08:29,912 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:08:31,913 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:08:37,128 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:08:37,128 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:08:52,363 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:08:52,363 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:08:57,669 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:09:01,261 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:09:01,262 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:09:01,262 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:09:01,262 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:09:01,305 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:09:01,919 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:09:03,920 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:09:07,594 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:09:07,594 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:09:22,838 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:09:22,838 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:09:27,841 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:09:33,425 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:09:33,426 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:09:33,426 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:09:33,426 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:09:33,469 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:09:33,927 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:09:35,927 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:09:38,072 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:09:38,072 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:09:53,309 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:09:53,309 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:09:58,025 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:10:05,790 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:10:05,791 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:10:05,791 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:10:05,791 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:10:05,833 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:10:05,934 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:10:07,934 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:10:08,549 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:10:08,550 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:10:23,784 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:10:23,785 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:10:28,193 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:10:38,615 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:10:38,616 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:10:38,616 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:10:38,616 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:10:38,657 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:10:38,942 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:10:39,174 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:10:39,174 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:10:39,942 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:10:54,406 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:10:54,407 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:10:58,395 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:11:09,636 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:11:09,636 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:11:11,465 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:11:11,466 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:11:11,466 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:11:11,467 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:11:11,467 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:11:11,949 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:11:13,950 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:11:24,866 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:11:24,866 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:11:28,593 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:11:40,104 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:11:40,104 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:11:43,717 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:11:43,718 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:11:43,719 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:11:43,719 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:11:43,719 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:11:43,957 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:11:45,957 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:11:55,343 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:11:55,343 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:11:58,767 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:12:10,579 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:12:10,579 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:12:16,011 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:12:16,012 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:12:16,012 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:12:16,012 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:12:16,057 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:12:16,965 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:12:17,965 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:12:25,813 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:12:25,813 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:12:28,959 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:12:41,044 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:12:41,044 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:12:49,023 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:12:49,023 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:12:49,024 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:12:49,024 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:12:49,065 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:12:49,972 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:12:51,973 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:12:56,279 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:12:56,279 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:12:59,140 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:13:11,507 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:13:11,507 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:13:22,728 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:13:22,729 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:13:22,729 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:13:22,730 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:13:22,773 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:13:22,980 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:13:23,981 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:13:26,757 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:13:26,757 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:13:29,331 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:13:41,986 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:13:41,986 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:13:56,192 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:13:56,193 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:13:56,193 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:13:56,194 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:13:56,233 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:13:56,989 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:13:57,221 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:13:57,221 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:13:57,989 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:13:59,515 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:14:12,459 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:14:12,459 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:14:27,741 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:14:27,741 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:14:28,937 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:14:28,938 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:14:28,938 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:14:28,938 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:14:28,939 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:14:28,997 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:14:29,702 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:14:31,998 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:14:42,979 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:14:42,979 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:14:58,228 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:14:58,228 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:14:59,893 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:15:01,750 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:15:01,751 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:15:01,751 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:15:01,752 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:15:01,752 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:15:02,005 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:15:04,006 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:15:13,467 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:15:13,467 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:15:28,706 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:15:28,706 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:15:30,078 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:15:34,597 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:15:34,598 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:15:34,598 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:15:34,598 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:15:34,598 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:15:35,013 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:15:36,013 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:15:37,013 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:15:43,937 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:15:43,938 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:15:59,168 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:15:59,168 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:16:00,273 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:16:07,684 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:16:07,685 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:16:07,685 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:16:07,685 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:16:07,725 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:16:08,021 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:16:10,021 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:16:14,398 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:16:14,399 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:16:29,635 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:16:29,636 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:16:30,465 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:16:40,657 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:16:40,658 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:16:40,658 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:16:40,658 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:16:40,705 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:16:41,028 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:16:42,029 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:16:44,868 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:16:44,869 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:17:00,099 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:17:00,100 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:17:00,653 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:17:13,863 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:17:13,864 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:17:13,864 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:17:13,864 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:17:13,909 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:17:14,037 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:17:15,330 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:17:15,331 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:17:16,037 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:17:30,568 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:17:30,569 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:17:30,847 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:17:45,804 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:17:45,805 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:17:46,425 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:17:46,426 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:17:46,426 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:17:46,426 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:17:46,427 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:17:47,045 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:17:48,045 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:18:01,025 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:18:01,068 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:18:01,069 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:18:16,322 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:18:16,323 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:18:19,516 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:18:19,517 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:18:19,517 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:18:19,517 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:18:19,518 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:18:20,053 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:18:21,053 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:18:22,054 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:18:31,198 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:18:31,554 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:18:31,554 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:18:46,800 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:18:46,800 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:18:52,041 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:18:52,042 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:18:52,042 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:18:52,042 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:18:52,061 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:18:52,089 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:18:54,061 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:19:01,376 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:19:02,030 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:19:02,031 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:19:17,266 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:19:17,266 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:19:25,597 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:19:25,598 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:19:25,598 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:19:25,598 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:19:25,644 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:19:26,069 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:19:28,070 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:19:31,570 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:19:32,503 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:19:32,503 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:19:47,739 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:19:47,739 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:19:58,308 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:19:58,308 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:19:58,309 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:19:58,309 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:19:58,353 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:19:59,077 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:20:00,078 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:20:01,762 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:20:02,976 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:20:02,977 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:20:18,208 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:20:18,209 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:20:30,987 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:20:30,987 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:20:30,988 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:20:30,988 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:20:31,033 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:20:31,085 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:20:31,932 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:20:32,085 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:20:33,448 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:20:33,448 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:20:48,679 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:20:48,679 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:21:02,127 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:21:03,289 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:21:03,289 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:21:03,290 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:21:03,290 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:21:03,290 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:21:03,915 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:21:03,915 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:21:04,093 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:21:04,093 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:21:05,093 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:21:19,161 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:21:19,161 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:21:32,297 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:21:34,444 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:21:34,444 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:21:35,928 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:21:35,929 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:21:35,929 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:21:35,930 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:21:35,930 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:21:36,100 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:21:38,101 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:21:49,674 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:21:49,674 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:22:02,480 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:22:04,925 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:22:04,925 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:22:08,468 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:22:08,468 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:22:08,468 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:22:08,468 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:22:08,469 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:22:09,108 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:22:10,108 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:22:20,169 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:22:20,169 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:22:32,674 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:22:35,408 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:22:35,408 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:22:40,360 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:22:40,360 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:22:40,361 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:22:40,361 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:22:40,361 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:22:41,115 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:22:42,116 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:22:50,648 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:22:50,648 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:23:02,858 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:23:05,884 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:23:05,884 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:23:13,035 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:23:13,035 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:23:13,036 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:23:13,036 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:23:13,077 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:23:13,123 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:23:14,123 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:23:21,115 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:23:21,115 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:23:33,051 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:23:36,344 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:23:36,344 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:23:45,329 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:23:45,330 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:23:45,330 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:23:45,330 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:23:45,331 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:23:46,131 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:23:46,131 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:23:47,131 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:23:51,577 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:23:51,577 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:24:03,243 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:24:06,806 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:24:06,806 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:24:17,572 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:24:17,572 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:24:17,573 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:24:17,573 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:24:17,613 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:24:18,139 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:24:20,139 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:24:22,043 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:24:22,043 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:24:33,438 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:24:37,399 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:24:37,399 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:24:50,336 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:24:50,337 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:24:50,337 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:24:50,337 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:24:50,377 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:24:51,147 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:24:52,147 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:24:52,636 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:24:52,636 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:25:03,617 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:25:07,861 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:25:07,862 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:25:23,023 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:25:23,024 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:25:23,024 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:25:23,025 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:25:23,065 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:25:23,122 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:25:23,122 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:25:23,155 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:25:24,155 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:25:33,799 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:25:38,375 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:25:38,375 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:25:53,826 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:25:53,826 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:25:55,686 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:25:55,687 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:25:55,687 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:25:55,688 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:25:55,688 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:25:56,162 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:25:58,163 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:26:03,984 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:26:09,062 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:26:09,062 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:26:24,348 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:26:24,348 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:26:28,054 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:26:28,055 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:26:28,055 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:26:28,055 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:26:28,056 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:26:28,170 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:26:29,170 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:26:30,170 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:26:34,172 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:26:39,587 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:26:39,587 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:26:54,821 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:26:54,821 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:27:00,857 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:27:00,858 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:27:00,858 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:27:00,858 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:27:00,904 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:27:01,177 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:27:02,178 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:27:04,367 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:27:10,050 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:27:10,050 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:27:25,283 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:27:25,283 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:27:33,495 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:27:33,495 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:27:33,495 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:27:33,496 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:27:33,537 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:27:34,185 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:27:34,185 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:27:34,543 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:27:40,514 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:27:40,515 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:27:55,754 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:27:55,754 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:28:04,744 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:28:06,560 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:28:06,561 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:28:06,561 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:28:06,561 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:28:06,605 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:28:07,192 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:28:08,192 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:28:10,984 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:28:10,984 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:28:26,213 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: stop_status
+2022-10-17 20:28:26,213 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: stop_status
+2022-10-17 20:28:34,925 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:28:39,074 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:28:39,075 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:28:39,075 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:28:39,076 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:28:39,118 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: partial_history
+2022-10-17 20:28:39,120 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:39,120 DEBUG   SenderThread:222658 [sender.py:send():301] send: telemetry
+2022-10-17 20:28:39,120 DEBUG   SenderThread:222658 [sender.py:send():301] send: exit
+2022-10-17 20:28:39,121 INFO    SenderThread:222658 [sender.py:send_exit():437] handling exit code: 0
+2022-10-17 20:28:39,121 INFO    SenderThread:222658 [sender.py:send_exit():439] handling runtime: 1632
+2022-10-17 20:28:39,121 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:28:39,122 INFO    SenderThread:222658 [sender.py:send_exit():445] send defer
+2022-10-17 20:28:39,122 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:39,123 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: defer
+2022-10-17 20:28:39,124 INFO    HandlerThread:222658 [handler.py:handle_request_defer():161] handle defer: 0
+2022-10-17 20:28:39,124 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: defer
+2022-10-17 20:28:39,124 INFO    SenderThread:222658 [sender.py:send_request_defer():454] handle sender defer: 0
+2022-10-17 20:28:39,124 INFO    SenderThread:222658 [sender.py:transition_state():458] send defer: 1
+2022-10-17 20:28:39,125 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: defer
+2022-10-17 20:28:39,125 INFO    HandlerThread:222658 [handler.py:handle_request_defer():161] handle defer: 1
+2022-10-17 20:28:39,164 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: defer
+2022-10-17 20:28:39,164 INFO    SenderThread:222658 [sender.py:send_request_defer():454] handle sender defer: 1
+2022-10-17 20:28:39,164 INFO    SenderThread:222658 [sender.py:transition_state():458] send defer: 2
+2022-10-17 20:28:39,164 DEBUG   SenderThread:222658 [sender.py:send():301] send: stats
+2022-10-17 20:28:39,165 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: defer
+2022-10-17 20:28:39,165 INFO    HandlerThread:222658 [handler.py:handle_request_defer():161] handle defer: 2
+2022-10-17 20:28:39,167 DEBUG   SenderThread:222658 [sender.py:send():301] send: history
+2022-10-17 20:28:39,167 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:28:39,168 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:28:39,169 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: defer
+2022-10-17 20:28:39,169 INFO    SenderThread:222658 [sender.py:send_request_defer():454] handle sender defer: 2
+2022-10-17 20:28:39,169 INFO    SenderThread:222658 [sender.py:transition_state():458] send defer: 3
+2022-10-17 20:28:39,169 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: defer
+2022-10-17 20:28:39,170 INFO    HandlerThread:222658 [handler.py:handle_request_defer():161] handle defer: 3
+2022-10-17 20:28:39,170 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: defer
+2022-10-17 20:28:39,170 INFO    SenderThread:222658 [sender.py:send_request_defer():454] handle sender defer: 3
+2022-10-17 20:28:39,170 INFO    SenderThread:222658 [sender.py:transition_state():458] send defer: 4
+2022-10-17 20:28:39,171 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: defer
+2022-10-17 20:28:39,171 INFO    HandlerThread:222658 [handler.py:handle_request_defer():161] handle defer: 4
+2022-10-17 20:28:39,173 DEBUG   SenderThread:222658 [sender.py:send():301] send: summary
+2022-10-17 20:28:39,174 INFO    SenderThread:222658 [sender.py:_save_file():1155] saving file wandb-summary.json with policy end
+2022-10-17 20:28:39,174 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: defer
+2022-10-17 20:28:39,175 INFO    SenderThread:222658 [sender.py:send_request_defer():454] handle sender defer: 4
+2022-10-17 20:28:39,175 INFO    SenderThread:222658 [sender.py:transition_state():458] send defer: 5
+2022-10-17 20:28:39,175 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: defer
+2022-10-17 20:28:39,176 INFO    HandlerThread:222658 [handler.py:handle_request_defer():161] handle defer: 5
+2022-10-17 20:28:39,176 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: defer
+2022-10-17 20:28:39,176 INFO    SenderThread:222658 [sender.py:send_request_defer():454] handle sender defer: 5
+2022-10-17 20:28:39,199 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:28:39,226 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:39,451 INFO    SenderThread:222658 [sender.py:transition_state():458] send defer: 6
+2022-10-17 20:28:39,451 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:39,452 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: defer
+2022-10-17 20:28:39,452 INFO    HandlerThread:222658 [handler.py:handle_request_defer():161] handle defer: 6
+2022-10-17 20:28:39,452 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: defer
+2022-10-17 20:28:39,452 INFO    SenderThread:222658 [sender.py:send_request_defer():454] handle sender defer: 6
+2022-10-17 20:28:39,553 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:40,200 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:28:40,201 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/config.yaml
+2022-10-17 20:28:41,296 INFO    SenderThread:222658 [sender.py:transition_state():458] send defer: 7
+2022-10-17 20:28:41,297 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:41,299 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: defer
+2022-10-17 20:28:41,299 INFO    HandlerThread:222658 [handler.py:handle_request_defer():161] handle defer: 7
+2022-10-17 20:28:41,300 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: defer
+2022-10-17 20:28:41,300 INFO    SenderThread:222658 [sender.py:send_request_defer():454] handle sender defer: 7
+2022-10-17 20:28:41,301 INFO    SenderThread:222658 [dir_watcher.py:finish():362] shutting down directory watcher
+2022-10-17 20:28:41,404 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:42,201 INFO    Thread-13 :222658 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:28:42,201 INFO    SenderThread:222658 [dir_watcher.py:finish():392] scan: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files
+2022-10-17 20:28:42,201 INFO    SenderThread:222658 [dir_watcher.py:finish():406] scan save: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/conda-environment.yaml conda-environment.yaml
+2022-10-17 20:28:42,201 INFO    SenderThread:222658 [dir_watcher.py:finish():406] scan save: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/requirements.txt requirements.txt
+2022-10-17 20:28:42,201 INFO    SenderThread:222658 [dir_watcher.py:finish():406] scan save: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log output.log
+2022-10-17 20:28:42,201 INFO    SenderThread:222658 [dir_watcher.py:finish():406] scan save: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json wandb-summary.json
+2022-10-17 20:28:42,201 INFO    SenderThread:222658 [dir_watcher.py:finish():406] scan save: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/config.yaml config.yaml
+2022-10-17 20:28:42,201 INFO    SenderThread:222658 [dir_watcher.py:finish():406] scan save: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-metadata.json wandb-metadata.json
+2022-10-17 20:28:42,201 INFO    SenderThread:222658 [sender.py:transition_state():458] send defer: 8
+2022-10-17 20:28:42,201 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:42,204 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: defer
+2022-10-17 20:28:42,205 INFO    HandlerThread:222658 [handler.py:handle_request_defer():161] handle defer: 8
+2022-10-17 20:28:42,205 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: defer
+2022-10-17 20:28:42,205 INFO    SenderThread:222658 [sender.py:send_request_defer():454] handle sender defer: 8
+2022-10-17 20:28:42,205 INFO    SenderThread:222658 [file_pusher.py:finish():168] shutting down file pusher
+2022-10-17 20:28:42,307 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:42,308 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:42,413 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:42,414 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:42,519 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:42,519 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:42,625 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:42,625 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:42,729 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:42,730 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:42,832 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:42,833 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:42,916 INFO    Thread-22 :222658 [upload_job.py:push():139] Uploaded file /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/config.yaml
+2022-10-17 20:28:42,934 INFO    Thread-19 :222658 [upload_job.py:push():139] Uploaded file /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/requirements.txt
+2022-10-17 20:28:42,937 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:42,937 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:42,939 INFO    Thread-21 :222658 [upload_job.py:push():139] Uploaded file /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/wandb-summary.json
+2022-10-17 20:28:42,948 INFO    Thread-20 :222658 [upload_job.py:push():139] Uploaded file /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/output.log
+2022-10-17 20:28:42,983 INFO    Thread-18 :222658 [upload_job.py:push():139] Uploaded file /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/files/conda-environment.yaml
+2022-10-17 20:28:43,042 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:43,042 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:43,146 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:43,146 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:43,184 INFO    Thread-12 :222658 [sender.py:transition_state():458] send defer: 9
+2022-10-17 20:28:43,185 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: defer
+2022-10-17 20:28:43,185 INFO    HandlerThread:222658 [handler.py:handle_request_defer():161] handle defer: 9
+2022-10-17 20:28:43,185 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: defer
+2022-10-17 20:28:43,185 INFO    SenderThread:222658 [sender.py:send_request_defer():454] handle sender defer: 9
+2022-10-17 20:28:43,249 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:43,801 INFO    SenderThread:222658 [sender.py:transition_state():458] send defer: 10
+2022-10-17 20:28:43,802 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:43,803 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: defer
+2022-10-17 20:28:43,803 INFO    HandlerThread:222658 [handler.py:handle_request_defer():161] handle defer: 10
+2022-10-17 20:28:43,804 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: defer
+2022-10-17 20:28:43,804 INFO    SenderThread:222658 [sender.py:send_request_defer():454] handle sender defer: 10
+2022-10-17 20:28:43,805 INFO    SenderThread:222658 [sender.py:transition_state():458] send defer: 11
+2022-10-17 20:28:43,807 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: defer
+2022-10-17 20:28:43,807 DEBUG   SenderThread:222658 [sender.py:send():301] send: final
+2022-10-17 20:28:43,808 INFO    HandlerThread:222658 [handler.py:handle_request_defer():161] handle defer: 11
+2022-10-17 20:28:43,809 DEBUG   SenderThread:222658 [sender.py:send():301] send: footer
+2022-10-17 20:28:43,810 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: defer
+2022-10-17 20:28:43,810 INFO    SenderThread:222658 [sender.py:send_request_defer():454] handle sender defer: 11
+2022-10-17 20:28:43,912 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: poll_exit
+2022-10-17 20:28:43,913 DEBUG   SenderThread:222658 [sender.py:send_request():315] send_request: poll_exit
+2022-10-17 20:28:43,913 INFO    SenderThread:222658 [file_pusher.py:join():173] waiting for file pusher
+2022-10-17 20:28:44,511 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: sampled_history
+2022-10-17 20:28:44,518 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: get_summary
+2022-10-17 20:28:44,522 DEBUG   HandlerThread:222658 [handler.py:handle_request():138] handle_request: shutdown
+2022-10-17 20:28:44,522 INFO    HandlerThread:222658 [handler.py:finish():807] shutting down handler
+2022-10-17 20:28:44,808 INFO    WriterThread:222658 [datastore.py:close():279] close: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221017_200126-dwkqgobs/run-dwkqgobs.wandb
+2022-10-17 20:28:45,406 INFO    SenderThread:222658 [sender.py:finish():1315] shutting down sender
+2022-10-17 20:28:45,406 INFO    SenderThread:222658 [file_pusher.py:finish():168] shutting down file pusher
+2022-10-17 20:28:45,406 INFO    SenderThread:222658 [file_pusher.py:join():173] waiting for file pusher
+2022-10-17 20:28:46,529 INFO    MainThread:222658 [internal.py:handle_exit():78] Internal process exited

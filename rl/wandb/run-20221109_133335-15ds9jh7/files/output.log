@@ -1,0 +1,10 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+Traceback (most recent call last):
+  File "sac_scripts/hrl_gcid.py", line 209, in <module>
+    main()
+  File "sac_scripts/hrl_gcid.py", line 205, in main
+    train_single_task(env, tasks, args)
+  File "sac_scripts/hrl_gcid.py", line 168, in train_single_task
+    config = {'batch_size': 256, 'reuse_rate': 256, 'task' : task, "G" : G}
+NameError: name 'task' is not defined

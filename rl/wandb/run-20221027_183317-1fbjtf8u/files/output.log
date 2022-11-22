@@ -1,0 +1,16 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+Traceback (most recent call last):
+  File "hrl_gcspirl.py", line 232, in <module>
+    main()
+  File "hrl_gcspirl.py", line 228, in main
+    train_single_task(env, task, args)
+  File "hrl_gcspirl.py", line 205, in train_single_task
+    imgs = render_task(env, self.policy, low_actor, model.goal_generator)
+  File "hrl_gcspirl.py", line 49, in render_task
+    low_action = low_actor.act(state)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/subnetworks.py", line 65, in act
+    state = np.concatenate([state, self.z], axis=0)
+  File "<__array_function__ internals>", line 6, in concatenate
+ValueError: all the input arrays must have same number of dimensions, but the array at index 0 has 2 dimension(s) and the array at index 1 has 1 dimension(s)
+rendering..

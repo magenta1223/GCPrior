@@ -1,0 +1,36 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+Traceback (most recent call last):
+  File "hrl_sgspirl.py", line 203, in <module>
+    main()
+  File "hrl_sgspirl.py", line 199, in main
+    train_single_task(env, task, args)
+  File "hrl_sgspirl.py", line 170, in train_single_task
+    log = simpl_fine_tune_iter(collector, self, **config)
+  File "hrl_sgspirl.py", line 64, in simpl_fine_tune_iter
+    episode = collector.collect_episode(trainer.policy, G_final)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/collector/sgspirl.py", line 48, in collect_episode
+    return super().collect_episode(self.low_actor, high_actor, G)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/collector/sgspirl.py", line 20, in collect_episode
+    high_action = high_actor.act(state,G) # 여기를 state하고 action 둘 다 들어가게. posterior 사용 시
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/subnetworks.py", line 289, in act
+    dist = self.dist(states, G)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/subnetworks.py", line 304, in dist
+    hsg_hat = self.subgoal_g(G)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/base.py", line 48, in forward
+    out = layer(out)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/base.py", line 114, in forward
+    return self.layers(x)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/container.py", line 139, in forward
+    input = module(input)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/linear.py", line 114, in forward
+    return F.linear(input, self.weight, self.bias)
+RuntimeError: mat1 and mat2 shapes cannot be multiplied (1x21 and 81x128)

@@ -1,0 +1,26 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+Traceback (most recent call last):
+  File "sac_scripts/hrl_gcid.py", line 208, in <module>
+    main()
+  File "sac_scripts/hrl_gcid.py", line 204, in main
+    train_single_task(env, tasks, args)
+  File "sac_scripts/hrl_gcid.py", line 175, in train_single_task
+    log = simpl_fine_tune_iter(collector, self, **config)
+  File "sac_scripts/hrl_gcid.py", line 83, in simpl_fine_tune_iter
+    stat = trainer.step(batch_size, G)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/sac_modules/gcid.py", line 99, in step
+    dists = self.policy.dist(batch.states, G)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/subnetworks.py", line 422, in dist
+    self.min_scale + F.softplus(res_pre_scales + prior_pre_scales)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/distributions/normal.py", line 50, in __init__
+    if isinstance(loc, Number) and isinstance(scale, Number):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/abc.py", line 139, in __instancecheck__
+    return _abc_instancecheck(cls, instance)
+KeyboardInterrupt

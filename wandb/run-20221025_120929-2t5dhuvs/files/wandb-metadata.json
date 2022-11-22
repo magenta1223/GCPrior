@@ -1,0 +1,31 @@
+{
+    "os": "Linux-5.15.0-52-generic-x86_64-with-debian-bullseye-sid",
+    "python": "3.7.13",
+    "heartbeatAt": "2022-10-25T03:09:30.467316",
+    "startedAt": "2022-10-25T03:09:29.859104",
+    "docker": null,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "gpu_count": 1,
+    "cpu_count": 24,
+    "cuda": null,
+    "args": [
+        "--prior_loss",
+        "nll",
+        "--gc",
+        "True",
+        "--ga",
+        "False",
+        "--min",
+        "0",
+        "--max",
+        "-1",
+        "--gd",
+        "True"
+    ],
+    "state": "running",
+    "program": "train_gc_spirl.py",
+    "codePath": "train_gc_spirl.py",
+    "host": "magenta1223-MS-7D42",
+    "username": "magenta1223",
+    "executable": "/home/magenta1223/anaconda3/envs/skill/bin/python"
+}

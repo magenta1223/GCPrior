@@ -1,0 +1,30 @@
+2022-11-09 13:31:18,357 INFO    MainThread:47931 [wandb_setup.py:_flush():68] Configure stats pid to 47931
+2022-11-09 13:31:18,358 INFO    MainThread:47931 [wandb_setup.py:_flush():68] Loading settings from /home/magenta1223/.config/wandb/settings
+2022-11-09 13:31:18,358 INFO    MainThread:47931 [wandb_setup.py:_flush():68] Loading settings from /home/magenta1223/skill-based/SiMPL/proposed/rl/wandb/settings
+2022-11-09 13:31:18,358 INFO    MainThread:47931 [wandb_setup.py:_flush():68] Loading settings from environment variables: {'_require_service': 'True'}
+2022-11-09 13:31:18,358 INFO    MainThread:47931 [wandb_setup.py:_flush():68] Inferring run settings from compute environment: {'program_relpath': 'sac_scripts/hrl_gcid.py', 'program': 'sac_scripts/hrl_gcid.py'}
+2022-11-09 13:31:18,358 INFO    MainThread:47931 [wandb_init.py:_log_setup():476] Logging user logs to /home/magenta1223/skill-based/SiMPL/proposed/rl/wandb/run-20221109_133118-33g0o2rt/logs/debug.log
+2022-11-09 13:31:18,358 INFO    MainThread:47931 [wandb_init.py:_log_setup():477] Logging internal logs to /home/magenta1223/skill-based/SiMPL/proposed/rl/wandb/run-20221109_133118-33g0o2rt/logs/debug-internal.log
+2022-11-09 13:31:18,358 INFO    MainThread:47931 [wandb_init.py:init():516] calling init triggers
+2022-11-09 13:31:18,358 INFO    MainThread:47931 [wandb_init.py:init():520] wandb.init called with sweep_config: {}
+config: {}
+2022-11-09 13:31:18,359 INFO    MainThread:47931 [wandb_init.py:init():569] starting backend
+2022-11-09 13:31:18,359 INFO    MainThread:47931 [wandb_init.py:init():573] setting up manager
+2022-11-09 13:31:18,360 INFO    MainThread:47931 [backend.py:_multiprocessing_setup():104] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2022-11-09 13:31:18,361 INFO    MainThread:47931 [wandb_init.py:init():580] backend started and connected
+2022-11-09 13:31:18,362 INFO    MainThread:47931 [wandb_init.py:init():658] updated telemetry
+2022-11-09 13:31:18,362 INFO    MainThread:47931 [wandb_init.py:init():694] communicating run to backend with 60 second timeout
+2022-11-09 13:31:18,368 ERROR   MainThread:47931 [wandb_init.py:init():1105] error
+Traceback (most recent call last):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/sdk/wandb_init.py", line 1078, in init
+    run = wi.init()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/sdk/wandb_init.py", line 696, in init
+    handle = backend.interface.deliver_run(run)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/sdk/interface/interface.py", line 719, in deliver_run
+    run = self._make_run(run_obj)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/sdk/interface/interface.py", line 173, in _make_run
+    run._make_proto_run(proto_run)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/sdk/wandb_run.py", line 664, in _make_proto_run
+    run.display_name = self._name
+TypeError: bad argument type for built-in operation
+2022-11-09 13:31:21,863 WARNING MsgRouterThr:47931 [router.py:message_loop():77] message_loop has been closed

@@ -1,0 +1,45 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+Traceback (most recent call last):
+  File "hrl_gcspirl.py", line 224, in <module>
+    main()
+  File "hrl_gcspirl.py", line 220, in main
+    train_single_task(env, task, args)
+  File "hrl_gcspirl.py", line 192, in train_single_task
+    log = simpl_fine_tune_iter(collector, self, **config)
+  File "hrl_gcspirl.py", line 92, in simpl_fine_tune_iter
+    episode = collector.collect_episode(trainer.policy, trainer.prior_policy, trainer.goal_generator)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/collector/collector.py", line 63, in collect_episode
+    return super().collect_episode(self.low_actor, high_actor, prior_module, goal_generator)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/collector/collector.py", line 36, in collect_episode
+    low_action = low_actor.act(state)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/subnetworks.py", line 75, in act
+    self.train(training)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1839, in train
+    module.train(mode)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1839, in train
+    module.train(mode)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1839, in train
+    module.train(mode)
+  [Previous line repeated 1 more time]
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1837, in train
+    self.training = mode
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1210, in __setattr__
+    def __setattr__(self, name: str, value: Union[Tensor, 'Module']) -> None:
+KeyboardInterrupt

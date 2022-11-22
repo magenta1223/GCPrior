@@ -1,0 +1,21 @@
+{
+    "os": "Linux-5.15.0-52-generic-x86_64-with-debian-bullseye-sid",
+    "python": "3.7.13",
+    "heartbeatAt": "2022-11-07T06:23:35.684465",
+    "startedAt": "2022-11-07T06:23:34.984634",
+    "docker": null,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "gpu_count": 1,
+    "cpu_count": 24,
+    "cuda": null,
+    "args": [
+        "--prior_loss",
+        "nll"
+    ],
+    "state": "running",
+    "program": "prior_train/train_prior.py",
+    "codePath": "prior_train/train_prior.py",
+    "host": "magenta1223-MS-7D42",
+    "username": "magenta1223",
+    "executable": "/home/magenta1223/anaconda3/envs/skill/bin/python"
+}

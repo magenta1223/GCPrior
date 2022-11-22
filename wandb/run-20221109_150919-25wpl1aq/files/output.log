@@ -1,0 +1,22 @@
+
+
+
+
+
+  6%|████████▏                                                                                                                                       | 4/70 [02:08<35:25, 32.20s/it]
+Traceback (most recent call last):
+  File "prior_train/train_prior.py", line 47, in <module>
+    main()
+  File "prior_train/train_prior.py", line 44, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/prior_train/trainer.py", line 180, in fit
+    train_loss_dict  = self.train_one_epoch(train_loader, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/prior_train/trainer.py", line 254, in train_one_epoch
+    loss = self.model.optimize(batch, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/spirl_easy.py", line 222, in optimize
+    self.scaler.scale(loss).backward()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/_tensor.py", line 396, in backward
+    torch.autograd.backward(self, gradient, retain_graph, create_graph, inputs=inputs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/autograd/__init__.py", line 175, in backward
+    allow_unreachable=True, accumulate_grad=True)  # Calls into the C++ engine to run the backward pass
+KeyboardInterrupt

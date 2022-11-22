@@ -1,0 +1,33 @@
+2022-10-27 21:36:04,390 INFO    MainThread:664159 [wandb_setup.py:_flush():68] Configure stats pid to 664159
+2022-10-27 21:36:04,390 INFO    MainThread:664159 [wandb_setup.py:_flush():68] Loading settings from /home/magenta1223/.config/wandb/settings
+2022-10-27 21:36:04,390 INFO    MainThread:664159 [wandb_setup.py:_flush():68] Loading settings from /home/magenta1223/skill-based/SiMPL/proposed/wandb/settings
+2022-10-27 21:36:04,390 INFO    MainThread:664159 [wandb_setup.py:_flush():68] Loading settings from environment variables: {'_require_service': 'True'}
+2022-10-27 21:36:04,390 INFO    MainThread:664159 [wandb_setup.py:_flush():68] Inferring run settings from compute environment: {'program_relpath': 'train_gc_spirl.py', 'program': 'train_gc_spirl.py'}
+2022-10-27 21:36:04,390 INFO    MainThread:664159 [wandb_init.py:_log_setup():476] Logging user logs to /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221027_213604-32p7x3kh/logs/debug.log
+2022-10-27 21:36:04,390 INFO    MainThread:664159 [wandb_init.py:_log_setup():477] Logging internal logs to /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221027_213604-32p7x3kh/logs/debug-internal.log
+2022-10-27 21:36:04,391 INFO    MainThread:664159 [wandb_init.py:init():516] calling init triggers
+2022-10-27 21:36:04,391 INFO    MainThread:664159 [wandb_init.py:init():520] wandb.init called with sweep_config: {}
+config: {'model_cls': None, 'logger': None, 'data_dir': '.', 'epoch_cycles_train': 50, 'epochs': 70, 'evaluator': None, 'top_of_n_eval': 100, 'top_comp_metric': 'mse', 'batch_size': 1024, 'exp_path': None, 'optim_cls': <class 'torch.optim.adam.Adam'>, 'lr': 0.001, 'gradient_clip': None, 'init_grad_clip': 0.001, 'init_grad_clip_step': 100, 'momentum': 0, 'adam_beta': 0.9, 'schedulerClass': <class 'torch.optim.lr_scheduler.ReduceLROnPlateau'>, 'scheduler_params': {'mode': 'min', 'factor': 0.2, 'patience': 4, 'verbose': True, 'threshold': 0.01, 'threshold_mode': 'abs', 'cooldown': 0, 'min_lr': 1e-12, 'eps': 1e-08}, 'save_path': './weights', 'log_path': './log.txt', 'save_ckpt': 0, 'warmup_steps': 20, 'warmup_method': None, 'model_id': '', 'early_stop_rounds': 100, 'state_dim': 60, 'action_dim': 9, 'n_rollout_steps': 10, 'kl_div_weight': 0.0005, 'hidden_dim': 128, 'latent_dim': 10, 'n_processing_layers': 5, 'cond_decode': True, 'n_obj': 9, 'n_env': 21, 'g_agent': False, 'data': {'dataset_spec': {'dataset_class': <class 'proposed.data.kitchen.src.kitchen_data_loader.D4RLGoalRelabelingDataset'>, 'n_actions': 9, 'state_dim': 60, 'env_name': 'kitchen-mixed-v0', 'res': 128, 'crop_rand_subseq': True, 'max_seq_len': 280, 'subseq_len': 11}, 'subseq_len': 11, 'device': 'cpu'}, 'val_data_size': 5000, 'prior_loss': 'nll', 'reg_beta': 0.00025, 'n_epochs': 50, 'gc': True, 'project': 'gcspirl', 'goal_range': [0, -1]}
+2022-10-27 21:36:04,391 INFO    MainThread:664159 [wandb_init.py:init():569] starting backend
+2022-10-27 21:36:04,391 INFO    MainThread:664159 [wandb_init.py:init():573] setting up manager
+2022-10-27 21:36:04,393 INFO    MainThread:664159 [wandb_init.py:init():580] backend started and connected
+2022-10-27 21:36:04,397 INFO    MainThread:664159 [wandb_init.py:init():658] updated telemetry
+2022-10-27 21:36:04,397 INFO    MainThread:664159 [wandb_init.py:init():694] communicating run to backend with 60 second timeout
+2022-10-27 21:36:04,520 WARNING MainThread:664159 [wandb_init.py:init():1099] interrupted
+Traceback (most recent call last):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/sdk/wandb_init.py", line 1078, in init
+    run = wi.init()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/sdk/wandb_init.py", line 698, in init
+    timeout=self.settings.init_timeout, on_progress=self._on_progress_init
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/sdk/lib/mailbox.py", line 261, in wait
+    found = self._slot._get_and_clear(timeout=wait_timeout)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/sdk/lib/mailbox.py", line 118, in _get_and_clear
+    if self._wait(timeout=timeout):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/sdk/lib/mailbox.py", line 114, in _wait
+    return self._event.wait(timeout=timeout)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/threading.py", line 552, in wait
+    signaled = self._cond.wait(timeout)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/threading.py", line 300, in wait
+    gotit = waiter.acquire(True, timeout)
+KeyboardInterrupt
+2022-10-27 21:36:09,100 WARNING MsgRouterThr:664159 [router.py:message_loop():77] message_loop has been closed

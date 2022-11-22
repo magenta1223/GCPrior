@@ -1,0 +1,78 @@
+2022-11-02 20:17:35,362 INFO    MainThread:58553 [wandb_setup.py:_flush():68] Configure stats pid to 58553
+2022-11-02 20:17:35,362 INFO    MainThread:58553 [wandb_setup.py:_flush():68] Loading settings from /home/magenta1223/.config/wandb/settings
+2022-11-02 20:17:35,362 INFO    MainThread:58553 [wandb_setup.py:_flush():68] Loading settings from /home/magenta1223/skill-based/SiMPL/proposed/wandb/settings
+2022-11-02 20:17:35,362 INFO    MainThread:58553 [wandb_setup.py:_flush():68] Loading settings from environment variables: {'_require_service': 'True'}
+2022-11-02 20:17:35,362 INFO    MainThread:58553 [wandb_setup.py:_flush():68] Inferring run settings from compute environment: {'program_relpath': 'train_caes.py', 'program': 'train_caes.py'}
+2022-11-02 20:17:35,362 INFO    MainThread:58553 [wandb_init.py:_log_setup():476] Logging user logs to /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221102_201735-9p57msdn/logs/debug.log
+2022-11-02 20:17:35,363 INFO    MainThread:58553 [wandb_init.py:_log_setup():477] Logging internal logs to /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221102_201735-9p57msdn/logs/debug-internal.log
+2022-11-02 20:17:35,363 INFO    MainThread:58553 [wandb_init.py:init():516] calling init triggers
+2022-11-02 20:17:35,363 INFO    MainThread:58553 [wandb_init.py:init():520] wandb.init called with sweep_config: {}
+config: {'model_cls': None, 'logger': None, 'data_dir': '.', 'epoch_cycles_train': 50, 'epochs': 50, 'evaluator': None, 'top_of_n_eval': 100, 'top_comp_metric': 'mse', 'batch_size': 1024, 'exp_path': None, 'optim_cls': <class 'torch.optim.adam.Adam'>, 'lr': 0.001, 'gradient_clip': None, 'init_grad_clip': 0.001, 'init_grad_clip_step': 100, 'momentum': 0, 'adam_beta': 0.9, 'schedulerClass': <class 'torch.optim.lr_scheduler.ReduceLROnPlateau'>, 'scheduler_params': {'mode': 'min', 'factor': 0.2, 'patience': 4, 'verbose': True, 'threshold': 0.01, 'threshold_mode': 'abs', 'cooldown': 0, 'min_lr': 1e-12, 'eps': 1e-08}, 'save_path': './weights', 'log_path': './log.txt', 'save_ckpt': 0, 'warmup_steps': 10, 'warmup_method': None, 'model_id': '', 'early_stop_rounds': 10, 'state_dim': 60, 'action_dim': 9, 'n_rollout_steps': 10, 'kl_div_weight': 0.0005, 'hidden_dim': 128, 'latent_dim': 10, 'n_processing_layers': 5, 'cond_decode': True, 'n_obj': 9, 'n_env': 21, 'g_agent': False, 'data': {'dataset_spec': {'dataset_class': <class 'proposed.data.kitchen.src.kitchen_data_loader.D4RLGoalRelabelingDataset'>, 'n_actions': 9, 'state_dim': 60, 'env_name': 'kitchen-mixed-v0', 'res': 128, 'crop_rand_subseq': True, 'max_seq_len': 280, 'subseq_len': 11}, 'subseq_len': 11, 'device': 'cpu'}, 'val_data_size': 5000, 'prior_loss': 'nll', 'reg_beta': 7e-05, 'gc': True, 'project': 'gcspirl', 'goal_range': [0, 20]}
+2022-11-02 20:17:35,364 INFO    MainThread:58553 [wandb_init.py:init():569] starting backend
+2022-11-02 20:17:35,364 INFO    MainThread:58553 [wandb_init.py:init():573] setting up manager
+2022-11-02 20:17:35,369 INFO    MainThread:58553 [wandb_init.py:init():580] backend started and connected
+2022-11-02 20:17:35,375 INFO    MainThread:58553 [wandb_init.py:init():658] updated telemetry
+2022-11-02 20:17:35,375 INFO    MainThread:58553 [wandb_init.py:init():694] communicating run to backend with 60 second timeout
+2022-11-02 20:18:03,529 ERROR   Thread-2  :58553 [retry.py:__call__():154] Retry attempt failed:
+Traceback (most recent call last):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/urllib3/connection.py", line 175, in _new_conn
+    (self._dns_host, self.port), self.timeout, **extra_kw
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/urllib3/util/connection.py", line 72, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/socket.py", line 752, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+socket.gaierror: [Errno -3] Temporary failure in name resolution
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/urllib3/connectionpool.py", line 710, in urlopen
+    chunked=chunked,
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/urllib3/connectionpool.py", line 386, in _make_request
+    self._validate_conn(conn)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/urllib3/connectionpool.py", line 1042, in _validate_conn
+    conn.connect()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/urllib3/connection.py", line 358, in connect
+    self.sock = conn = self._new_conn()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/urllib3/connection.py", line 187, in _new_conn
+    self, "Failed to establish a new connection: %s" % e
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPSConnection object at 0x7ff73e008690>: Failed to establish a new connection: [Errno -3] Temporary failure in name resolution
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/requests/adapters.py", line 499, in send
+    timeout=timeout,
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/urllib3/connectionpool.py", line 788, in urlopen
+    method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/urllib3/util/retry.py", line 592, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='api.wandb.ai', port=443): Max retries exceeded with url: /graphql (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7ff73e008690>: Failed to establish a new connection: [Errno -3] Temporary failure in name resolution'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/sdk/lib/retry.py", line 113, in __call__
+    result = self._call_fn(*args, **kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/sdk/internal/internal_api.py", line 213, in execute
+    return self.client.execute(*args, **kwargs)  # type: ignore
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/client.py", line 52, in execute
+    result = self._get_result(document, *args, **kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/client.py", line 60, in _get_result
+    return self.transport.execute(document, *args, **kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/transport/requests.py", line 38, in execute
+    request = requests.post(self.url, **post_args)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/requests/api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/requests/sessions.py", line 587, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/requests/sessions.py", line 701, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/requests/adapters.py", line 565, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='api.wandb.ai', port=443): Max retries exceeded with url: /graphql (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7ff73e008690>: Failed to establish a new connection: [Errno -3] Temporary failure in name resolution'))
+2022-11-02 20:18:35,400 ERROR   MainThread:58553 [wandb_init.py:init():704] backend process timed out
+2022-11-02 20:18:35,401 ERROR   MainThread:58553 [wandb_init.py:init():713] encountered error: Error communicating with wandb process
+For more info see: https://docs.wandb.ai/library/init#init-start-error

@@ -1,0 +1,21 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+Traceback (most recent call last):
+  File "sac_scripts/hrl_gcid.py", line 204, in <module>
+    main()
+  File "sac_scripts/hrl_gcid.py", line 200, in main
+    train_single_task(env, task, args)
+  File "sac_scripts/hrl_gcid.py", line 171, in train_single_task
+    log = simpl_fine_tune_iter(collector, self, **config)
+  File "sac_scripts/hrl_gcid.py", line 64, in simpl_fine_tune_iter
+    episode = collector.collect_episode(trainer.policy, G)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/collector/gcid.py", line 48, in collect_episode
+    return super().collect_episode(self.low_actor, high_actor, G)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/collector/gcid.py", line 20, in collect_episode
+    high_action = high_actor.act(state,G) # 여기를 state하고 action 둘 다 들어가게. posterior 사용 시
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/subnetworks.py", line 394, in act
+    dist = self.dist(states, G)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/subnetworks.py", line 414, in dist
+    prior_locs, prior_scales = prior_dist.locs, prior_dist.scales
+AttributeError: 'Normal' object has no attribute 'locs'
+['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_batch_shape', '_event_shape', '_extended_shape', '_get_checked_instance', '_log_normalizer', '_mean_carrier_measure', '_natural_params', '_validate_args', '_validate_sample', 'arg_constraints', 'batch_shape', 'cdf', 'entropy', 'enumerate_support', 'event_shape', 'expand', 'has_enumerate_support', 'has_rsample', 'icdf', 'loc', 'log_prob', 'mean', 'mode', 'perplexity', 'rsample', 'sample', 'sample_n', 'scale', 'set_default_validate_args', 'stddev', 'support', 'variance']

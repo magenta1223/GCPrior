@@ -1,0 +1,47 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 20%|████████████████████████████▌                                                                                                                  | 14/70 [05:04<20:04, 21.50s/it]Exception ignored in: <function _MultiProcessingDataLoaderIter.__del__ at 0x7f96eb547440>
+Traceback (most recent call last):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 1510, in __del__
+    self._shutdown_workers()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 1474, in _shutdown_workers
+    w.join(timeout=_utils.MP_STATUS_CHECK_INTERVAL)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/multiprocessing/process.py", line 140, in join
+    res = self._popen.wait(timeout)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/multiprocessing/popen_fork.py", line 45, in wait
+    if not wait([self.sentinel], timeout):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/multiprocessing/connection.py", line 921, in wait
+    ready = selector.select(timeout)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/selectors.py", line 415, in select
+    fd_event_list = self._selector.poll(timeout)
+KeyboardInterrupt:
+ 20%|████████████████████████████▌                                                                                                                  | 14/70 [05:12<20:48, 22.29s/it]
+Traceback (most recent call last):
+  File "train_gc_spirl.py", line 50, in <module>
+    main()
+  File "train_gc_spirl.py", line 47, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 178, in fit
+    train_loss_dict  = self.train_one_epoch(train_loader, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 248, in train_one_epoch
+    loss = self.model.optimize(batch, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/gcspirl.py", line 313, in optimize
+    self.scaler.scale(loss).backward()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/_tensor.py", line 396, in backward
+    torch.autograd.backward(self, gradient, retain_graph, create_graph, inputs=inputs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/autograd/__init__.py", line 175, in backward
+    allow_unreachable=True, accumulate_grad=True)  # Calls into the C++ engine to run the backward pass
+KeyboardInterrupt

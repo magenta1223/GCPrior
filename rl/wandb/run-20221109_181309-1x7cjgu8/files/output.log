@@ -1,0 +1,13 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+Traceback (most recent call last):
+  File "sac_scripts/hrl_gcid.py", line 209, in <module>
+    main()
+  File "sac_scripts/hrl_gcid.py", line 205, in main
+    train_single_task(env, tasks, args)
+  File "sac_scripts/hrl_gcid.py", line 175, in train_single_task
+    log = simpl_fine_tune_iter(collector, self, **config)
+  File "sac_scripts/hrl_gcid.py", line 71, in simpl_fine_tune_iter
+    imgs.append(info['img'])
+KeyError: 'img'
+success

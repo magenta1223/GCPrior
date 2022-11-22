@@ -1,0 +1,49 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 26%|████████████████████████████████████████▊                                                                                                                    | 13/50 [06:33<18:38, 30.24s/it]
+Traceback (most recent call last):
+  File "train_gc_spirl.py", line 45, in <module>
+    main()
+  File "train_gc_spirl.py", line 42, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 185, in fit
+    train_loss_dict  = self.train_one_epoch(train_loader, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 256, in train_one_epoch
+    loss = self.model.optimize(batch, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/gcspirl.py", line 289, in optimize
+    outputs, N, T = self(states, actions)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/gcspirl.py", line 178, in forward
+    q_hat = self.skill_prior(states[:,0])
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/base.py", line 51, in forward
+    out = layer(out)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/base.py", line 117, in forward
+    return self.layers(x)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/container.py", line 139, in forward
+    input = module(input)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/batchnorm.py", line 179, in forward
+    self.eps,
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/functional.py", line 2439, in batch_norm
+    input, weight, bias, running_mean, running_var, training, momentum, eps, torch.backends.cudnn.enabled
+KeyboardInterrupt

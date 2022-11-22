@@ -1,0 +1,68 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 62%|███████████████████████████████████████████████████████████████████████▎                                           | 31/50 [15:25<09:26, 29.83s/it]
+
+
+
+
+
+ 72%|██████████████████████████████████████████████████████████████████████████████████▊                                | 36/50 [17:53<06:54, 29.62s/it]
+
+
+
+
+ 80%|████████████████████████████████████████████████████████████████████████████████████████████                       | 40/50 [19:51<04:55, 29.56s/it]
+
+
+
+
+
+
+ 92%|█████████████████████████████████████████████████████████████████████████████████████████████████████████▊         | 46/50 [22:49<01:58, 29.69s/it]
+ 92%|█████████████████████████████████████████████████████████████████████████████████████████████████████████▊         | 46/50 [22:55<01:59, 29.90s/it]
+Traceback (most recent call last):
+  File "train_gc_spirl.py", line 45, in <module>
+    main()
+  File "train_gc_spirl.py", line 42, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 184, in fit
+    train_loss_dict  = self.train_one_epoch(train_loader, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 255, in train_one_epoch
+    loss = self.model.optimize(batch, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/gcspirl.py", line 317, in optimize
+    self.scaler.scale(loss).backward()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/_tensor.py", line 396, in backward
+    torch.autograd.backward(self, gradient, retain_graph, create_graph, inputs=inputs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/autograd/__init__.py", line 175, in backward
+    allow_unreachable=True, accumulate_grad=True)  # Calls into the C++ engine to run the backward pass
+KeyboardInterrupt

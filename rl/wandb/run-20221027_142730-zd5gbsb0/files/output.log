@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "hrl_gcspirl.py", line 223, in <module>
+    main()
+  File "hrl_gcspirl.py", line 219, in main
+    train_single_task(env, task, args)
+  File "hrl_gcspirl.py", line 170, in train_single_task
+    policy = MixedMLPPolicy(Linear_Config(policy_config))
+TypeError: __init__() missing 1 required positional argument: 'prior_policy'

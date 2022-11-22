@@ -1,0 +1,12 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+Traceback (most recent call last):
+  File "hrl_caespirl.py", line 195, in <module>
+    main()
+  File "hrl_caespirl.py", line 191, in main
+    train_single_task(env, task, args)
+  File "hrl_caespirl.py", line 154, in train_single_task
+    self = SAC(policy, model.skill_prior, model.state_encoder, model.context_regressor, qfs, buffer, goal_generator= model.goal_generator, **sac_config)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1208, in __getattr__
+    type(self).__name__, name))
+AttributeError: 'CAESkillPrior' object has no attribute 'goal_generator'

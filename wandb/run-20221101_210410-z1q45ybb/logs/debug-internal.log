@@ -1,0 +1,152 @@
+2022-11-01 21:04:10,445 INFO    StreamThr :257832 [internal.py:wandb_internal():91] W&B internal server running at pid: 257832, started at: 2022-11-01 21:04:10.445061
+2022-11-01 21:04:10,447 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: status
+2022-11-01 21:04:10,448 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: status
+2022-11-01 21:04:10,449 DEBUG   SenderThread:257832 [sender.py:send():303] send: header
+2022-11-01 21:04:10,449 INFO    WriterThread:257832 [datastore.py:open_for_write():75] open: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/run-z1q45ybb.wandb
+2022-11-01 21:04:10,449 DEBUG   SenderThread:257832 [sender.py:send():303] send: run
+2022-11-01 21:04:10,995 INFO    SenderThread:257832 [dir_watcher.py:__init__():216] watching files in: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files
+2022-11-01 21:04:10,995 INFO    SenderThread:257832 [sender.py:_start_run_threads():931] run started: z1q45ybb with start time 1667304250.440369
+2022-11-01 21:04:10,997 DEBUG   SenderThread:257832 [sender.py:send():303] send: summary
+2022-11-01 21:04:10,998 INFO    SenderThread:257832 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-11-01 21:04:10,998 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: check_version
+2022-11-01 21:04:10,998 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: check_version
+2022-11-01 21:04:11,063 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: run_start
+2022-11-01 21:04:11,065 DEBUG   HandlerThread:257832 [meta.py:__init__():34] meta init
+2022-11-01 21:04:11,065 DEBUG   HandlerThread:257832 [meta.py:__init__():49] meta init done
+2022-11-01 21:04:11,065 DEBUG   HandlerThread:257832 [meta.py:probe():215] probe
+2022-11-01 21:04:11,073 DEBUG   HandlerThread:257832 [git.py:repo():40] git repository is invalid
+2022-11-01 21:04:11,073 DEBUG   HandlerThread:257832 [meta.py:_save_pip():53] save pip
+2022-11-01 21:04:11,073 DEBUG   HandlerThread:257832 [meta.py:_save_pip():67] save pip done
+2022-11-01 21:04:11,073 DEBUG   HandlerThread:257832 [meta.py:_save_conda():74] save conda
+2022-11-01 21:04:11,996 INFO    Thread-13 :257832 [dir_watcher.py:_on_file_created():275] file/dir created: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/conda-environment.yaml
+2022-11-01 21:04:11,997 INFO    Thread-13 :257832 [dir_watcher.py:_on_file_created():275] file/dir created: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/requirements.txt
+2022-11-01 21:04:11,997 INFO    Thread-13 :257832 [dir_watcher.py:_on_file_created():275] file/dir created: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/wandb-summary.json
+2022-11-01 21:04:13,943 DEBUG   HandlerThread:257832 [meta.py:_save_conda():84] save conda done
+2022-11-01 21:04:13,943 DEBUG   HandlerThread:257832 [meta.py:probe():253] probe done
+2022-11-01 21:04:13,945 DEBUG   SenderThread:257832 [sender.py:send():303] send: files
+2022-11-01 21:04:13,945 INFO    SenderThread:257832 [sender.py:_save_file():1171] saving file wandb-metadata.json with policy now
+2022-11-01 21:04:13,947 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: stop_status
+2022-11-01 21:04:13,948 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: stop_status
+2022-11-01 21:04:13,996 INFO    Thread-13 :257832 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/conda-environment.yaml
+2022-11-01 21:04:13,996 INFO    Thread-13 :257832 [dir_watcher.py:_on_file_created():275] file/dir created: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/wandb-metadata.json
+2022-11-01 21:04:14,173 DEBUG   SenderThread:257832 [sender.py:send():303] send: telemetry
+2022-11-01 21:04:14,301 DEBUG   SenderThread:257832 [sender.py:send():303] send: exit
+2022-11-01 21:04:14,301 INFO    SenderThread:257832 [sender.py:send_exit():442] handling exit code: 1
+2022-11-01 21:04:14,302 INFO    SenderThread:257832 [sender.py:send_exit():444] handling runtime: 3
+2022-11-01 21:04:14,302 INFO    SenderThread:257832 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-11-01 21:04:14,302 INFO    SenderThread:257832 [sender.py:send_exit():450] send defer
+2022-11-01 21:04:14,302 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: defer
+2022-11-01 21:04:14,302 INFO    HandlerThread:257832 [handler.py:handle_request_defer():161] handle defer: 0
+2022-11-01 21:04:14,302 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: defer
+2022-11-01 21:04:14,302 INFO    SenderThread:257832 [sender.py:send_request_defer():459] handle sender defer: 0
+2022-11-01 21:04:14,302 INFO    SenderThread:257832 [sender.py:transition_state():463] send defer: 1
+2022-11-01 21:04:14,302 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: defer
+2022-11-01 21:04:14,302 INFO    HandlerThread:257832 [handler.py:handle_request_defer():161] handle defer: 1
+2022-11-01 21:04:14,398 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: defer
+2022-11-01 21:04:14,398 INFO    SenderThread:257832 [sender.py:send_request_defer():459] handle sender defer: 1
+2022-11-01 21:04:14,398 INFO    SenderThread:257832 [sender.py:transition_state():463] send defer: 2
+2022-11-01 21:04:14,398 DEBUG   SenderThread:257832 [sender.py:send():303] send: stats
+2022-11-01 21:04:14,399 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: defer
+2022-11-01 21:04:14,399 INFO    HandlerThread:257832 [handler.py:handle_request_defer():161] handle defer: 2
+2022-11-01 21:04:14,399 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: defer
+2022-11-01 21:04:14,399 INFO    SenderThread:257832 [sender.py:send_request_defer():459] handle sender defer: 2
+2022-11-01 21:04:14,399 INFO    SenderThread:257832 [sender.py:transition_state():463] send defer: 3
+2022-11-01 21:04:14,399 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: defer
+2022-11-01 21:04:14,399 INFO    HandlerThread:257832 [handler.py:handle_request_defer():161] handle defer: 3
+2022-11-01 21:04:14,399 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: defer
+2022-11-01 21:04:14,399 INFO    SenderThread:257832 [sender.py:send_request_defer():459] handle sender defer: 3
+2022-11-01 21:04:14,399 INFO    SenderThread:257832 [sender.py:transition_state():463] send defer: 4
+2022-11-01 21:04:14,399 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: defer
+2022-11-01 21:04:14,399 INFO    HandlerThread:257832 [handler.py:handle_request_defer():161] handle defer: 4
+2022-11-01 21:04:14,399 DEBUG   SenderThread:257832 [sender.py:send():303] send: summary
+2022-11-01 21:04:14,400 INFO    SenderThread:257832 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-11-01 21:04:14,400 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: defer
+2022-11-01 21:04:14,400 INFO    SenderThread:257832 [sender.py:send_request_defer():459] handle sender defer: 4
+2022-11-01 21:04:14,400 INFO    SenderThread:257832 [sender.py:transition_state():463] send defer: 5
+2022-11-01 21:04:14,400 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: defer
+2022-11-01 21:04:14,400 INFO    HandlerThread:257832 [handler.py:handle_request_defer():161] handle defer: 5
+2022-11-01 21:04:14,400 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: defer
+2022-11-01 21:04:14,400 INFO    SenderThread:257832 [sender.py:send_request_defer():459] handle sender defer: 5
+2022-11-01 21:04:14,555 INFO    Thread-17 :257832 [upload_job.py:push():143] Uploaded file /tmp/tmph2wqkfalwandb/36z8o1y7-wandb-metadata.json
+2022-11-01 21:04:14,687 INFO    SenderThread:257832 [sender.py:transition_state():463] send defer: 6
+2022-11-01 21:04:14,687 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: defer
+2022-11-01 21:04:14,687 INFO    HandlerThread:257832 [handler.py:handle_request_defer():161] handle defer: 6
+2022-11-01 21:04:14,688 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: defer
+2022-11-01 21:04:14,688 INFO    SenderThread:257832 [sender.py:send_request_defer():459] handle sender defer: 6
+2022-11-01 21:04:14,998 INFO    Thread-13 :257832 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/config.yaml
+2022-11-01 21:04:14,998 INFO    Thread-13 :257832 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/wandb-summary.json
+2022-11-01 21:04:14,999 INFO    Thread-13 :257832 [dir_watcher.py:_on_file_created():275] file/dir created: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/output.log
+2022-11-01 21:04:15,302 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: poll_exit
+2022-11-01 21:04:16,194 INFO    SenderThread:257832 [sender.py:transition_state():463] send defer: 7
+2022-11-01 21:04:16,194 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: poll_exit
+2022-11-01 21:04:16,195 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: defer
+2022-11-01 21:04:16,196 INFO    HandlerThread:257832 [handler.py:handle_request_defer():161] handle defer: 7
+2022-11-01 21:04:16,197 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: defer
+2022-11-01 21:04:16,197 INFO    SenderThread:257832 [sender.py:send_request_defer():459] handle sender defer: 7
+2022-11-01 21:04:16,197 INFO    SenderThread:257832 [dir_watcher.py:finish():362] shutting down directory watcher
+2022-11-01 21:04:16,302 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: poll_exit
+2022-11-01 21:04:16,999 INFO    Thread-13 :257832 [dir_watcher.py:_on_file_modified():292] file/dir modified: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/output.log
+2022-11-01 21:04:17,001 INFO    SenderThread:257832 [dir_watcher.py:finish():392] scan: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files
+2022-11-01 21:04:17,001 INFO    SenderThread:257832 [dir_watcher.py:finish():406] scan save: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/wandb-summary.json wandb-summary.json
+2022-11-01 21:04:17,002 INFO    SenderThread:257832 [dir_watcher.py:finish():406] scan save: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/output.log output.log
+2022-11-01 21:04:17,003 INFO    SenderThread:257832 [dir_watcher.py:finish():406] scan save: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/wandb-metadata.json wandb-metadata.json
+2022-11-01 21:04:17,003 INFO    SenderThread:257832 [dir_watcher.py:finish():406] scan save: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/config.yaml config.yaml
+2022-11-01 21:04:17,015 INFO    SenderThread:257832 [dir_watcher.py:finish():406] scan save: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/conda-environment.yaml conda-environment.yaml
+2022-11-01 21:04:17,023 INFO    SenderThread:257832 [dir_watcher.py:finish():406] scan save: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/requirements.txt requirements.txt
+2022-11-01 21:04:17,037 INFO    SenderThread:257832 [sender.py:transition_state():463] send defer: 8
+2022-11-01 21:04:17,037 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: poll_exit
+2022-11-01 21:04:17,038 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: defer
+2022-11-01 21:04:17,038 INFO    HandlerThread:257832 [handler.py:handle_request_defer():161] handle defer: 8
+2022-11-01 21:04:17,041 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: defer
+2022-11-01 21:04:17,041 INFO    SenderThread:257832 [sender.py:send_request_defer():459] handle sender defer: 8
+2022-11-01 21:04:17,041 INFO    SenderThread:257832 [file_pusher.py:finish():168] shutting down file pusher
+2022-11-01 21:04:17,303 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: poll_exit
+2022-11-01 21:04:17,303 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: poll_exit
+2022-11-01 21:04:17,666 INFO    Thread-21 :257832 [upload_job.py:push():143] Uploaded file /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/conda-environment.yaml
+2022-11-01 21:04:17,669 INFO    Thread-22 :257832 [upload_job.py:push():143] Uploaded file /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/requirements.txt
+2022-11-01 21:04:17,697 INFO    Thread-19 :257832 [upload_job.py:push():143] Uploaded file /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/output.log
+2022-11-01 21:04:17,737 INFO    Thread-20 :257832 [upload_job.py:push():143] Uploaded file /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/config.yaml
+2022-11-01 21:04:17,968 INFO    Thread-18 :257832 [upload_job.py:push():143] Uploaded file /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/files/wandb-summary.json
+2022-11-01 21:04:18,168 INFO    Thread-12 :257832 [sender.py:transition_state():463] send defer: 9
+2022-11-01 21:04:18,169 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: defer
+2022-11-01 21:04:18,169 INFO    HandlerThread:257832 [handler.py:handle_request_defer():161] handle defer: 9
+2022-11-01 21:04:18,170 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: defer
+2022-11-01 21:04:18,170 INFO    SenderThread:257832 [sender.py:send_request_defer():459] handle sender defer: 9
+2022-11-01 21:04:18,170 INFO    SenderThread:257832 [file_pusher.py:join():173] waiting for file pusher
+2022-11-01 21:04:18,171 INFO    SenderThread:257832 [sender.py:transition_state():463] send defer: 10
+2022-11-01 21:04:18,171 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: defer
+2022-11-01 21:04:18,171 INFO    HandlerThread:257832 [handler.py:handle_request_defer():161] handle defer: 10
+2022-11-01 21:04:18,172 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: defer
+2022-11-01 21:04:18,172 INFO    SenderThread:257832 [sender.py:send_request_defer():459] handle sender defer: 10
+2022-11-01 21:04:18,304 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: poll_exit
+2022-11-01 21:04:18,393 INFO    SenderThread:257832 [sender.py:transition_state():463] send defer: 11
+2022-11-01 21:04:18,394 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: poll_exit
+2022-11-01 21:04:18,395 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: defer
+2022-11-01 21:04:18,396 INFO    HandlerThread:257832 [handler.py:handle_request_defer():161] handle defer: 11
+2022-11-01 21:04:18,397 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: defer
+2022-11-01 21:04:18,397 INFO    SenderThread:257832 [sender.py:send_request_defer():459] handle sender defer: 11
+2022-11-01 21:04:18,397 INFO    SenderThread:257832 [sender.py:transition_state():463] send defer: 12
+2022-11-01 21:04:18,399 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: defer
+2022-11-01 21:04:18,399 INFO    HandlerThread:257832 [handler.py:handle_request_defer():161] handle defer: 12
+2022-11-01 21:04:18,400 DEBUG   SenderThread:257832 [sender.py:send():303] send: final
+2022-11-01 21:04:18,400 DEBUG   SenderThread:257832 [sender.py:send():303] send: footer
+2022-11-01 21:04:18,400 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: defer
+2022-11-01 21:04:18,400 INFO    SenderThread:257832 [sender.py:send_request_defer():459] handle sender defer: 12
+2022-11-01 21:04:18,403 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: poll_exit
+2022-11-01 21:04:18,404 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: poll_exit
+2022-11-01 21:04:18,407 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: poll_exit
+2022-11-01 21:04:18,408 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: server_info
+2022-11-01 21:04:18,408 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: get_summary
+2022-11-01 21:04:18,409 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: poll_exit
+2022-11-01 21:04:18,409 DEBUG   SenderThread:257832 [sender.py:send_request():317] send_request: server_info
+2022-11-01 21:04:18,414 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: sampled_history
+2022-11-01 21:04:18,896 INFO    MainThread:257832 [wandb_run.py:_footer_history_summary_info():3377] rendering history
+2022-11-01 21:04:18,896 INFO    MainThread:257832 [wandb_run.py:_footer_history_summary_info():3409] rendering summary
+2022-11-01 21:04:18,896 INFO    MainThread:257832 [wandb_run.py:_footer_sync_info():3333] logging synced files
+2022-11-01 21:04:18,898 DEBUG   HandlerThread:257832 [handler.py:handle_request():138] handle_request: shutdown
+2022-11-01 21:04:18,898 INFO    HandlerThread:257832 [handler.py:finish():814] shutting down handler
+2022-11-01 21:04:19,400 INFO    WriterThread:257832 [datastore.py:close():279] close: /home/magenta1223/skill-based/SiMPL/proposed/wandb/run-20221101_210410-z1q45ybb/run-z1q45ybb.wandb
+2022-11-01 21:04:19,895 INFO    SenderThread:257832 [sender.py:finish():1331] shutting down sender
+2022-11-01 21:04:19,895 INFO    SenderThread:257832 [file_pusher.py:finish():168] shutting down file pusher
+2022-11-01 21:04:19,895 INFO    SenderThread:257832 [file_pusher.py:join():173] waiting for file pusher
+2022-11-01 21:04:19,903 INFO    MainThread:257832 [internal.py:handle_exit():78] Internal process exited

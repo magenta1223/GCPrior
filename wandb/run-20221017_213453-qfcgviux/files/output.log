@@ -1,0 +1,25 @@
+  0%|                                                                                                                            | 0/50 [00:00<?, ?it/s]/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/loss.py:530: UserWarning: Using a target size (torch.Size([256, 10, 9])) that is different to the input size (torch.Size([256, 10])). This will likely lead to incorrect results due to broadcasting. Please ensure they have the same size.
+  return F.mse_loss(input, target, reduction=self.reduction)
+  0%|                                                                                                                            | 0/50 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "train_gc_spirl.py", line 45, in <module>
+    main()
+  File "train_gc_spirl.py", line 42, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 184, in fit
+    train_loss_dict  = self.train_one_epoch(train_loader, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 255, in train_one_epoch
+    loss = self.model.optimize(batch, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/gcspirl.py", line 300, in optimize
+    loss, loss_dict = self.compute_loss(outputs, actions)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/gcspirl.py", line 250, in compute_loss
+    recon_pseudo = self.loss_fns['recon'][1](outputs.prior_g_hat.sample(), actions)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/loss.py", line 530, in forward
+    return F.mse_loss(input, target, reduction=self.reduction)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/functional.py", line 3279, in mse_loss
+    expanded_input, expanded_target = torch.broadcast_tensors(input, target)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/functional.py", line 73, in broadcast_tensors
+    return _VF.broadcast_tensors(tensors)  # type: ignore[attr-defined]
+RuntimeError: The size of tensor a (10) must match the size of tensor b (9) at non-singleton dimension 2

@@ -1,0 +1,21 @@
+{
+    "os": "Linux-5.15.0-52-generic-x86_64-with-debian-bullseye-sid",
+    "python": "3.7.13",
+    "heartbeatAt": "2022-11-09T06:40:31.262503",
+    "startedAt": "2022-11-09T06:40:30.238858",
+    "docker": null,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "gpu_count": 1,
+    "cpu_count": 24,
+    "cuda": null,
+    "args": [
+        "-p",
+        "proposed/weights/log41_end.bin"
+    ],
+    "state": "running",
+    "program": "sac_scripts/hrl_spirl.py",
+    "codePath": "sac_scripts/hrl_spirl.py",
+    "host": "magenta1223-MS-7D42",
+    "username": "magenta1223",
+    "executable": "/home/magenta1223/anaconda3/envs/skill/bin/python"
+}

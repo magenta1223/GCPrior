@@ -1,0 +1,26 @@
+
+
+  2%|██▎                                                                                                                 | 1/50 [00:29<23:43, 29.04s/it]
+[Epoch 0]TRAIN loss : 10.97265 recon_mse : 0.02764 recon_prior : 0.03623 reg_kld : 3.22941 prior_kld : 1.61852 metric : 4.87556 VALID loss : 12.70256 recon_mse : 0.01630 recon_prior : 0.02447 reg_kld : 1.77653 prior_kld : 1.19301 metric : 2.98584 Time : 29.02849 s
+
+
+  6%|██████▉                                                                                                             | 3/50 [01:27<22:50, 29.16s/it]
+[Epoch 2]TRAIN loss : 14.20345 recon_mse : 0.01519 recon_prior : 0.01520 reg_kld : 0.00021 prior_kld : 0.01394 metric : 0.02934 VALID loss : 14.17791 recon_mse : 0.01471 recon_prior : 0.01475 reg_kld : 0.00011 prior_kld : 0.00418 metric : 0.01900 Time : 28.90917 s
+
+  8%|█████████▎                                                                                                          | 4/50 [02:06<24:13, 31.60s/it]
+Traceback (most recent call last):
+  File "train_prior.py", line 44, in <module>
+    main()
+  File "train_prior.py", line 41, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 185, in fit
+    train_loss_dict  = self.train_one_epoch(train_loader, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 256, in train_one_epoch
+    loss = self.model.optimize(batch, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/spirl.py", line 253, in optimize
+    self.scaler.scale(loss).backward()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/_tensor.py", line 396, in backward
+    torch.autograd.backward(self, gradient, retain_graph, create_graph, inputs=inputs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/autograd/__init__.py", line 175, in backward
+    allow_unreachable=True, accumulate_grad=True)  # Calls into the C++ engine to run the backward pass
+KeyboardInterrupt

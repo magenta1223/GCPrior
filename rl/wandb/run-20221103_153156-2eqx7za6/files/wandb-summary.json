@@ -1,0 +1,1 @@
+{"tr_return": 1, "episode_i": 8, "_timestamp": 1667457142.0485253, "_runtime": 25.995543241500854, "_step": 8, "qf_loss": 0.0004607048467732966, "policy_loss": -0.14097395539283752, "kl": 0.0017686975188553333, "mean_policy_scale": 0.811059296131134, "alpha_loss": 0.0, "alpha": 0.10517092049121857, "_wandb": {"runtime": 26}}

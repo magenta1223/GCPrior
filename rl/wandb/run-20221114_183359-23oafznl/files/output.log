@@ -1,0 +1,50 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+success
+success
+success
+success
+rendering..
+done!
+success
+success
+success
+rendering..
+done!
+success
+success
+success
+success
+success
+rendering..
+done!
+success
+success
+success
+success
+rendering..
+done!
+Traceback (most recent call last):
+  File "sac_scripts/hrl_gcid.py", line 226, in <module>
+    main()
+  File "sac_scripts/hrl_gcid.py", line 222, in main
+    train_single_task(env, tasks, args)
+  File "sac_scripts/hrl_gcid.py", line 190, in train_single_task
+    log = simpl_fine_tune_iter(collector, self, **config)
+  File "sac_scripts/hrl_gcid.py", line 91, in simpl_fine_tune_iter
+    stat = trainer.step(step_inputs)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/sac_module.py", line 148, in step
+    target_qs = self.compute_target_q(step_inputs)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/sac_module.py", line 236, in compute_target_q
+    entropy_term = self.entropy(_inputs)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/sac_module.py", line 81, in entropy
+    prior_dists = self.prior_policy(inputs, True).prior
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/subnetworks.py", line 119, in forward
+    return self.forward_dict[self.mode](*args)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/subnetworks.py", line 279, in GCID
+    ht = self.state_encoder.dist(states).sample()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1195, in __getattr__
+    if '_parameters' in self.__dict__:
+KeyboardInterrupt

@@ -1,0 +1,22 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+Traceback (most recent call last):
+  File "hrl_gcspirl.py", line 224, in <module>
+    main()
+  File "hrl_gcspirl.py", line 220, in main
+    train_single_task(env, task, args)
+  File "hrl_gcspirl.py", line 192, in train_single_task
+    log = simpl_fine_tune_iter(collector, self, **config)
+  File "hrl_gcspirl.py", line 92, in simpl_fine_tune_iter
+    episode = collector.collect_episode(trainer.policy, trainer.prior_policy, trainer.goal_generator)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/collector/collector.py", line 63, in collect_episode
+    return super().collect_episode(self.low_actor, high_actor, prior_module, goal_generator)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/collector/collector.py", line 29, in collect_episode
+    high_action = high_actor.act(state_input) # 여기를 state하고 action 둘 다 들어가게. posterior 사용 시
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/subnetworks.py", line 192, in act
+    dist = self.dist(states)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/modules/subnetworks.py", line 210, in dist
+    self.min_scale + F.softplus(prior_pre_scales + res_pre_scales)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1208, in __getattr__
+    type(self).__name__, name))
+AttributeError: 'MixedMLPPolicy' object has no attribute 'min_scale'

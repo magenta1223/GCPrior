@@ -1,0 +1,36 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 28%|████████████████████████████████████████                                                                                                       | 14/50 [05:43<14:43, 24.54s/it]
+Traceback (most recent call last):
+  File "train_caes.py", line 51, in <module>
+    main()
+  File "train_caes.py", line 48, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 178, in fit
+    train_loss_dict  = self.train_one_epoch(train_loader, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 248, in train_one_epoch
+    loss = self.model.optimize(batch, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/caes.py", line 342, in optimize
+    loss, loss_dict = self.compute_loss(outputs, actions)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/caes.py", line 309, in compute_loss
+    recon_state = self.get_loss_fn('recon')(outputs.state, outputs.state_hat)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/loss.py", line 530, in forward
+    return F.mse_loss(input, target, reduction=self.reduction)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/functional.py", line 3280, in mse_loss
+    return torch._C._nn.mse_loss(expanded_input, expanded_target, _Reduction.get_enum(reduction))
+KeyboardInterrupt

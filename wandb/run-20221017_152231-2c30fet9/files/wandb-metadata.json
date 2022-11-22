@@ -1,0 +1,29 @@
+{
+    "os": "Linux-5.15.0-50-generic-x86_64-with-debian-bullseye-sid",
+    "python": "3.7.13",
+    "heartbeatAt": "2022-10-17T06:22:32.294231",
+    "startedAt": "2022-10-17T06:22:31.638942",
+    "docker": null,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "gpu_count": 1,
+    "cpu_count": 24,
+    "cuda": null,
+    "args": [
+        "--prior_loss",
+        "nll",
+        "--gc",
+        "False"
+    ],
+    "state": "running",
+    "program": "train_gc_spirl.py",
+    "codePath": "proposed/train_gc_spirl.py",
+    "git": {
+        "remote": "https://github.com/namsan96/SiMPL.git",
+        "commit": "f5286924bd0502431b1f9904db631f6b1e13dce7"
+    },
+    "email": "magenta1223@naver.com",
+    "root": "/home/magenta1223/skill-based/SiMPL",
+    "host": "magenta1223-MS-7D42",
+    "username": "magenta1223",
+    "executable": "/home/magenta1223/anaconda3/envs/skill/bin/python"
+}

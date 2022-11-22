@@ -1,0 +1,23 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+success
+Traceback (most recent call last):
+  File "hrl_gcspirl.py", line 235, in <module>
+    main()
+  File "hrl_gcspirl.py", line 231, in main
+    train_single_task(env, task, args)
+  File "hrl_gcspirl.py", line 202, in train_single_task
+    log = simpl_fine_tune_iter(collector, self, **config)
+  File "hrl_gcspirl.py", line 112, in simpl_fine_tune_iter
+    visualize(imgs = imgs, task_name = task, prefix = 'success')
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/vis.py", line 23, in visualize
+    n =  max([ int(f.replace(f"./{task_name}/", "").replace(".mp4", ""))  for f in fs]) + 1
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/vis.py", line 23, in <listcomp>
+    n =  max([ int(f.replace(f"./{task_name}/", "").replace(".mp4", ""))  for f in fs]) + 1
+ValueError: invalid literal for int() with base 10: 'success14'

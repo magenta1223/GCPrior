@@ -1,0 +1,16 @@
+
+
+
+
+
+  8%|█████████▎                                                                                                          | 4/50 [02:31<29:00, 37.84s/it]
+Traceback (most recent call last):
+  File "train_gc_spirl.py", line 45, in <module>
+    main()
+  File "train_gc_spirl.py", line 42, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 185, in fit
+    train_loss_dict  = self.train_one_epoch(train_loader, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 256, in train_one_epoch
+    loss = self.model.optimize(batch, e)
+KeyboardInterrupt

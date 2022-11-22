@@ -1,0 +1,16 @@
+
+  0%|                                                                                                                                                        | 0/50 [00:05<?, ?it/s]
+Traceback (most recent call last):
+  File "train_caes.py", line 52, in <module>
+    main()
+  File "train_caes.py", line 49, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 178, in fit
+    train_loss_dict  = self.train_one_epoch(train_loader, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 248, in train_one_epoch
+    loss = self.model.optimize(batch, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/caes.py", line 348, in optimize
+    self.optimizer.zero_grad()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/optim/optimizer.py", line 249, in zero_grad
+    p.grad.zero_()
+KeyboardInterrupt

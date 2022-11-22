@@ -1,0 +1,33 @@
+
+
+
+
+
+
+
+ 12%|███████████████████▎                                                                                                                                             | 6/50 [02:32<18:34, 25.32s/it]Exception ignored in: <function _MultiProcessingDataLoaderIter.__del__ at 0x7fd788b88440>
+Traceback (most recent call last):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 1510, in __del__
+    self._shutdown_workers()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 1474, in _shutdown_workers
+    w.join(timeout=_utils.MP_STATUS_CHECK_INTERVAL)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/multiprocessing/process.py", line 140, in join
+    res = self._popen.wait(timeout)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/multiprocessing/popen_fork.py", line 45, in wait
+    if not wait([self.sentinel], timeout):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/multiprocessing/connection.py", line 921, in wait
+    ready = selector.select(timeout)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/selectors.py", line 415, in select
+    fd_event_list = self._selector.poll(timeout)
+KeyboardInterrupt:
+ 12%|███████████████████▎                                                                                                                                             | 6/50 [02:51<20:54, 28.50s/it]
+Traceback (most recent call last):
+  File "train_gc_spirl.py", line 48, in <module>
+    main()
+  File "train_gc_spirl.py", line 45, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 178, in fit
+    train_loss_dict  = self.train_one_epoch(train_loader, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 248, in train_one_epoch
+    loss = self.model.optimize(batch, e)
+KeyboardInterrupt

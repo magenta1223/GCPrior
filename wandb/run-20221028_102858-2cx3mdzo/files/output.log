@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "train_gc_spirl.py", line 49, in <module>
+    main()
+  File "train_gc_spirl.py", line 46, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 174, in fit
+    for e in tqdm(range(self.epochs)):
+TypeError: 'str' object cannot be interpreted as an integer

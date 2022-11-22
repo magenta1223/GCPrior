@@ -1,0 +1,19 @@
+  0%|                                                                                                                                                        | 0/50 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "train_caes.py", line 51, in <module>
+    main()
+  File "train_caes.py", line 48, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 178, in fit
+    train_loss_dict  = self.train_one_epoch(train_loader, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 248, in train_one_epoch
+    loss = self.model.optimize(batch, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/caes.py", line 341, in optimize
+    outputs, N, T = self(states, actions)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/caes.py", line 213, in forward
+    s, g, masked_g = self.state_enc_input(states)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/caes.py", line 198, in state_enc_input
+    return now_states.view(-1, D), goal_states.view(-1, D) , masked_goal_state.view(-1, D)
+RuntimeError: view size is not compatible with input tensor's size and stride (at least one dimension spans across two contiguous subspaces). Use .reshape(...) instead.

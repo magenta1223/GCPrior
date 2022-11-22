@@ -1,0 +1,20 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+Traceback (most recent call last):
+  File "hrl_caespirl.py", line 195, in <module>
+    main()
+  File "hrl_caespirl.py", line 191, in main
+    train_single_task(env, task, args)
+  File "hrl_caespirl.py", line 162, in train_single_task
+    log = simpl_fine_tune_iter(collector, self, **config)
+  File "hrl_caespirl.py", line 83, in simpl_fine_tune_iter
+    stat = trainer.step(batch_size)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/sac/cae.py", line 94, in step
+    target_qs = self.compute_target_q(batch)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/sac/cae.py", line 164, in compute_target_q
+    entropy_term = self.entropy(dists, next_states, actions)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/sac/cae.py", line 78, in entropy
+    h_s = self.state_enc(s)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1208, in __getattr__
+    type(self).__name__, name))
+AttributeError: 'SAC' object has no attribute 'state_enc'

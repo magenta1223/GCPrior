@@ -1,0 +1,36 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+Traceback (most recent call last):
+  File "sac_scripts/hrl_gcid.py", line 209, in <module>
+    main()
+  File "sac_scripts/hrl_gcid.py", line 205, in main
+    train_single_task(env, tasks, args)
+  File "sac_scripts/hrl_gcid.py", line 182, in train_single_task
+    visualize(imgs = imgs, task_name = "_".join(tasks))
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/vis.py", line 12, in visualize
+    frames.append([plt.imshow(imgs[i], cmap=cm.Greys_r,animated=True)])
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/matplotlib/pyplot.py", line 2909, in imshow
+    **kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/matplotlib/__init__.py", line 1361, in inner
+    return func(ax, *map(sanitize_sequence, args), **kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/matplotlib/axes/_axes.py", line 5609, in imshow
+    im.set_data(X)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/matplotlib/image.py", line 718, in set_data
+    if self._A.min() < 0 or high < self._A.max():
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/numpy/ma/core.py", line 5701, in min
+    axis=axis, out=out, **kwargs).view(type(self))
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/numpy/core/_methods.py", line 44, in _amin
+    return umr_minimum(a, axis, None, out, keepdims, initial, where)
+KeyboardInterrupt
+done!

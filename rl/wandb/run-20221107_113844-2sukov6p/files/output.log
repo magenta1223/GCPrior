@@ -1,0 +1,16 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+Traceback (most recent call last):
+  File "hrl_sgspirl.py", line 205, in <module>
+    main()
+  File "hrl_sgspirl.py", line 201, in main
+    train_single_task(env, task, args)
+  File "hrl_sgspirl.py", line 172, in train_single_task
+    log = simpl_fine_tune_iter(collector, self, **config)
+  File "hrl_sgspirl.py", line 87, in simpl_fine_tune_iter
+    stat = trainer.step(batch_size, G_final)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/sac/sgspirl.py", line 94, in step
+    target_qs = self.compute_target_q(batch)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/sac/sgspirl.py", line 160, in compute_target_q
+    dists = self.policy.dist(batch.next_states)
+TypeError: dist() missing 1 required positional argument: 'G'

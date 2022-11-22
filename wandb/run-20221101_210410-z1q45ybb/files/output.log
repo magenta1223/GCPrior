@@ -1,0 +1,29 @@
+  0%|                                                                                                                                                         | 0/5 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "train_gc_spirl.py", line 50, in <module>
+    main()
+  File "train_gc_spirl.py", line 47, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 178, in fit
+    train_loss_dict  = self.train_one_epoch(train_loader, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/trainer.py", line 247, in train_one_epoch
+    for i, batch in enumerate(loader):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 681, in __next__
+    data = self._next_data()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 1376, in _next_data
+    return self._process_data(data)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 1402, in _process_data
+    data.reraise()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/_utils.py", line 461, in reraise
+    raise exception
+UnboundLocalError: Caught UnboundLocalError in DataLoader worker process 0.
+Original Traceback (most recent call last):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/utils/data/_utils/worker.py", line 302, in _worker_loop
+    data = fetcher.fetch(index)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/utils/data/_utils/fetch.py", line 49, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/utils/data/_utils/fetch.py", line 49, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/home/magenta1223/skill-based/SiMPL/proposed/data/kitchen/src/kitchen_data_loader.py", line 50, in __getitem__
+    goal_idx = min(start_idx + 20, len(states) - 1)
+UnboundLocalError: local variable 'states' referenced before assignment

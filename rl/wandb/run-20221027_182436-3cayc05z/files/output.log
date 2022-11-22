@@ -1,0 +1,36 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+Traceback (most recent call last):
+  File "hrl_gcspirl.py", line 225, in <module>
+    main()
+  File "hrl_gcspirl.py", line 221, in main
+    train_single_task(env, task, args)
+  File "hrl_gcspirl.py", line 192, in train_single_task
+    log = simpl_fine_tune_iter(collector, self, **config)
+  File "hrl_gcspirl.py", line 92, in simpl_fine_tune_iter
+    episode = collector.collect_episode(trainer.policy, trainer.prior_policy, trainer.goal_generator)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/collector/collector.py", line 63, in collect_episode
+    return super().collect_episode(self.low_actor, high_actor, prior_module, goal_generator)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/collector/collector.py", line 38, in collect_episode
+    env_state, reward, done, info = self.env.step(low_action)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/gym/wrappers/order_enforcing.py", line 13, in step
+    observation, reward, done, info = self.env.step(action)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/envs/base.py", line 144, in step
+    'img' : self.render(mode = "rgb_array") if self.do_render else None
+  File "/home/magenta1223/skill-based/SiMPL/proposed/contrib/simpl/env/kitchen.py", line 124, in render
+    return self.viewer.read_pixels(self.render_width, self.render_height, depth=False)[::-1, :, :]
+KeyboardInterrupt

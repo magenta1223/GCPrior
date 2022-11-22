@@ -1,0 +1,119 @@
+#--------------------#model_cls : None
+logger : None
+data_dir : .
+epoch_cycles_train : 50
+epochs : 70
+evaluator : None
+top_of_n_eval : 100
+top_comp_metric : mse
+batch_size : 1024
+exp_path : None
+optim_cls : <class 'torch.optim.adam.Adam'>
+lr : 0.001
+gradient_clip : None
+init_grad_clip : 0.001
+init_grad_clip_step : 100
+momentum : 0
+adam_beta : 0.9
+schedulerClass : <class 'torch.optim.lr_scheduler.ReduceLROnPlateau'>
+scheduler_params : {'mode': 'min', 'factor': 0.2, 'patience': 4, 'verbose': True, 'threshold': 0.01, 'threshold_mode': 'abs', 'cooldown': 0, 'min_lr': 1e-12, 'eps': 1e-08}
+save_path : ./weights
+log_path : ./log.txt
+save_ckpt : 100
+warmup_steps : 20
+warmup_method : None
+model_id : 
+early_stop_rounds : 10
+state_dim : 60
+action_dim : 9
+n_rollout_steps : 10
+kl_div_weight : 0.0005
+hidden_dim : 128
+latent_dim : 10
+n_processing_layers : 5
+cond_decode : True
+n_obj : 9
+n_env : 21
+g_agent : False
+data : {'dataset_spec': {'dataset_class': <class 'proposed.data.kitchen.src.kitchen_data_loader.D4RLGCIDDataset'>, 'n_actions': 9, 'state_dim': 60, 'env_name': 'kitchen-mixed-v0', 'res': 128, 'crop_rand_subseq': True, 'max_seq_len': 280, 'subseq_len': 11}, 'subseq_len': 11, 'device': 'cpu'}
+val_data_size : 5000
+reg_beta : 0.0005
+project : gcid
+goal_range : [0, -1]
+beta : 0.15
+#--------------------#
+[Epoch 0]
+TRAIN loss : 25.02039 Rec_skill : 0.05117 Reg : 5.71853 Pri : 3.96329 Reg_H_tH_kl : 0.31254 Pri_hat : 6.10949 Reg_Pri_hat : 8.21686 metric : 4.01732 
+VALID loss : 25.36684 Rec_skill : 0.01683 Reg : 5.02343 Pri : 2.94939 Reg_H_tH_kl : 0.02252 Pri_hat : 4.59220 Reg_Pri_hat : 8.89151 metric : 2.96873 
+Time : 25.38282 s 
+
+[Epoch 1]
+TRAIN loss : 25.89066 Rec_skill : 0.01539 Reg : 4.77256 Pri : 2.83001 Reg_H_tH_kl : 0.02944 Pri_hat : 8.15204 Reg_Pri_hat : 10.98869 metric : 2.84778 
+VALID loss : 26.40678 Rec_skill : 0.01494 Reg : 4.31033 Pri : 2.43977 Reg_H_tH_kl : 0.01609 Pri_hat : 7.73332 Reg_Pri_hat : 11.46725 metric : 2.45687 
+Time : 24.94738 s 
+
+[Epoch 2]
+TRAIN loss : 26.45500 Rec_skill : 0.01343 Reg : 4.34436 Pri : 2.66212 Reg_H_tH_kl : 0.02703 Pri_hat : 6.60075 Reg_Pri_hat : 9.16686 metric : 2.67772 
+VALID loss : 26.59836 Rec_skill : 0.01429 Reg : 3.80978 Pri : 2.16940 Reg_H_tH_kl : 0.01299 Pri_hat : 6.43594 Reg_Pri_hat : 9.87009 metric : 2.18560 
+Time : 24.94661 s 
+
+[Epoch 3]
+TRAIN loss : 26.72417 Rec_skill : 0.01238 Reg : 4.01731 Pri : 2.49026 Reg_H_tH_kl : 0.02153 Pri_hat : 5.58260 Reg_Pri_hat : 7.94398 metric : 2.50466 
+VALID loss : 27.26575 Rec_skill : 0.01267 Reg : 3.97638 Pri : 2.69701 Reg_H_tH_kl : 0.01636 Pri_hat : 5.01584 Reg_Pri_hat : 9.60093 metric : 2.71166 
+Time : 25.18144 s 
+
+[Epoch 4]
+TRAIN loss : 26.98020 Rec_skill : 0.01170 Reg : 3.82517 Pri : 2.46251 Reg_H_tH_kl : 0.01775 Pri_hat : 4.71445 Reg_Pri_hat : 7.03576 metric : 2.47612 
+VALID loss : 27.25130 Rec_skill : 0.01151 Reg : 3.85226 Pri : 2.75066 Reg_H_tH_kl : 0.01284 Pri_hat : 3.61488 Reg_Pri_hat : 7.98977 metric : 2.76409 
+Time : 24.85077 s 
+
+[Epoch 5]
+TRAIN loss : 27.08462 Rec_skill : 0.01119 Reg : 3.69253 Pri : 2.43054 Reg_H_tH_kl : 0.01316 Pri_hat : 4.20065 Reg_Pri_hat : 6.50265 metric : 2.44358 
+VALID loss : 27.24161 Rec_skill : 0.01089 Reg : 3.78055 Pri : 2.46174 Reg_H_tH_kl : 0.00706 Pri_hat : 3.76340 Reg_Pri_hat : 7.41147 metric : 2.47453 
+Time : 25.21252 s 
+
+[Epoch 6]
+TRAIN loss : 27.19743 Rec_skill : 0.01055 Reg : 3.55749 Pri : 2.34308 Reg_H_tH_kl : 0.00905 Pri_hat : 3.97177 Reg_Pri_hat : 6.19558 metric : 2.35541 
+VALID loss : 27.37812 Rec_skill : 0.01141 Reg : 3.46291 Pri : 2.33465 Reg_H_tH_kl : 0.00503 Pri_hat : 2.80164 Reg_Pri_hat : 5.38899 metric : 2.34779 
+Time : 24.65712 s 
+
+[Epoch 7]
+TRAIN loss : 27.22879 Rec_skill : 0.01044 Reg : 3.52383 Pri : 2.36157 Reg_H_tH_kl : 0.00731 Pri_hat : 3.62694 Reg_Pri_hat : 5.88239 metric : 2.37376 
+VALID loss : 27.31341 Rec_skill : 0.01297 Reg : 3.74247 Pri : 2.42782 Reg_H_tH_kl : 0.00285 Pri_hat : 4.59428 Reg_Pri_hat : 7.12098 metric : 2.44266 
+Time : 24.78308 s 
+
+[Epoch 8]
+TRAIN loss : 27.30934 Rec_skill : 0.01010 Reg : 3.44340 Pri : 2.32277 Reg_H_tH_kl : 0.00654 Pri_hat : 3.47273 Reg_Pri_hat : 5.69300 metric : 2.33459 
+VALID loss : 27.14946 Rec_skill : 0.01114 Reg : 3.47900 Pri : 2.52944 Reg_H_tH_kl : 0.00250 Pri_hat : 4.45423 Reg_Pri_hat : 7.11009 metric : 2.54232 
+Time : 24.71964 s 
+
+[Epoch 9]
+TRAIN loss : 27.36145 Rec_skill : 0.00979 Reg : 3.38464 Pri : 2.28465 Reg_H_tH_kl : 0.00700 Pri_hat : 3.33654 Reg_Pri_hat : 5.52396 metric : 2.29613 
+VALID loss : 27.80511 Rec_skill : 0.01339 Reg : 3.24408 Pri : 2.47805 Reg_H_tH_kl : 0.00149 Pri_hat : 3.04695 Reg_Pri_hat : 5.27587 metric : 2.49306 
+Time : 25.01530 s 
+
+[Epoch 10]
+TRAIN loss : 27.44906 Rec_skill : 0.00944 Reg : 3.33973 Pri : 2.29074 Reg_H_tH_kl : 0.00604 Pri_hat : 3.05995 Reg_Pri_hat : 5.27963 metric : 2.30185 
+VALID loss : 27.84821 Rec_skill : 0.01159 Reg : 3.26727 Pri : 2.30082 Reg_H_tH_kl : 0.00120 Pri_hat : 2.75668 Reg_Pri_hat : 4.95109 metric : 2.31405 
+Time : 25.34922 s 
+
+[Epoch 11]
+TRAIN loss : 27.43237 Rec_skill : 0.00958 Reg : 3.34496 Pri : 2.32314 Reg_H_tH_kl : 0.00645 Pri_hat : 2.93623 Reg_Pri_hat : 5.19000 metric : 2.33439 
+VALID loss : 27.98104 Rec_skill : 0.01345 Reg : 3.74935 Pri : 2.87506 Reg_H_tH_kl : 0.00182 Pri_hat : 2.65005 Reg_Pri_hat : 6.17641 metric : 2.89038 
+Time : 25.37053 s 
+
+[Epoch 12]
+TRAIN loss : 27.46483 Rec_skill : 0.00925 Reg : 3.32133 Pri : 2.29980 Reg_H_tH_kl : 0.00655 Pri_hat : 2.90903 Reg_Pri_hat : 5.15293 metric : 2.31071 
+VALID loss : 27.86760 Rec_skill : 0.01035 Reg : 3.35595 Pri : 2.48584 Reg_H_tH_kl : 0.00236 Pri_hat : 2.71570 Reg_Pri_hat : 5.08806 metric : 2.49786 
+Time : 25.10654 s 
+
+[Epoch 13]
+TRAIN loss : 27.50653 Rec_skill : 0.00899 Reg : 3.26661 Pri : 2.27242 Reg_H_tH_kl : 0.00601 Pri_hat : 2.76716 Reg_Pri_hat : 4.98978 metric : 2.28305 
+VALID loss : 27.87736 Rec_skill : 0.01072 Reg : 3.13417 Pri : 2.31824 Reg_H_tH_kl : 0.00171 Pri_hat : 2.95405 Reg_Pri_hat : 5.02751 metric : 2.33052 
+Time : 25.09252 s 
+
+[Epoch 14]
+TRAIN loss : 27.51762 Rec_skill : 0.00896 Reg : 3.23906 Pri : 2.26995 Reg_H_tH_kl : 0.00538 Pri_hat : 2.68750 Reg_Pri_hat : 4.90020 metric : 2.28053 
+VALID loss : 27.78861 Rec_skill : 0.01204 Reg : 3.24571 Pri : 2.30571 Reg_H_tH_kl : 0.00319 Pri_hat : 2.64826 Reg_Pri_hat : 4.92843 metric : 2.31938 
+Time : 24.99666 s 
+

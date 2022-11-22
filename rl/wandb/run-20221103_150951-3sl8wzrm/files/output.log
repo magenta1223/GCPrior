@@ -1,0 +1,62 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+Traceback (most recent call last):
+  File "hrl_caespirl.py", line 195, in <module>
+    main()
+  File "hrl_caespirl.py", line 191, in main
+    train_single_task(env, task, args)
+  File "hrl_caespirl.py", line 162, in train_single_task
+    log = simpl_fine_tune_iter(collector, self, **config)
+  File "hrl_caespirl.py", line 62, in simpl_fine_tune_iter
+    episode = collector.collect_episode(trainer.policy)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/collector/caespirl.py", line 48, in collect_episode
+    return super().collect_episode(self.low_actor, high_actor)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/collector/caespirl.py", line 29, in collect_episode
+    state, reward, done, info = self.env.step(low_action)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/gym/wrappers/order_enforcing.py", line 13, in step
+    observation, reward, done, info = self.env.step(action)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/envs/base.py", line 138, in step
+    self.robot.step(self, a, step_duration=self.skip * self.model.opt.timestep)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/d4rl/kitchen/adept_envs/franka/robot/franka_robot.py", line 194, in step
+    env.do_simulation(ctrl_feasible, int(step_duration/env.sim.model.opt.timestep)) # render is folded in here
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/d4rl/kitchen/adept_envs/mujoco_env.py", line 153, in do_simulation
+    self.sim.step()
+KeyboardInterrupt

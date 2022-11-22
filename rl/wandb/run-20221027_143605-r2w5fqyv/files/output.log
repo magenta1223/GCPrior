@@ -1,0 +1,30 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+rendering..
+done!
+WARNING:matplotlib.animation:MovieWriter ffmpeg unavailable; using Pillow instead.
+Traceback (most recent call last):
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/PIL/Image.py", line 2298, in save
+    format = EXTENSION[ext]
+KeyError: '.mp4'
+The above exception was the direct cause of the following exception:
+Traceback (most recent call last):
+  File "hrl_gcspirl.py", line 224, in <module>
+    main()
+  File "hrl_gcspirl.py", line 220, in main
+    train_single_task(env, task, args)
+  File "hrl_gcspirl.py", line 199, in train_single_task
+    visualize(imgs = imgs, task_name = task)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/vis.py", line 28, in visualize
+    ani.save(f'./{task_name}/{n}.mp4')
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/matplotlib/animation.py", line 1177, in save
+    writer.grab_frame(**savefig_kwargs)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/contextlib.py", line 119, in __exit__
+    next(self.gen)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/matplotlib/animation.py", line 238, in saving
+    self.finish()
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/matplotlib/animation.py", line 542, in finish
+    duration=int(1000 / self.fps), loop=0)
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/PIL/Image.py", line 2300, in save
+    raise ValueError(f"unknown file extension: {ext}") from e
+ValueError: unknown file extension: .mp4

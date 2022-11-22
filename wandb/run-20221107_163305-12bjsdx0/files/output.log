@@ -1,0 +1,14 @@
+
+  0%|                                                                                                                                                        | 0/70 [00:26<?, ?it/s]
+Traceback (most recent call last):
+  File "prior_train/train_prior.py", line 47, in <module>
+    main()
+  File "prior_train/train_prior.py", line 44, in main
+    trainer.fit(train_loader, test_loader, True)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/prior_train/trainer.py", line 181, in fit
+    valid_loss_dict = self.validate(valid_loader, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/prior_train/trainer.py", line 272, in validate
+    loss = self.model.validate(batch, e)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/models/spirl_easy.py", line 243, in validate
+    outputs, N, T = self(states, actions, G)
+NameError: name 'G' is not defined

@@ -1,0 +1,28 @@
+/home/magenta1223/skill-based/SiMPL/proposed/contrib/spirl/data_loader.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+rendering..
+done!
+Traceback (most recent call last):
+  File "hrl_gcspirl.py", line 224, in <module>
+    main()
+  File "hrl_gcspirl.py", line 220, in main
+    train_single_task(env, task, args)
+  File "hrl_gcspirl.py", line 192, in train_single_task
+    log = simpl_fine_tune_iter(collector, self, **config)
+  File "hrl_gcspirl.py", line 113, in simpl_fine_tune_iter
+    stat = trainer.step(batch_size)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/SAC.py", line 85, in step
+    target_qs = self.compute_target_q(batch)
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/SAC.py", line 157, in compute_target_q
+    min_qs = torch.min(*[target_qf(next_states, actions) for target_qf in self.target_qfs])
+  File "/home/magenta1223/skill-based/SiMPL/proposed/rl/SAC.py", line 157, in <listcomp>
+    min_qs = torch.min(*[target_qf(next_states, actions) for target_qf in self.target_qfs])
+  File "/home/magenta1223/anaconda3/envs/skill/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1124, in _call_impl
+    def _call_impl(self, *input, **kwargs):
+KeyboardInterrupt
