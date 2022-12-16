@@ -8,7 +8,7 @@ import torch.nn.functional as F
 
 from proposed.modules.base import BaseModule
 from proposed.contrib.simpl.math import clipped_kl, inverse_softplus
-from proposed.utils import prep_state
+from proposed.utils import prep_state, nll_dist, get_fixed_dist
 from easydict import EasyDict as edict
 
 class SAC(BaseModule):
@@ -36,6 +36,16 @@ class SAC(BaseModule):
         self.policy_optim = torch.optim.Adam(policy.parameters(), lr=policy_lr)
         self.qf_optims = [torch.optim.Adam(qf.parameters(), lr=qf_lr) for qf in qfs]
 
+        # additional         
+        # self.prior_optim = torch.optim.Adam(
+        #     [
+        #         {"params" : self.prior_policy.state_encoder.parameters()},
+        #         {"params" : self.prior_policy.subgoal_generator.parameters()}
+        #     ],
+        #     lr = 1e-5 
+        # )
+
+        
         self.auto_alpha = auto_alpha
         pre_init_alpha = inverse_softplus(init_alpha)
         if auto_alpha is True:
@@ -50,6 +60,7 @@ class SAC(BaseModule):
         self.n_step = 0
         self.init_grad_clip_step = 1000
         self.init_grad_clip = 0.01
+
         
     @property
     def alpha(self):
@@ -77,11 +88,16 @@ class SAC(BaseModule):
         # if states.shape[0] != G.shape[0]:
             # G = G.repeat(states.shape[0], 1)
 
-        with torch.no_grad():
-            prior_dists = self.prior_policy(inputs, True).prior
+        # with torch.no_grad():
+        # self.prior_policy.finetune()
+
+        self.prior_policy.eval()
+        
+        prior_dists = self.prior_policy(inputs, "eval").prior # 세팅에 따라 내부적으로 no_grad 할지말지 결정함. 
+        
         # ---------------- #
 
-        return torch_dist.kl_divergence(inputs.dists, prior_dists).mean(0) # calculate kl divergence analytically
+        return torch_dist.kl_divergence(inputs.dists, prior_dists).mean() # calculate kl divergence analytically
         # else:
             # return dists.log_prob(actions)
     
@@ -141,24 +157,21 @@ class SAC(BaseModule):
         step_inputs = self.expand_G(step_inputs)
 
         # -------------------------------------- # 
+        # self.finetune_networks(step_inputs)
+
 
         # qfs
         with torch.no_grad():
-            # q value계산
             target_qs = self.compute_target_q(step_inputs)
 
 
         # policy
-        # dists = self.policy.dist(batch.states, G)
-        step_inputs['dists'] = self.policy.dist(step_inputs)
+        step_inputs['dists'] = self.policy.dist(step_inputs, "eval")
 
         qf_losses = []  
-        # states = prep_state(batch.states, "cuda:0")
         step_inputs['actions'] = step_inputs['dists'].sample()
 
         for qf, qf_optim in zip(self.qfs, self.qf_optims):
-            # q-function 업데이트
-            # qs = qf(states, actions)
             qs = qf(step_inputs.__states__, step_inputs.actions)
             qf_loss = (qs - target_qs).pow(2).mean()
             qf_optim.zero_grad()
@@ -172,22 +185,25 @@ class SAC(BaseModule):
 
         # 
         # policy_actions = step_inputs['dists'].rsample() #.clamp(-1,1)
-        step_inputs['policy_actions'] = step_inputs['dists'].rsample() #.clamp(-1,1)
+        step_inputs['policy_actions'] = step_inputs['dists'].rsample().clamp(-1,1)
 
 
-        # entropy_term = self.entropy(dists, batch.states, policy_actions, G) 
         entropy_term = self.entropy(step_inputs)  # action 은  
 
         min_qs = torch.min(*[qf(step_inputs.__states__, step_inputs.policy_actions) for qf in self.qfs])
-
+        
+        # policy loss & update
         policy_loss = (- min_qs + self.alpha * entropy_term).mean()
-
         self.policy_optim.zero_grad()
         policy_loss.backward()
-
         self.clip_grad(self.policy.parameters())
-
         self.policy_optim.step()
+
+        # prior policy finetuning 
+        # dynamics 
+        # state recontruction
+        # ? 
+        
         
         stat['policy_loss'] = policy_loss
         stat['kl'] = entropy_term.mean() # if self.prior_policy is not None else - entropy_term.mean()
@@ -213,21 +229,21 @@ class SAC(BaseModule):
         return stat
 
     def compute_target_q(self, step_inputs):
-        
-        # 몬가 예쁘게
-        # dictionary로 주던가
-        # 아니면 args형태로 
+        """
+        step_inputs 
+          states : states
+          next_states : next_states
+          G : G
+        """
 
-        # step_inputs 
-        #   states : states
-        #   next_states : next_states
-        #   G : G
 
         _inputs = self.copy_inputs(step_inputs) # deepcopy to prevent reference error
 
         # get action distributions
         _inputs['states'] = _inputs.__next_states__.clone() # overwrite
-        _inputs['dists'] = self.policy.dist(_inputs)
+        
+
+        _inputs['dists'] = self.policy.dist(_inputs, "eval")
         
         # to tensor 
         _inputs['actions'] = _inputs['dists'].sample().clamp(-1,1)
@@ -250,3 +266,56 @@ class SAC(BaseModule):
 
 
 
+    def finetune_networks(self, step_inputs):
+        """
+        SKiMO Dynamics finetuning
+        
+        - buffer에서 state sequence를 가져오고 
+        - 전체 길이 T, 호라이즌 H
+        - 최대 T- H + 1 개 만큼의 s_t, s_{t+H} 의 쌍이 나옴
+        - State Consistency loss 
+            - ht : train모드로 포워딩
+            - h_star : eval모드로 포워딩
+            - \hat{h}_{t+H} : train모드로 포워딩 ㅇㅇ
+        
+        state, G, H-step 이후의 state
+
+        G만 가져오면 됨. state, next_H_state는 buffer에서 가져와야 함. 둘이 인덱스가 맞아야 하니까
+
+        """
+        H = 10
+        
+        batch_Hstep = self.buffer.sample_Hstep(step_inputs.batch_size).to(self.device)
+
+        inputs = edict(
+            states = batch_Hstep.states,
+            G = step_inputs.G,
+            next_H_states = batch_Hstep.next_H_states
+        )
+        
+
+        # learning
+
+        self.prior_policy.train()
+        # zero grad
+        self.prior_optim.zero_grad()
+
+
+        result = self.prior_policy(inputs, mode = "finetune")
+
+        # state consistency 
+        # latent_consistency_loss = nll_dist(result.h_tH, result.h_tH_hat)
+        loss = nll_dist(result.prior_GT, result.prior_hat)
+        loss.backward()
+
+
+
+        self.prior_optim.step()
+
+        self.prior_policy.ma_state_enc()
+        self.prior_policy.eval()
+        
+        
+
+        
+        

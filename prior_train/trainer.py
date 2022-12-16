@@ -136,19 +136,20 @@ class BaseTrainer:
             self.best_summary_loss = val_loss
             self.early_stop = 0
             self.best_e = e
-            self.save(f'{self.model_path}/{self.model_id}_{e}.bin')
-            # save
-            if e > self.save_ckpt:
-                self.save(f'{self.model_path}/{self.model_id}_{e}.bin')
+            # self.save(f'{self.model_path}/{self.model_id}_{e}.bin')
+            # # save
+            # if e > self.save_ckpt:
+            #     self.save(f'{self.model_path}/{self.model_id}_{e}.bin')
                 # for path in sorted(glob(f'{self.model_path}/{self.model_id}_*epoch.bin'))[:-1]:
                 #     os.remove(path)
         else:
-            if e > self.save_ckpt:
-                self.save(f'{self.model_path}/{self.model_id}_{e}.bin')
+            # if e > self.save_ckpt:
+            #     self.save(f'{self.model_path}/{self.model_id}_{e}.bin')
             # early stop
             self.early_stop += 1
 
-        
+
+
         if self.early_stop == self.early_stop_rounds:
             return True
         else: 
@@ -197,6 +198,9 @@ class BaseTrainer:
                     if self.loop_indicator(e, valid_loss_dict['metric']):
                         break
 
+                if e > self.save_ckpt:
+                    self.save(f'{self.model_path}/{self.model_id}_{e}.bin')
+
 
                 train_loss_dict = { "TRAIN " + k : v for k, v in train_loss_dict.items()}
                 valid_loss_dict = { "VALID " + k : v for k, v in valid_loss_dict.items()}
@@ -239,6 +243,9 @@ class BaseTrainer:
                         print("early stop", 'loss',  valid_loss_dict['metric'])
                         break
                 
+                if e > self.save_ckpt:
+                    self.save(f'{self.model_path}/{self.model_id}_{e}.bin')
+
             self.save(f'{self.model_path}/{self.model_id}_end.bin')
             self.logger.log('Finished')           
          
@@ -246,11 +253,11 @@ class BaseTrainer:
 
     def train_one_epoch(self, loader, e):
 
-        self.model.train()
         self.meter_initialize()
 
 
         for i, batch in enumerate(loader):
+            self.model.train()
             loss = self.model.optimize(batch, e)
             if not len(self.meters):
                 # initialize key
@@ -299,7 +306,7 @@ class BaseTrainer:
             'model': self.model.state_dict(),
             'optimizer' : self.model.optimizer.state_dict(),
             'scheduler' : self.scheduler.state_dict(),
-            'scaler' : self.model.scaler.state_dict(),
+            # 'scaler' : self.model.scaler.state_dict(),
             'configuration' : self.config,
             'best_summary_loss': self.best_summary_loss
             }, path)
@@ -309,7 +316,7 @@ class BaseTrainer:
             'model': self.model,
             'optimizer' : self.model.optimizer,
             'scheduler' : self.scheduler,
-            'scaler' : self.model.scaler,
+            # 'scaler' : self.model.scaler,
             'configuration' : self.config,
             'best_summary_loss': self.best_summary_loss
             }, path)
@@ -321,12 +328,12 @@ class BaseTrainer:
             self.model.load_state_dict(checkpoint['model'])
             self.model.optimizer.load_state_dict(checkpoint['optimizer'])
             self.scheduler.load_state_dict(checkpoint['scheduler'])
-            self.model.scaler.load_state_dict(checkpoint["scaler"])
+            # self.model.scaler.load_state_dict(checkpoint["scaler"])
         else:
             self.model = checkpoint['model']
             self.model.optimizer = checkpoint['optimizer']
             self.scheduler = checkpoint['scheduler']
-            self.model.scaler = checkpoint['scaler']
+            # self.model.scaler = checkpoint['scaler']
 
         config = checkpoint['configuration']
         self.prep(config)
@@ -363,32 +370,20 @@ def get_loader(
     env_config.attrs.subseq_len = 11
 
     conf = edict(
-
         # general 
-        model_cls = None, 
-        logger = None,
         data_dir = '.',
         epoch_cycles_train = 50,
         epochs = int(kwargs.get("epochs", False)),
-        evaluator = None,
-        top_of_n_eval = 100,
-        top_comp_metric = "mse",
 
         #########################
         # BATCH SIZE #
         batch_size = 1024,
         ##########################
 
-
-
-        exp_path = None,  # Path to the folder with experiments
         optim_cls = torch.optim.Adam,
         lr = 1e-3,
-        gradient_clip = None, # hard gradient clipping factor
         init_grad_clip = 0.001, # to prevent gradient explode in early phase of learning
         init_grad_clip_step = 100,
-        momentum = 0,
-        adam_beta = 0.9,
 
         schedulerClass = torch.optim.lr_scheduler.ReduceLROnPlateau,
         scheduler_params = dict(      # scheduler params
@@ -405,12 +400,11 @@ def get_loader(
 
         save_path = "./weights",
         log_path = "./log.txt",
-        save_ckpt = 100,
+        save_ckpt = 10,
         warmup_steps = kwargs.get("warmup", False),
         warmup_method = None,
         model_id = "",
-        early_stop_rounds = 10,
-
+        early_stop_rounds = 20,
 
         # model
         state_dim=env_config.attrs.state_dim,
@@ -419,13 +413,12 @@ def get_loader(
         kl_div_weight=5e-4,
         hidden_dim=128,
         latent_dim=10,
-        n_processing_layers=5,
+        n_processing_layers= kwargs.get('nLayers', 5),
         cond_decode=True,
         n_obj = 9,
         n_env = 21, 
         g_agent = kwargs.get("ga", False),
         
-
         # data
         data = edict(
             dataset_spec = env_config.attrs,
@@ -441,31 +434,29 @@ def get_loader(
     if phase == "train":
 
         # train params
-        params = edict(
+        dataset_params = edict(
             logger_class= None,
-            model_class= conf.model_cls,
             n_repeat= conf.epoch_cycles_train,
             dataset_size=-1,
             goal_range = kwargs.get("goal_range", False),
             n_obj = conf.n_obj,
-            n_env = conf.n_env
+            n_env = conf.n_env,
+            last = kwargs.get('last', False)
             
         )
     else:
 
-        params = edict(
+        dataset_params = edict(
             logger_class= None,
-            model_class= conf.model_cls,
             n_repeat=1,
             dataset_size=conf.val_data_size,
             goal_range = kwargs.get("goal_range", False),
             n_obj = conf.n_obj,
-            n_env = conf.n_env
-
+            n_env = conf.n_env,
+            last = kwargs.get('last', False)
         )
 
 
-    print(conf.data.dataset_spec.dataset_class)
 
     dataset = conf.data.dataset_spec.dataset_class(
         conf.data_dir,
@@ -473,15 +464,13 @@ def get_loader(
         resolution = 64,
         phase= phase,
         shuffle= phase == "train",
-        **params
-        # g_agent = params.g_agent,
-        # n_obj = conf.n_obj,
-        # n_env = conf.n_env,
-        # goal_range = kwargs['goal_range'],
-        # last = kwargs['params'].last,
-
+        **dataset_params
     )
 
-    return conf, dataset.get_data_loader(conf.batch_size, params.n_repeat, num_workers = 14)
+
+    for k, v in kwargs.items():
+        conf[k] = v
+
+    return conf, dataset.get_data_loader(conf.batch_size, dataset_params.n_repeat, num_workers = 8)
 
 

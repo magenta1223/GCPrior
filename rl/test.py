@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import wandb
 
 # simpl contribs
-# from proposed.contrib.simpl.collector import Buffer
+from proposed.contrib.simpl.collector import Buffer
 from proposed.contrib.simpl.torch_utils import itemize
 
 # models
@@ -26,7 +26,6 @@ import argparse
 from proposed.rl.vis import *
 from proposed.utils import *
 from proposed.collector.gcid import LowFixedHierarchicalTimeLimitCollector
-from proposed.collector.storage import Buffer, Batch, Batch_Hstep
 
 
 
@@ -45,7 +44,7 @@ def render_task(env, policy, low_actor, G):
 
     while not done and time_step < time_limit: 
         if time_step % 10 == 0:
-            high_action = policy.act(state, G, "eval")
+            high_action = policy.act(state, G)
 
         with low_actor.condition(high_action), low_actor.expl():
             low_action = low_actor.act(state)
@@ -74,15 +73,6 @@ def simpl_fine_tune_iter(collector, trainer, batch_size, reuse_rate, task, G):
         #     imgs.append(info['img'])
         # visualize(imgs = imgs, task_name = task, prefix = 'success')
     
-        # sr = success_rate(env, policy, low_actor, time_limit)
-        # print(sr)
-        # imgs = render_task(env, self.policy, low_actor, G)
-        # imgs = []
-        # for info in episode.infos:
-        #     imgs.append(info['img'])
-
-        # visualize(imgs = imgs, task_name = "_".join(task), prefix = 'success')
-
     trainer.buffer.enqueue(episode) 
     log['tr_return'] = sum(episode.rewards)
 
@@ -184,7 +174,7 @@ def train_single_task(env, tasks, args):
     # ----------------------------------- # 
 
     # ------------- Buffers & Collectors ------------- #
-    buffer = Buffer(state_dim, action_dim, buffer_size, Batch_Hstep)
+    buffer = Buffer(state_dim, action_dim, buffer_size)
     collector = LowFixedHierarchicalTimeLimitCollector(env, low_actor, horizon=10, time_limit=time_limit)
 
     
@@ -217,30 +207,121 @@ def train_single_task(env, tasks, args):
                 # print(sr)
                 imgs = render_task(env, self.policy, low_actor, G)
                 visualize(imgs = imgs, task_name = "_".join(tasks))
+            if args.wandb:
                 wandb.log(log)
-    wandb.finish()    
+        if args.wandb:
+            wandb.finish()    
         
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--wandb", action = "store_true")    
-    parser.add_argument("-p", "--path", default = "")
-    parser.add_argument("-tl", "--time_limit", default = 280)
-    parser.add_argument("-nh", "--n_hidden", default = 3)
-    parser.add_argument("-hd", "--hidden_dim", default = 128)
+
+
+args = edict(
+    wandb = False, 
+    path = "proposed/weights/log66_end.bin",
+    time_limit = 280,
+    n_hidden  =3, 
+    hidden_dim = 128 
+)
+
+
+env = gym.make("simpl-kitchen-v0")
+# env = gym.make("kitchen-single-v0")
+
+# ALL_TASKS = ['bottom burner', 'top burner', 'light switch', 'slide cabinet', 'hinge cabinet', 'microwave', 'kettle']
+# for task in ALL_TASKS:
+tasks = [ 'slide cabinet']
+# tasks = ['slide cabinet']
+# ------------- Set Task ------------- #
+if len(tasks) == 1:
+    task_obj = KitchenTask(subtasks = [tasks[0]])
+else:
+    task_obj = KitchenTask(subtasks= tasks)
+
+# ------------- Hyper Parameteres ------------- #
+time_limit = int(args.time_limit)
+wandb_project_name = "single task SAC"
+buffer_size = 20000
+n_episode = 1000
+state_dim = env.observation_space.shape[0]
+action_dim = env.action_space.shape[0]
+hidden_dim = int(args.hidden_dim)
+n_hidden = int(args.n_hidden)
+latent_dim = 10
+
+# ------------- Logger ------------- #
+wandb.init(
+    project=wandb_project_name,
+    name = "multi-task"
+)
+
+
+# ------------- Module Configuration ------------- #
+policy_config = edict(
+    n_blocks = n_hidden, 
+    in_feature = state_dim, # state dim 
+    hidden_dim = hidden_dim, # 128
+    out_dim = latent_dim * 2 ,
+    norm_cls = None,
+    act_cls = nn.LeakyReLU,
+    block_cls = LinearBlock,
+    true = True,
+)
+
+qf_config = edict(
+    n_blocks = n_hidden, 
+    in_feature = state_dim + latent_dim, # state dim 
+    hidden_dim = hidden_dim, # 128
+    out_dim = 1, # 10 * 2
+    norm_cls = None,
+    act_cls = nn.LeakyReLU,
+    block_cls = LinearBlock,
+    true = True,
+)
+
+# ------------- Modules ------------- #
+
+## ------------- X-spirl Modules ------------- ##
+load = torch.load(f"/home/magenta1223/skill-based/SiMPL/{args.path}")
+model = load['model'].eval()
+
+## ------------- Q-functions ------------- ##
+qfs = [ MLPQF(Linear_Config(qf_config))  for _ in range(2)]
+
+## ------------- High Policy ------------- ##
+policy = MMPHSG(Linear_Config(policy_config), model.skill_prior)        
+
+## ------------- Prior Policy ------------- ##
+prior_policy = model.skill_prior
+# TODO
+# state encoder, subgoal generator는 gradient 계산 해서 forwarding 하게 바꿔야 함
+# 그래야겠지?
+# 그러면 inference method를 다시 짜야 함
+
+## ------------- Low Decoder ------------- ##
+low_actor = model.skill_decoder
+
+# ----------------------------------- # 
+
+# ------------- Buffers & Collectors ------------- #
+buffer = Buffer(state_dim, action_dim, buffer_size)
+collector = LowFixedHierarchicalTimeLimitCollector(env, low_actor, horizon=10, time_limit=time_limit)
+
+
+# ------------- Goal setting ------------- #
+with env.set_task(task_obj):
+    init_state = env.reset()
+
+_G = init_state[30:]
+G = np.zeros_like(init_state)
+G[:30] = _G
+G = prep_state(G, model.device)
+
+
+# ------------- RL agent ------------- #
+sac_config = {'auto_alpha': True, 'kl_clip': 20, 'target_kl': 5, 'increasing_alpha': True,}
+self = SAC(policy, prior_policy, qfs, buffer, **sac_config)
+self = self.cuda()
+config = {'batch_size': 256, 'reuse_rate': 256, 'task' : tasks, "G" : G}
 
 
 
-    args = parser.parse_args()
-
-    env = gym.make("simpl-kitchen-v0")
-    # env = gym.make("kitchen-single-v0")
-
-    # ALL_TASKS = ['bottom burner', 'top burner', 'light switch', 'slide cabinet', 'hinge cabinet', 'microwave', 'kettle']
-    # for task in ALL_TASKS:
-    tasks = [ 'kettle', 'bottom burner', 'light switch', 'slide cabinet']
-    # tasks = ['slide cabinet']
-    train_single_task(env, tasks, args)
-
-
-if __name__ == "__main__":
-    main()
+self.buffer

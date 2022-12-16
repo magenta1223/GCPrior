@@ -92,27 +92,6 @@ class SkillPrior(BaseModule):
 
         # Losses
 
-        prior_losses = ["nll", "kld"]
-
-        loss_fns = {
-            "recon" : {
-                'mse' : nn.MSELoss(),
-                'nll' : nll_loss2,
-            },
-
-            "reg" : {
-                'kld' : torch_dist.kl_divergence ,
-            },
-
-            "prior" : {
-                'kld' : torch_dist.kl_divergence ,
-                # 'nll' : nll_loss,   
-                'nll' : nll_dist
-            }
-
-        }
-
-
 
         self.loss_fns = {
             'recon' : ['mse', nn.MSELoss()],
@@ -146,7 +125,7 @@ class SkillPrior(BaseModule):
             q =  self.skill_encoder(actions)[:,-1]
 
         # skill prior
-        outputs = self.skill_prior(states[:,0])
+        outputs = self.skill_prior(edict( states = states[:,0]))
 
         outputs['post'] = get_dist(q)
         outputs['post_detach'] = get_dist(q, detached= True)
@@ -171,7 +150,7 @@ class SkillPrior(BaseModule):
         return outputs, N, T
 
 
-    def compute_loss(self, outputs, skill):
+    def compute_loss(self, outputs, skill, state_labels):
         # ----------- SPiRL -------------- # 
 
         recon = self.get_loss_fn('recon')(outputs.skill_hat, skill)
@@ -184,6 +163,13 @@ class SkillPrior(BaseModule):
         with torch.no_grad():
             prior_kld  = self.get_loss_fn('reg')(outputs.post_detach, outputs.prior_detach).mean() 
 
+            non_branching_indices = state_labels[:, 0] == 1
+            non_branching_indices = non_branching_indices.cpu().numpy()
+
+            prior_mean = outputs.prior_detach.base_dist.loc.cpu().numpy()#[non_branching_indices].mean()
+            prior_std = outputs.prior_detach.base_dist.scale.cpu().numpy()#[non_branching_indices].mean()
+            prior_mean = prior_mean[non_branching_indices].mean()
+            prior_std = prior_std[non_branching_indices].mean()
 
         # ----------- Add -------------- # 
         
@@ -196,8 +182,11 @@ class SkillPrior(BaseModule):
             "loss" : loss.item(),
             "Rec_skill" : recon.item(),
             "Reg" : reg.item(),
-            "Pri" : prior.item(),
-            "Pri_kld" : prior_kld.item(),
+            # "Pri" : prior.item(),
+            "Pri" : prior_kld.item(),
+            "prior_mean" : prior_mean.item(),
+            "prior_std" : prior_std.item(),
+
             "metric" : metric,
             # "beta" : beta
         }       
@@ -209,14 +198,14 @@ class SkillPrior(BaseModule):
 
     def optimize(self, batch, e):
         # inputs & targets          
-        states, actions, masks = batch.values()
-        states, actions, masks = states.cuda(), actions.cuda(), masks.cuda()
+        states, actions, masks, state_labels = batch.values()
+        states, actions, masks, state_labels = states.cuda(), actions.cuda(), masks.cuda(), state_labels.cuda()
         
         with autocast(self.use_amp):
             # forwarding
             outputs, N, T = self(states, actions)
             # loss
-            loss, loss_dict = self.compute_loss(outputs, actions)
+            loss, loss_dict = self.compute_loss(outputs, actions, state_labels)
 
 
         self.scaler.scale(loss).backward()
@@ -235,12 +224,12 @@ class SkillPrior(BaseModule):
     
     def validate(self, batch, e):
         # inputs & targets          
-        states, actions, masks = batch.values()
-        states, actions, masks = states.cuda(), actions.cuda(), masks.cuda()
+        states, actions, masks, state_labels = batch.values()
+        states, actions, masks, state_labels = states.cuda(), actions.cuda(), masks.cuda(), state_labels.cuda()
         
         # forwarding
         with autocast(self.use_amp):
             outputs, N, T = self(states, actions)
-            loss, loss_dict = self.compute_loss(outputs, actions)
+            loss, loss_dict = self.compute_loss(outputs, actions, state_labels)
 
         return loss_dict

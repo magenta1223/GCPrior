@@ -1,13 +1,17 @@
+import numpy as np
+
 import torch
 import torch.nn as nn
-from proposed.utils import get_dist, get_fixed_dist, prep_state, inverse_softplus
-import numpy as np
 import torch.distributions as torch_dist
-from .base import SequentialBuilder, ContextPolicyMixin, BaseModule
-from proposed.utils import *
+
 import copy
 from easydict import EasyDict as edict
-from proposed.contrib.momentum_encode import EMA, update_moving_average
+
+from proposed.modules.base import SequentialBuilder, ContextPolicyMixin, BaseModule
+from proposed.utils import *
+from proposed.contrib.momentum_encode import update_moving_average
+
+
 
 
 class PriorNetwork(SequentialBuilder):
@@ -28,9 +32,6 @@ class PriorNetwork(SequentialBuilder):
         dist2 = get_dist(self(batch_state[:, : self.in_feature]), detached= True)
 
         return dist1, dist2
-
-
-
 
 
 
@@ -88,6 +89,8 @@ class DecoderNetwork(ContextPolicyMixin, SequentialBuilder):
         return batch_action.squeeze(0).cpu().numpy()
 
 
+
+
 class PriorWrapper(BaseModule):
     """
     TODO 
@@ -99,59 +102,99 @@ class PriorWrapper(BaseModule):
         # self.prior_policy = prior_policy
         # for name, module in submodules.items():
         #     setattr(self, name, module)
-        self.ema_updater = None
+        self.ema_update = None
         
         super().__init__(submodules)
         
         self.forward_dict = {
             "default" : self.default, # state only conditioned
-            "inverse" : self.highS_inverseD, # inverse dynamics prior
-            "did" : self.DID, # inverse dynamics & dynamics prior
             "gcid" : self.GCID, # inverse dynamics & dynamics prior
-            "gc" : self.default, # state에 goal이 relabeling된 경우
-            "vic" : self.GCID_VIC,
-
+            # TODO : implement 
         }
 
-        if self.ema_updater:
+
+
+        if self.ema_update:
             self.target_state_encoder = copy.deepcopy(self.state_encoder)
-            
+                    
+        print("MODE", self.mode)
+
+
+        # copy
+        if self.mode in ['gcid']:
+            self.copy_weights()
+
+
     def forward(self, *args):
         return self.forward_dict[self.mode](*args)
 
     def ma_state_enc(self):
-        update_moving_average(self.ema_updater, self.target_state_encoder, self.state_encoder)
+        """
+        Exponentially moving averaging the parameters of state encoder 
+        """
+        update_moving_average(self.target_state_encoder, self.state_encoder)
+    
+    def copy_weights(self):
+        """
+        Hard-update the prior policy so that the subgoal generator learns directly from the prior without update
+        """
 
-    def default(self, s0):
-        # state only conditioned
-        prior, prior_detach = self.prior_policy.dist(s0, detached = True)
+        self.prior_policy_eval.load_state_dict(self.prior_policy.state_dict())
+        self.prior_policy_eval.eval()
+
+        
+        for p in self.prior_policy_eval.parameters():
+            p.requires_grad_(False)
+
+    def default(self, inputs, *args):
+        """
+        State only Conditioned Prior
+        inputs : instance of EasyDict
+            -  states 
+        return: state conditioned prior, and detached version for metric
+        """
+
+        prior, prior_detach = self.prior_policy.dist(inputs.states, detached = True)
         return edict(
             prior = prior,
             prior_detach = prior_detach
         )
+    
 
-    def _hs_id(self, states, h_tH = None):
+    def __dhsid__(self, states, h_tH = None):
         """
-        High states, inverse dynamics
-        states : raw state sequences or single states if hs_ht is not None
-        hs_th : high states of t+H time step from other module
+        Distributional High States & Inverse Dynamics 
+        states : states
+        h_tH   : hidden states of H-step later. It will be given when inference or RL adaptation. 
+
+        return :
+            # state reconstruction
+                states = states,
+                s_hat = state_hat, 
+
+            # state regularization
+                - hsd : distribution of high state
+                - hs  : high states sampled from hsd 
+                - hsd_target : fixed distribution to guide high state by beta-VAE
+            
+            # subgoal generation
+                - ht : sampled high state at time step t 
+                - h_tH_detach : detached & sampled high state at time step t + H 
+
+            # prior distributions 
+                - prior : inverse dynamics prior,
+                - prior_detach : detached prior
         """
 
         if h_tH is None: # for prior training
-            # state AE
             N, T, D = states.shape
-            # encoder : variational inference
-            hsd = self.state_encoder.dist(states.view(N * T, -1)) # dist
-            hs = hsd.rsample().view(N, T, -1) # N * T, -1
+            
+            # distribution version
+            _h = self.state_encoder(states.view(N * T, -1)) # N, T, 20
 
-            hs_target = get_fixed_dist(torch.randn(N * T, 20).cuda())
-
-            # distribution of time step t+H
-            with torch.no_grad():
-                self.target_state_encoder.eval()
-                _, hsd_tH = self.target_state_encoder.dist(states[:,-1], detached = True)
-                # _, hsd_tH = self.state_encoder.dist(states[:,-1], detached = True)
-
+            hsd = get_dist(_h) # high state dist N * T, -1
+            hs = hsd.rsample().view(N, T, -1)  # high state N, T, 10
+            hsd_target = get_fixed_dist(torch.randn(N * T, 20).cuda())
 
             state_hat = self.state_decoder(hs.view(N * T, -1)).view(N, T, -1)
 
@@ -161,128 +204,145 @@ class PriorWrapper(BaseModule):
             prior, prior_detach = self.prior_policy.dist(prior_input, detached = True)
 
 
+            # 보조 리워드 
+            # 원래는 중간골은 task specific 
+            # final goal이 taks인데
+            # final goal이 중간 goal과 관련이 없다...  ?
+            
+            # GC skill은 학습해서 만들면 됨
+            # goal을 어떻게 생성?
+            # final
             return edict(
-                # shape inform
-                N = N,
-                T = T,
-                # distributions
-                hsd = hsd,
-                hsd_tH = hsd_tH,
-                # N(0, I)
-                hs_target = hs_target,
-                # for subgoal generating
-                ht = ht,
                 # state reconstruction
-                states = states,
-                s_hat = state_hat, 
-                # prior distributions 
-                prior = prior,
-                prior_detach = prior_detach
-            )
+                    states = states,
+                    s_hat = state_hat, 
 
+                # state regularization
+                    hsd = hsd, 
+                    hs = hs, 
+                    hsd_target = hsd_target, 
+
+                # for subgoal generating
+                    ht = ht,
+                    h_tH_detach = h_tH.clone().detach(),
+
+                # prior distributions 
+                    prior = prior,
+                    prior_detach = prior_detach
+            )
+            
         else: # for RL
-            ht = self.state_encoder.dist(states).sample()# single time step
+
+            if self.state_encdoder.training:
+                ht = self.state_encoder.dist(states).rsample()
+            else:
+                with torch.no_grad():
+                    ht = self.state_encoder.dist(states).sample()# single time step
             prior_input = torch.cat((ht, h_tH), -1)
             prior, prior_detach = self.prior_policy.dist(prior_input)  
             return edict(
                 prior = prior
             )
 
-    def _hs_d(self, ht, z):
-        dynamics_input = torch.cat((ht, z), dim = -1)
-        return self.dynamics(dynamics_input)
 
-
-    def _generate_subgoal(self, x):
+    def __hsid__(self, states, result = None):
         """
-        generating subgoals
+        High States & Inverse Dynamics 
+        states : states
+        h_tH   : hidden states of H-step later. It will be given when inference or RL adaptation. 
+
+        return :
+            # state reconstruction
+                states = states,
+                s_hat = state_hat, 
+            
+            # subgoal generation
+                - ht : high state at time step t 
+                - h_tH_detach : detached  high state at time step t + H 
+
+            # prior distributions 
+                - prior : inverse dynamics prior,
+                - prior_detach : detached prior
         """
-        return self.subgoal_generator(x)
 
 
+        if result is None:
+            N, T, D = states.shape
 
-    def highS_inverseD(self, s, G, inference = False):
+            hs = self.state_encoder(states.view(N * T, -1)) # N, T, 20
+            state_hat = self.state_decoder(hs).view(N, T, -1)
+            
+            hs_reshaped = hs.view(N, T, -1)
+            # inverse dynamics 
+            ht, h_tH = hs_reshaped[ : , 0], hs_reshaped[ : , -1]
+            prior_input = torch.cat((ht, h_tH), -1)
+            prior, prior_detach = self.prior_policy.dist(prior_input, detached = True)
 
-        if inference: # in RL or more
-            s = prep_state(s, self.device)
-            G = prep_state(G, self.device)
+            return edict(
+                # state reconstruction
+                    states = states,
+                    s_hat = state_hat, 
 
-            if s.shape[0] != G.shape[0] : # in RL
-                G = G.repeat(s.shape[0], -1)
+                # subgoal generating
+                    ht = ht,
+                    h_tH_detach = h_tH.clone().detach(),
+                
+                # prior distributions 
+                    prior = prior,
+                    prior_detach = prior_detach,      
 
-            h_tH = self._generate_subgoal(torch.cat((s, G), dim = -1)).sample()
-            result = self._hs_id(s, h_tH)
-        else:
-            h_tH = self._generate_subgoal(torch.cat((s, G), dim = -1))
-            result = self._hs_id(s)
-            result['h_tH_hat'] = h_tH
+                # for metric
+                    hs = hs, # high_states
+                    hs_reshaped = hs_reshaped.clone().detach()
+            )          
 
-        return result
+        else :
+            # N, T, D = states.shape
+            # states : N x D
 
-    def DID(self, states, G):
+            # ht = self.state_encoder(states) # N, T, 20
+            
+            # inverse dynamics 
+            prior_input = torch.cat((result.ht, result.h_tH_hat), -1)
+            result['prior'], result['prior_detach'] = self.prior_policy.dist(prior_input, detached = True)
+
+            return result
+
+    def __dsg__(self, inputs, result = None):
         """
-        Dynamics, Inverse Dynamics
-        deprecated
+        Goal-Conditioned Inverse Dynamics 
         """
-        # inverse dynamics 
-        result = self._hs_id(states)
-
-        # dynamics
-        z = result.prior.rsample()
-        result['h_tH_dynamics'] = self._hs_d(result.ht, z)
-
-        # subgoal
-        with torch.no_grad(): 
-            self.target_state_encoder.eval()
-            h_star = self.target_state_encoder(G) 
-        result['h_tH_pred'] = self._generate_subgoal(torch.cat((result.ht, h_star), dim = -1))
-        # prior hat 
-        prior_input = torch.cat((result.ht.detach(), result.h_tH_pred), -1)
-        result['prior_hat'] = self.prior_policy.dist(prior_input)[1]
-        
-        
-        
-        return result
-
-    def GCID(self, inputs, inference = False):
-
         states, G = inputs.states, inputs.G
-        if not inference:
-            result = self._hs_id(states)
-
-            # dynamics
-            # result['dynamics'] = self.dynamics.dist(torch.cat( (result.ht, result.prior.rsample()) ,dim = -1))
-
+        
+        if result is not None:
             # transition probability 
             with torch.no_grad(): 
-                self.target_state_encoder.eval()
                 h_star = self.target_state_encoder.dist(G).sample() 
-            sg_input = torch.cat((result.ht, h_star), dim = -1)
+                _, result['hsd_tH'] = self.target_state_encoder.dist(states[:,-1], detached = True)
+                _, ht_detach = self.target_state_encoder.dist(states[:, 0], detached = True)
+                result['ht_detach'] = ht_detach.sample()
+
+            sg_input = torch.cat((result.ht, h_star), dim = -1) # ht, ht_detach
             result['h_tH_hat_dist'] = self.subgoal_generator.dist(sg_input)
             
-            
-            # prior hat 
-            with torch.no_grad():
-                prior_input = torch.cat((result.ht, result.h_tH_hat_dist.sample()), -1)
-                result['prior_hat'] = self.prior_policy.dist(prior_input)[1]
-
-        
-            
+            if self.direct:
+                self.prior_policy_eval.eval()
+                prior_input = torch.cat((result.ht_detach, result.h_tH_hat_dist.rsample()), -1)
+                result['prior_hat'], _ = self.prior_policy_eval.dist(prior_input)
+            else:            
+                with torch.no_grad():
+                    self.prior_policy_eval.eval()
+                    prior_input = torch.cat((result.ht_detach, result.h_tH_hat_dist.sample()), -1)
+                    _, result['prior_hat'] = self.prior_policy_eval.dist(prior_input)
             return result
-        else: # RL
-
-            # get ht
-            ht = self.state_encoder.dist(states).sample()
-
-            # get h_star
-            with torch.no_grad(): 
-                self.target_state_encoder.eval()
-                h_star = self.target_state_encoder.dist(G).sample() 
-
-            h_tH_hat = self._generate_subgoal(torch.cat((ht, h_star), dim = -1))
-
-            prior_input = torch.cat((ht, h_tH_hat), -1)
-            prior, prior_detach = self.prior_policy.dist(prior_input)  
+        
+        else: # inference
+            with torch.no_grad():
+                ht = self.state_encoder.dist(states).sample()# single time step
+                h_star = self.target_state_encoder.dist(G).sample()
+                h_tH_hat = self._generate_subgoal(torch.cat((ht, h_star), dim = -1))
+                prior_input = torch.cat((ht, h_tH_hat), -1)
+                prior, prior_detach = self.prior_policy.dist(prior_input)  
 
             result = edict(
                 prior = prior,
@@ -292,31 +352,162 @@ class PriorWrapper(BaseModule):
 
             return result 
 
-    def GCID_VIC(self, inputs, inference = False):
+    def __sg__(self, inputs, result = None):
+        states, G = inputs.states, inputs.G
+        
+        if result is not None:
+            # transition probability 
+            with torch.no_grad(): 
+                h_star = self.target_state_encoder(G)
+                result['ht_detach'] = self.target_state_encoder(states[:, 0])
+                result['hsd_tH'] = self.target_state_encoder(states[:,-1])
 
-        result = self.GCID(inputs, inference)
-        if not inference:
-            result['pr_proj'] = self.prior_proj(result.prior.rsample())
-            # 뺑뺑이
-            # with torch.no_grad():
-            #     h_th_hat_cycle = self.state_encoder(self.state_decoder(result.h_tH_hat_dist.sample()))
-            #     prior_input_cycle = torch.cat((result.ht, h_th_hat_cycle), -1)
-            #     pr_proj_cycle, _ = self.prior_policy.dist(prior_input_cycle)  
-            #     result['pr_proj_cycle'] = self.prior_proj(pr_proj_cycle.sample())
-                
 
+            sg_input = torch.cat((result.ht, h_star), dim = -1) # ht, ht_detach
+            result['h_tH_hat'] = self.subgoal_generator(sg_input)
+            
+            
+            if self.direct:
+                # for learning 
+                self.prior_policy_eval.eval()
+                prior_input = torch.cat((result.ht_detach, result.h_tH_hat), -1)
+                result['prior_hat'], _ = self.prior_policy_eval.dist(prior_input)
+            else:            
+                # for metric 
+                with torch.no_grad():
+                    self.prior_policy_eval.eval()
+                    prior_input = torch.cat((result.ht_detach, result.h_tH_hat), -1)
+                    _, result['prior_hat'] = self.prior_policy_eval.dist(prior_input)
+                        
         else:
-            result['pr_proj'] = self.prior_proj(result.prior.sample())
+            with torch.no_grad():
+                ht = self.state_encoder(states)# single time step
+                h_star = self.target_state_encoder(G)
+                h_tH_hat = self.subgoal_generator(torch.cat((ht, h_star), dim = -1))
+
+            result = edict(
+                # prior = prior,
+                ht = ht,
+                h_tH_hat = h_tH_hat
+            )
+
+        return result 
+
+
+    def GCID(self, inputs, mode = "train"):
+        """
+        모드가 3개 필요. train, finetune, eval
+        
+        """
+        assert mode in ['train', 'finetune', 'eval'], "Invalid mode. Valid choices are 'train', 'finetune', and 'eval'."
+        self.target_state_encoder.eval()
+        
+        if mode == "train":
+            if self.distributional:
+                result = self.__dhsid__(inputs.states)
+                result = self.__dsg__(inputs, result)
+            else:
+                result = self.__hsid__(inputs.states)
+                result = self.__sg__(inputs, result)
             
-            # # 뺑뺑이
-            # h_th_hat_cycle = self.state_encoder(self.state_decoder(result.h_tH_hat))
-            # prior_input_cycle = torch.cat((result.ht, h_th_hat_cycle), -1)
-            # result['pr_proj_cycle'], _ = self.prior_policy.dist(prior_input_cycle)  
+        elif mode == "finetune":
+            if self.distributional:
+                result = self.__dfinetune__(inputs)
+            else:
+                result = self.__finetune__(inputs)
             
+        else:        
+            self.eval()
+            if self.distributional:
+                result = self.__dsg__(inputs, None)
+                result = self.__dhsid__(inputs.states, result.h_tH_hat.sample())
+            else:
+                result = self.__sg__(inputs, None)        
+                result = self.__hsid__(inputs.states, result)
+        
 
         return result
 
 
+   
+
+    def __dfinetune__(self, inputs):
+        """
+        Fine-tuning method for distributional mode 
+        TODO
+        1) state encoder, subgoal_generator train mode
+        2) calculate ht, hstar, h_tH
+        3) calculate h_tH_hat
+        4) NLL loss between(h_tH, h_tH_hat)
+        """
+        
+        # 1) set mode : mode control은 외부에서. 여기서는 forwarding만 수행. 
+        # self.state_encoder.train()
+        # self.subgoal_generator.train()
+
+        self.prior_policy.eval() # 반드시 eval모드. 절대로 업데이트 안함.  
+        self.target_state_encoder.eval()
+
+        # 2) get high-states
+        ht = self.state_encoder.dist(inputs.states)
+        with torch.no_grad():
+            hstar = self.target_state_encoder.dist(inputs.G).sample()
+            h_tH = self.target_state_encoder.dist(inputs.next_H_states)
+
+        # 3) generate subgoals
+        h_tH_hat = self.subgoal_generator.dist(torch.cat((ht.rsample(), hstar), dim= -1))
+        
+        # 4) prior inputs
+        prior_input = torch.cat((ht.sample(), h_tH_hat.rsample()), -1)
+        prior_input_GT = torch.cat((ht.sample(), h_tH.sample()), -1)
+        
+        # not registered in prior optimizer. 뭔짓을해도 절대 업데이트 안된다. 
+        prior_hat, _ = self.prior_policy.dist(prior_input)
+        prior_GT, _ = self.prior_policy.dist(prior_input_GT)
+
+        # 4) 
+        return edict(
+            ht = ht,
+            h_tH = h_tH,
+            h_tH_hat = h_tH_hat,
+            prior_hat = prior_hat,
+            prior_GT = prior_GT
+        )
+
+    def __finetune__(self, inputs):
+        """
+        Fine-tuning method for non-distributional mode 
+        train 시에는 어차피 다 train으로 돌아가 있음. 추가적으로 eval 모드가 필요한 것만 해주면 됨. 
+        """
+        
+        self.prior_policy.eval() # 반드시 eval모드. 절대로 업데이트 안함.  
+        self.target_state_encoder.eval()
+
+        # 2) get high-states
+        ht = self.state_encoder(inputs.states)
+        with torch.no_grad():
+            hstar = self.target_state_encoder(inputs.G)
+            h_tH = self.target_state_encoder(inputs.next_H_states)
+
+        # 3) generate subgoals
+        h_tH_hat = self.subgoal_generator(torch.cat((ht, hstar), dim= -1))
+        
+        # 4) prior inputs
+        prior_input = torch.cat((ht.clone().detach(), h_tH_hat), -1)
+        prior_input_GT = torch.cat((ht.clone().detach(), h_tH), -1)
+        
+        # not registered in prior optimizer. 뭔짓을해도 절대 업데이트 안된다. 
+        prior_hat, _ = self.prior_policy.dist(prior_input)
+        prior_GT, _ = self.prior_policy.dist(prior_input_GT)
+
+        # 4) 
+        return edict(
+            ht = ht,
+            h_tH = h_tH,
+            h_tH_hat = h_tH_hat,
+            prior_hat = prior_hat,
+            prior_GT = prior_GT
+        )
 
 
     
@@ -423,12 +614,15 @@ class MMPH(ContextPolicyMixin, SequentialBuilder):
         return super().forward(states)
 
     def act(self, states):
-        dist = self.dist(states)
+
+        dist = self.dist(edict(states = states))
         # TODO explore 여부에 따라 mu or sample을 결정
         return dist.rsample().detach().cpu().squeeze(0).numpy()
 
-    def dist(self, states):
+    def dist(self, inputs):
         self.prior_policy.eval()
+        states = inputs.states
+
         states = prep_state(states, self.device)
 
         # distributions from policy state
@@ -455,34 +649,44 @@ class MMPHSG(ContextPolicyMixin, SequentialBuilder):
     def forward(self, states):
         return super().forward(states)
 
-    def act(self, states, G):
+    def act(self, states, G, mode = "train"):
         dist_inputs = edict(
             states = prep_state(states, self.device),
             G = prep_state(G, self.device)
         )
-        dist = self.dist(dist_inputs)
+        dist = self.dist(dist_inputs, mode)
         # TODO explore 여부에 따라 mu or sample을 결정
         return dist.rsample().detach().cpu().squeeze(0).numpy()
 
-    def dist(self, inputs):
+    def dist(self, inputs, mode = "train"):
         self.prior_policy.eval()
 
         states, G = inputs.states, inputs.G
         
+        # self.prior_policy.eval()
         # states = prep_state(states, self.device)
-        # G = prep_state(G, self.device)
-
-        # if states.shape[0] != G.shape[0]:
-        #     # expand
-        #     G = G.repeat(states.shape[0], 1)
-
-
 
         # # distributions from prior state
-        # result = self.prior_policy(states, G, True)
-        # prior_dist = result.prior.base_dist
-        # prior_locs, prior_scales = prior_dist.loc, prior_dist.scale
-        # prior_pre_scales = inverse_softplus(prior_scales)
+        # prior_locs, prior_log_scales = self.prior_policy.dist_param(states)
+        # prior_pre_scales = inverse_softplus(prior_log_scales.exp())
+
+        states = prep_state(states, self.device)
+        G = prep_state(G, self.device)
+
+        if states.shape[0] != G.shape[0]:
+            # expand
+            G = G.repeat(states.shape[0], 1)
+
+        inputs = edict(
+            states = states,
+            G = G
+        )
+
+        # # distributions from prior state
+        result = self.prior_policy(inputs, mode)
+        prior_dist = result.prior.base_dist
+        prior_locs, prior_scales = prior_dist.loc, prior_dist.scale
+        prior_pre_scales = inverse_softplus(prior_scales)
         
         # distributions from policy state
 
@@ -490,7 +694,7 @@ class MMPHSG(ContextPolicyMixin, SequentialBuilder):
 
         # 혼합
         dist = torch_dist.Normal(
-            res_locs, # + prior_locs,
-            self.min_scale + F.softplus(res_pre_scales )#+ prior_pre_scales)
+            res_locs + prior_locs,
+            self.min_scale + F.softplus(res_pre_scales + prior_pre_scales)
         )
         return torch_dist.Independent(dist, 1)

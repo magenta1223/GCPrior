@@ -6,10 +6,12 @@ from proposed.modules.base import *
 from proposed.models.spirl_easy import *
 
 import argparse
+from proposed.utils import seed_everything
 
 
 
 def main():
+    seed_everything()
     parser = argparse.ArgumentParser()
     # parser.add_argument("--recon_loss", default = "mse", choices = ["nll", "mse"])
     parser.add_argument("--reg_beta", default = 0.0005, type = float)

@@ -15,7 +15,7 @@ import torch.nn as nn
 from proposed.configs.models import Linear_Config
 from proposed.modules.base import *
 from proposed.modules.subnetworks import *
-from proposed.rl.sac_modules.SAC import SAC
+from proposed.rl.sac_module import SAC
 
 
 import d4rl
@@ -65,11 +65,11 @@ def simpl_fine_tune_iter(collector, trainer, batch_size, reuse_rate, task):
 
     if np.array(episode.dones).sum() != 0: # success 
         print("success")
-        infos = episode.infos
-        imgs = []
-        for info in infos:
-            imgs.append(info['img'])
-        visualize(imgs = imgs, task_name = task, prefix = 'success')
+        # infos = episode.infos
+        # imgs = []
+        # for info in infos:
+        #     imgs.append(info['img'])
+        # visualize(imgs = imgs, task_name = task, prefix = 'success')
 
     trainer.buffer.enqueue(episode) # ? ? # ? ? 
     log['tr_return'] = sum(episode.rewards)
@@ -77,10 +77,13 @@ def simpl_fine_tune_iter(collector, trainer, batch_size, reuse_rate, task):
     if trainer.buffer.size < batch_size:
         return log
 
+    step_inputs = edict(
+        batch_size = batch_size,
+    )
     # train
     n_step = int(reuse_rate * len(episode) / batch_size)
     for i in range(max(n_step, 1)):
-        stat = trainer.step(batch_size)
+        stat = trainer.step(step_inputs)
 
 
     log.update(itemize(stat))

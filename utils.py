@@ -9,6 +9,9 @@ import d4rl
 
 from d4rl.kitchen.kitchen_envs import OBS_ELEMENT_GOALS, OBS_ELEMENT_INDICES, BONUS_THRESH
 
+import os
+import random
+
 def prep_state(states, device):
     if isinstance(states, np.ndarray):
         states = torch.tensor(states, dtype = torch.float32)
@@ -22,7 +25,8 @@ def prep_state(states, device):
 
 def get_dist(model_output, log_scale = None,  detached = False):
     if detached:
-        model_output = model_output.detach()
+        model_output = model_output.clone().detach()
+        model_output.requires_grad = False
 
     if log_scale is None:
         mu, log_scale = model_output.chunk(2, -1)
@@ -70,28 +74,73 @@ def goal_checker(state):
 
 
 
-def V_loss(x, y):
+def v(x):
     """
     Variance Loss
     """
     x = x - x.mean(dim=0)
-    y = y - y.mean(dim=0)
-
     std_x = torch.sqrt(x.var(dim=0) + 0.0001)
-    std_y = torch.sqrt(y.var(dim=0) + 0.0001)
-    std_loss = torch.mean(F.relu(1 - std_x)) / 2 + torch.mean(F.relu(1 - std_y)) / 2
+    return torch.mean(F.relu(1 - std_x)) / 2
+
+def cov(x):
+    """
+    """
+    B, D = x.shape
+    cov_x = (x.T @ x) / (B - 1)
+    return  off_diagonal(cov_x).pow_(2).sum().div(D)
+
+
+# def V_loss(x, y=None):
+
+#     loss = v(x)
+
+#     if y is not None:
+#         loss = loss + v(y)
+
+#     return loss
+
+# def COV_loss(x, y = None):
+
+#     loss = cov(x)
+
+#     if y is not None:
+#         loss = loss + cov(y)
+
+#     return loss
+
+
+
+def V_loss(x, y = None, coefs = [0.01, 0.01]):
+    """
+    Variance Loss
+    """
+    # x = x - x.mean(dim=0)
+    # y = y - y.mean(dim=0)
+
+    # std_x = torch.sqrt(x.var(dim=0) + 0.0001)
+    # std_y = torch.sqrt(y.var(dim=0) + 0.0001)
+    # std_loss = torch.mean(F.relu(1 - std_x)) / 2 + torch.mean(F.relu(1 - std_y)) / 2
+    std_loss = v(x) * coefs[0] 
+
+    if y is not None:
+        std_loss += v(y) * coefs[1]
 
     return std_loss
 
-def COV_loss(x, y):
+def COV_loss(x, y = None, coefs = [0.01, 0.01]):
     """
     """
     B, D = x.shape
 
-    cov_x = (x.T @ x) / (B - 1)
-    cov_y = (y.T @ y) / (B - 1)
-    cov_loss = off_diagonal(cov_x).pow_(2).sum().div(D) + off_diagonal(cov_y).pow_(2).sum().div(D)
+    x = x - x.mean(dim=0)
+    y = y - y.mean(dim=0)
 
+    cov_x = (x.T @ x) / (B - 1)
+    cov_loss = off_diagonal(cov_x).pow_(2).sum().div(D) * coefs[0]
+    if y is not None:
+        cov_y = (y.T @ y) / (B - 1)
+        cov_loss = cov_loss + (off_diagonal(cov_y).pow_(2).sum().div(D)  * coefs[1])
+    
     return cov_loss
 
 
@@ -99,3 +148,25 @@ def off_diagonal(x):
     n, m = x.shape
     assert n == m
     return x.flatten()[:-1].view(n - 1, n + 1)[:, 1:].flatten()
+
+def W2Normal(dist1, dist2):
+    return F.mse_loss(dist1.base_dist.loc, dist2.base_dist.loc) + F.mse_loss(dist1.base_dist.scale, dist2.base_dist.scale)
+
+
+def L2Norm(model):
+    
+    penalty = 0
+    for param in model.parameters():
+        # penalty += torch.sum(param.data ** 2)
+        penalty += torch.norm(param, p=2)
+
+    return penalty
+
+def seed_everything(seed: int = 42):
+    random.seed(seed)
+    np.random.seed(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)  # type: ignore
+    torch.backends.cudnn.deterministic = True  # type: ignore
+    torch.backends.cudnn.benchmark = True  # type: ignore

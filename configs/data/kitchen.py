@@ -7,7 +7,6 @@ import d4rl
 MODE_DICT = {
     "default" : D4RLSequenceSplitDataset,
     "gc" : D4RLGoalRelabelingDataset,
-    "did" : D4RLDIDDataset,
     "gcid" : D4RLGCIDDataset,
     "vic" : D4RLGCIDDataset,
 

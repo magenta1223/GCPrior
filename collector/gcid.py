@@ -17,7 +17,7 @@ class HierarchicalTimeLimitCollector:
         while not done and t < self.time_limit:
             if t % self.horizon == 0:
                 # horizon마다 action을 바꿈. 
-                high_action = high_actor.act(state,G) # 여기를 state하고 action 둘 다 들어가게. posterior 사용 시
+                high_action = high_actor.act(state,G, "eval") # 여기를 state하고 action 둘 다 들어가게. posterior 사용 시
                 data_high_action = high_action
             else:
                 data_high_action = None
