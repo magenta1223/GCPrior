@@ -11,7 +11,6 @@ from torch.distributions.kl import register_kl
 import numpy as np
 from d4rl.kitchen.kitchen_envs import OBS_ELEMENT_GOALS, OBS_ELEMENT_INDICES, BONUS_THRESH
 
-from .envs.calvin import CALVIN_EL_INDICES, CALVIN_EL_GOALS, CALVIN_BONUS_THRESH
 
 
 from .contrib.dists import TanhNormal

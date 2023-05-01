@@ -200,7 +200,8 @@ class D4RL_GoalConditioned_Diversity_Dataset(D4RL_GoalConditionedDataset):
             self.state_dim = self.n_obj
         else:
             self.state_dim = self.n_obj + self.n_env
-
+        
+        print("STATE DIM", self.state_dim)
         
         # 10 step 이후에 skill dynamics로 추론해 error 누적 최소화 
         self.buffer_prev = Offline_Buffer(state_dim= self.state_dim, action_dim= self.action_dim, trajectory_length = 19, max_size= int(1e5))
@@ -308,9 +309,6 @@ class D4RL_GoalConditioned_Diversity_Dataset(D4RL_GoalConditionedDataset):
         else:
             return self.__skill_learning__()
 
-
-class D4RLGCIDDataset:
-    dummy = None
 
 
 

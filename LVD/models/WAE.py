@@ -23,6 +23,9 @@ class WAE(BaseModule):
         act_cls = nn.Mish
         self.step= 0
         self.distributional = False
+
+        if self.env_name == "maze":
+            self.latent_dim = self.latent_env_dim
  
         ## ----------------- Configurations ----------------- ##
         # state encoder
@@ -30,7 +33,7 @@ class WAE(BaseModule):
             n_blocks = self.n_Layers,
             in_feature = self.state_dim, # state_dim + latent_dim 
             hidden_dim = self.hidden_dim, 
-            out_dim = self.latent_dim, # when variational inference
+            out_dim = self.latent_dim , # when variational inference
             norm_cls =  norm_cls,
             act_cls = act_cls, #nn.LeakyReLU,
             block_cls = LinearBlock,
@@ -42,7 +45,7 @@ class WAE(BaseModule):
         # state decoder
         state_decoder_config = edict(
             n_blocks = self.n_Layers,#self.n_processing_layers,
-            in_feature = self.latent_dim, # state_dim + latent_dim 
+            in_feature = self.latent_dim, # when variational inference
             hidden_dim = self.hidden_dim, 
             out_dim = self.state_dim,
             norm_cls = norm_cls,
@@ -106,6 +109,8 @@ class WAE(BaseModule):
 
         self.outputs = {}
         self.loss_dict = {}
+
+        self.binary = False
 
 
 
@@ -185,7 +190,10 @@ class WAE(BaseModule):
     def compute_loss(self):
 
         # State Reconstruction
-        recon_state = self.loss_fn(self.recon_loss)(self.outputs['states_hat'], self.outputs['states']) # ? 
+        if self.binary:
+            recon_state = self.loss_fn("mse")(torch.sigmoid(self.outputs['states_hat']), self.outputs['states']) # ? 
+        else:
+            recon_state = self.loss_fn("mse")(self.outputs['states_hat'], self.outputs['states']) # ? 
         
         # MMD
         z_tilde = self.outputs['states_repr']
@@ -250,9 +258,9 @@ class WAE(BaseModule):
         states = states.cuda()
 
         if len(states.shape) == 4:
-            # agent centric image of maze
+            self.binary = True
             N, T = states.shape[:2]
-            states = states.view(N * T, -1) # flatten 
+            states = states.view(N * T, -1).float() # flatten 
 
 
 
@@ -270,6 +278,10 @@ class WAE(BaseModule):
         # inputs & targets       
         states = batch['states']
         states = states.cuda()
+
+        if len(states.shape) == 4:
+            N, T = states.shape[:2]
+            states = states.view(N * T, -1).float() # flatten 
 
         self.__main_network__(states, True)
         with torch.no_grad():

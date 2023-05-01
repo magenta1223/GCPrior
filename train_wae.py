@@ -49,8 +49,6 @@ def main():
 
     if args.env_name == "maze":
         train_conf['state_dim'] = 32 * 32
-        train_conf['batch_size'] = 10
-        train_conf['num_workers'] = 0
 
 
     DATASET_CLS = {
@@ -85,6 +83,7 @@ def main():
     train_conf.scheduler_params['patience'] = 10
     train_conf.structure = "wae"
     train_conf.only_weights = False
+    train_conf.epochs = 150
     
     m = MODELS["WAE"](train_conf).cuda()
     trainer = BaseTrainer(m, train_conf)

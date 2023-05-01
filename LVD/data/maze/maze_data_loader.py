@@ -14,15 +14,16 @@ import h5py
 from torch.utils.data import Dataset
 from ...contrib.spirl.pytorch_utils import RepeatedDataLoader
 import pickle
+from torch.utils.data.dataloader import DataLoader
+
 
 def parse_h5(file_path):
     f = h5py.File(file_path)
     # return {k : np.array(f.get("traj0").get(k))   for k in list(f.get("traj0").keys()) if k != "images"}
-    traj = f.get("traj0")
     return edict( 
-        states = np.array(traj.get("states")),
-        actions = np.array(traj.get("actions")),
-        agent_centric_view = np.array(traj.get("images")) / 255,
+        states = np.array(f.get("states")),
+        actions = np.array(f.get("actions")),
+        agent_centric_view = np.array(f.get("images")),
     )
 
 def parse_pkl(file_path):
@@ -122,48 +123,25 @@ class Maze_StateConditioned(Dataset):
 
 
 
-
-
-
 class Maze_AgentCentric_StateConditioned(Dataset):
     SPLIT = edict(train=0.99, val=0.01, test=0.0)
     def __init__(self, data_dir, data_conf, phase, resolution=None, shuffle=True, dataset_size=-1, *args, **kwargs):
         # super().__init__(data_dir, data_conf, phase, resolution=None, shuffle=True, dataset_size=-1)
 
-        color_dict = {
-            "wall" : np.array([0.87, 0.62, 0.38]),
-            "agent" : np.array([0.32, 0.65, 0.32]),
-            "ground_color1" : np.array([0.2, 0.3, 0.4]),
-            "ground_color2" : np.array([0.1, 0.2, 0.3]),
-        }
-
-        self.file_paths = glob("/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_prep/**/*.pkl")        
+        self.file_paths = glob("/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_prep/*.h5")        
         # self.seqs = [parse_h5(file_path) for file_path in self.file_paths]
 
-        file_name = '/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze.pkl' # from spirl
-
-        # 파일 로드
-        with open(file_name, 'rb') as f:
-            seqs = pickle.load(f)
-
-        self.n_seqs = len(seqs)
-        self.n_obs = sum([ seq.states.shape[0]  for seq in seqs])
-
+        self.n_seqs = len(self.file_paths)
         self.phase = phase
         self.dataset_size = dataset_size
         self.shuffle = shuffle
         self.device = "cuda"
-
-        self.wall = np.full((32, 32, 3), color_dict['wall'])
-        self.ground1 = np.full((32, 32, 3), color_dict['ground_color1'])
-        self.ground2 = np.full((32, 32, 3), color_dict['ground_color2'])
 
         for k, v in data_conf.dataset_spec.items():
             setattr(self, k, v) 
 
         for k, v in kwargs.items():
             setattr(self, k, v)    
-
 
         if self.phase == "train":
             self.start = 0
@@ -187,12 +165,15 @@ class Maze_AgentCentric_StateConditioned(Dataset):
             seq_idx = self.n_seqs - 1
     
 
-        return parse_pkl(self.file_paths[seq_idx])
-    
+        # return parse_pkl(self.file_paths[seq_idx])
+        return parse_h5(self.file_paths[seq_idx])
+
+
     def __len__(self):
         if self.dataset_size != -1:
             return self.dataset_size
-        return int(self.SPLIT[self.phase] * self.n_obs / self.subseq_len)
+        # return int(self.SPLIT[self.phase] * self.n_obs / self.subseq_len)
+        return int(self.SPLIT[self.phase] * len(self.file_paths))
 
 
     def __getitem__(self, index):
@@ -201,10 +182,8 @@ class Maze_AgentCentric_StateConditioned(Dataset):
         start_idx = np.random.randint(0, seq.states.shape[0] - self.subseq_len - 1)
 
         states = seq.states[start_idx : start_idx + self.subseq_len]
-        actions = seq.actions[start_idx : start_idx + self.subseq_len-1],
-        imgs = seq.agent_centric_view[start_idx : start_idx + self.subseq_len - 1]
-
-
+        actions = seq.actions[start_idx : start_idx + self.subseq_len-1]
+        imgs = seq.agent_centric_view[start_idx : start_idx + self.subseq_len]
 
         output = dict(
             states = states,

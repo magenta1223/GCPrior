@@ -35,6 +35,8 @@ class StateConditioned_Model(BaseModule):
         self.joint_learn = True
 
 
+        if self.env_name == "maze":
+            self.state_dim = self.state_dim * 10 + self.latent_env_dim
 
 
         ## skill prior module
@@ -129,6 +131,9 @@ class StateConditioned_Model(BaseModule):
         self.outputs = {}
         self.loss_dict = {}
 
+        if self.env_name == "maze":
+            self.visual_encoder = torch.load("./weights/maze/wae/log36_81.bin")['model'].state_encoder.eval()
+
     @staticmethod
     def dec_input(states, z, steps, detach = False):
         if detach:
@@ -160,7 +165,13 @@ class StateConditioned_Model(BaseModule):
             self.loss_dict['metric'] = self.loss_dict['Prior_S']
             
 
-    def forward(self, states, actions):
+    def forward(self, states, actions, imgs):
+        if self.env_name == "maze":
+            # imgs  : N, T, 32, 32
+            N, T = imgs.shape[:2]
+            visual_embedidng = self.visual_encoder(imgs.view(N * T, -1).float()).view(N, T, -1) # N, T ,32
+            states = torch.cat((states.repeat(1,1,10), visual_embedidng), axis = -1)
+        
 
         inputs = dict(
             states = states,
@@ -247,8 +258,8 @@ class StateConditioned_Model(BaseModule):
 
         return loss
     
-    def __main_network__(self, states, actions, validate = False):
-        self(states, actions)
+    def __main_network__(self, states, actions, imgs, validate = False):
+        self(states, actions, imgs)
         loss = self.compute_loss(actions)
 
         if not validate:
@@ -264,10 +275,15 @@ class StateConditioned_Model(BaseModule):
 
     def optimize(self, batch, e):
         # inputs & targets       
-        states, actions = batch.values()
-        states, actions = states.cuda(), actions.cuda()
+        if self.env_name == "maze":
+            states, actions, imgs = batch.values()
+            states, actions, imgs = states.cuda(), actions.cuda(), imgs.cuda()
+        else:
+            states, actions = batch.values()
+            states, actions = states.cuda(), actions.cuda()
+            imgs = None
 
-        self.__main_network__(states, actions)
+        self.__main_network__(states, actions, imgs)
 
         with torch.no_grad():
             self.get_metrics()
@@ -276,10 +292,15 @@ class StateConditioned_Model(BaseModule):
     
     def validate(self, batch, e):
         # inputs & targets       
-        states, actions = batch.values()
-        states, actions = states.cuda(), actions.cuda()
+        if self.env_name == "maze":
+            states, actions, imgs = batch.values()
+            states, actions, imgs = states.cuda(), actions.cuda(), imgs.cuda()
+        else:
+            states, actions = batch.values()
+            states, actions = states.cuda(), actions.cuda()
+            imgs = None
 
-        self.__main_network__(states, actions, validate= True)
+        self.__main_network__(states, actions, imgs, validate= True)
 
         with torch.no_grad():
             self.get_metrics()

@@ -4,7 +4,8 @@ from ...data.maze.maze_data_loader import *
 
 
 MODE_DICT = {
-    "sc" : Maze_StateConditioned,
+    # "sc" : Maze_StateConditioned,
+    "sc" : Maze_AgentCentric_StateConditioned,
     "wae" : Maze_AEDataset
 }
 
@@ -41,8 +42,8 @@ class MazeEnvConfig(BaseDataConfig):
             crop_rand_subseq=True,
             max_seq_len = 300,
             data_dir = "./LVD/data/maze/maze.pkl",
-            epoch_cycles_train = 1,
-            batch_size  = 10240,
+            epoch_cycles_train = 10,
+            batch_size  = 512,
 
             # Train Schedule 
             mixin_start = 30,
@@ -53,10 +54,13 @@ class MazeEnvConfig(BaseDataConfig):
 
             # Architecture
             latent_dim = 10,
+            latent_env_dim = 32,
             latent_state_dim  = 32,
             n_Layers = 5,
             hidden_dim = 128,
-            reg_beta = 0.01,
+            # reg_beta = 0.01,
+            reg_beta = 0.005,
+
 
             # RL
             time_limit = 3000, # orig 2000

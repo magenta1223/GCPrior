@@ -220,7 +220,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     # ------------- Train RL ------------- #
     with env.set_task(task_obj):
         state = env.reset()
-        print("TASK : ",  GOAL_CHECKERS[args.env_name](   GOAL_TRANSFORM[args.env_name](state)  ))
+        # print("TASK : ",  GOAL_CHECKERS[args.env_name](   GOAL_TRANSFORM[args.env_name](state)  ))
         # log에 success rate추가 .
         # ep = 0
         ewm_rwds = 0

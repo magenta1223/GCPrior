@@ -500,6 +500,7 @@ def get_loader(
     model_config = MODEL_CONFIGS[kwargs.get("structure", "sc")]
 
 
+
     env_default_conf = {**env_config.attrs}
     conf = edict(
         # general 
@@ -620,11 +621,11 @@ def get_loader(
         dataset_size=-1,
         # n_obj = conf.n_obj,
         # n_env = conf.n_env,
-        last = kwargs.get('last', False),
-        mixin_ratio = kwargs.get("mixin_ratio", 0.0),
-        rollout_method = kwargs.get("rollout_method", "rollout"),
-        plan_H = kwargs.get("plan_H", 100),
-        only_proprioceptive = kwargs.get("only_proprioceptive", False)
+        last = conf.last,
+        mixin_ratio =  conf.mixin_ratio,
+        rollout_method = conf.rollout_method,
+        plan_H = conf.plan_H,
+        only_proprioceptive = conf.only_proprioceptive
     )
 
     if phase == "train":
