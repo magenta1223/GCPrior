@@ -37,6 +37,7 @@ class StateConditioned_Model(BaseModule):
 
         if self.env_name == "maze":
             self.state_dim = self.state_dim * 10 + self.latent_env_dim
+            self.visual_encoder = torch.load("./weights/maze/wae/log1_end.bin")['model'].state_encoder.eval()
 
 
         ## skill prior module
@@ -131,8 +132,8 @@ class StateConditioned_Model(BaseModule):
         self.outputs = {}
         self.loss_dict = {}
 
-        if self.env_name == "maze":
-            self.visual_encoder = torch.load("./weights/maze/wae/log36_81.bin")['model'].state_encoder.eval()
+        self.step = 0
+
 
     @staticmethod
     def dec_input(states, z, steps, detach = False):
@@ -274,6 +275,8 @@ class StateConditioned_Model(BaseModule):
 
 
     def optimize(self, batch, e):
+        print(self.step)
+        self.step += 1
         # inputs & targets       
         if self.env_name == "maze":
             states, actions, imgs = batch.values()

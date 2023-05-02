@@ -52,6 +52,10 @@ class RepeatedDataLoader(DataLoader):
             self._DataLoader__initialized = True
 
     # additional methods
+    def set_sampler(self, sampler):
+        self.batch_sampler = sampler
+
+
     def set_mode(self, mode):
         self.dataset.set_mode(mode)
     

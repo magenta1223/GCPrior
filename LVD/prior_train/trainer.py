@@ -299,6 +299,7 @@ class BaseTrainer:
 
 
         for i, batch in enumerate(loader):
+            print("loaded!!!!\n")
             self.model.train()
             loss = self.model.optimize(batch, e)
             
@@ -330,6 +331,7 @@ class BaseTrainer:
 
             # if self.warmup_steps != 0:
             #     self.set_lr(1/sqrt(max(self.iteration, self.warmup_steps)))
+            del batch
         
         if self.model.structure == "vqvae":
             pass
@@ -667,4 +669,4 @@ def get_loader(
     for k, v in kwargs.items():
         conf[k] = v
 
-    return conf, dataset.get_data_loader(conf.batch_size, dataset_params.n_repeat, num_workers = conf['workers'])
+    return conf, dataset.get_data_loader(conf.batch_size, dataset_params.n_repeat, num_workers = conf.workers)

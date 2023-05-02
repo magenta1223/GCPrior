@@ -112,6 +112,8 @@ class WAE(BaseModule):
 
         self.binary = False
 
+        self.step = 0
+
 
 
 
@@ -250,6 +252,10 @@ class WAE(BaseModule):
             update_moving_average(self.target_state_encoder, self.state_encoder)
 
     def optimize(self, batch, e):
+
+        print(self.step)
+        self.step += 1
+
         self.loss_dict = {}
         self.outputs = {}
 
@@ -267,7 +273,6 @@ class WAE(BaseModule):
         self.__main_network__(states)
         with torch.no_grad():
             self.get_metrics()
-        self.step += 1
         
         return self.loss_dict
     

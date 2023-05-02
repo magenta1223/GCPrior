@@ -42,8 +42,8 @@ class MazeEnvConfig(BaseDataConfig):
             crop_rand_subseq=True,
             max_seq_len = 300,
             data_dir = "./LVD/data/maze/maze.pkl",
-            epoch_cycles_train = 10,
-            batch_size  = 512,
+            epoch_cycles_train = 1,
+            batch_size  = 64,
 
             # Train Schedule 
             mixin_start = 30,
@@ -60,6 +60,8 @@ class MazeEnvConfig(BaseDataConfig):
             hidden_dim = 128,
             # reg_beta = 0.01,
             reg_beta = 0.005,
+
+            
 
 
             # RL

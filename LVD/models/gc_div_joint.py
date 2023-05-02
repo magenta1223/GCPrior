@@ -29,8 +29,10 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         self.KL_threshold = 0
         bias = True
         dropout = 0
-    
 
+        if self.env_name == "maze":
+            self.state_dim = self.state_dim * 10 + self.latent_env_dim
+            self.visual_encoder = torch.load("./weights/maze/wae/log36_81.bin")['model'].state_encoder.eval()
 
         # self.init_grad_clip_step = 100
 
@@ -438,9 +440,17 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
 
 
 
-    def forward(self, states, actions, G):
+    def forward(self, states, actions, G, imgs):
         
         N, T, _ = states.shape
+
+        if self.env_name == "maze":
+            # imgs  : N, T, 32, 32
+            N, T = imgs.shape[:2]
+            visual_embedidng = self.visual_encoder(imgs.view(N * T, -1).float()).view(N, T, -1) # N, T ,32
+            states = torch.cat((states.repeat(1,1,10), visual_embedidng), axis = -1)
+        
+
 
         # inputs = dict(
         #     states = states,
@@ -619,9 +629,9 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         
 
 
-    def __main_network__(self, states, actions, G, rollout, validate = False):
+    def __main_network__(self, states, actions, G, rollout, imgs, validate = False):
 
-        self(states, actions, G)
+        self(states, actions, G, imgs)
         loss = self.compute_loss(actions)
         self.loss_dict['KL_threshold'] = self.KL_threshold
 
@@ -650,9 +660,21 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             self.train()
 
     def optimize(self, batch, e):
-        states, actions, G, rollout = batch.values()
-        states, actions, G, rollout = states.cuda(), actions.cuda(), G.cuda(), rollout.cuda()
-        self.__main_network__(states, actions, G, rollout)
+        # states, actions, G, rollout = batch.values()
+        # states, actions, G, rollout = states.cuda(), actions.cuda(), G.cuda(), rollout.cuda()
+        # self.__main_network__(states, actions, G, rollout)
+
+        # inputs & targets       
+        if self.env_name == "maze":
+            states, actions, G, rollout, imgs = batch.values()
+            states, actions, G, rollout, imgs = states.cuda(), actions.cuda(), G.cuda(), rollout.cuda(), imgs.cuda()
+        else:
+            states, actions, G, rollout = batch.values()
+            states, actions, G, rollout = states.cuda(), actions.cuda(), G.cuda(), rollout.cuda()
+            imgs = None
+
+        self.__main_network__(states, actions, G, rollout, imgs)
+
 
 
         with torch.no_grad():
@@ -665,9 +687,21 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
     
     def validate(self, batch, e):
 
-        states, actions, G, rollout  = batch.values()
-        states, actions, G, rollout = states.cuda(), actions.cuda(), G.cuda(), rollout.cuda()
-        self.__main_network__(states, actions, G, rollout, validate= True)
+        # states, actions, G, rollout  = batch.values()
+        # states, actions, G, rollout = states.cuda(), actions.cuda(), G.cuda(), rollout.cuda()
+        # self.__main_network__(states, actions, G, rollout, validate= True)
+
+
+        if self.env_name == "maze":
+            states, actions, G, rollout, imgs = batch.values()
+            states, actions, G, rollout, imgs = states.cuda(), actions.cuda(), G.cuda(), rollout.cuda(), imgs.cuda()
+        else:
+            states, actions, G, rollout = batch.values()
+            states, actions, G, rollout = states.cuda(), actions.cuda(), G.cuda(), rollout.cuda()
+            imgs = None
+
+        self.__main_network__(states, actions, G, rollout, imgs, validate= True)
+
 
         self.get_metrics()
         self.step += 1
