@@ -136,15 +136,8 @@ class Skimo_Prior(BaseModule):
 
         return result
     
-
+    @torch.no_grad()
     def __rollout__(self, inputs):
-        self.state_encoder.eval()
-        self.state_decoder.eval()
-        self.prior_policy.eval()
-        self.inverse_dynamics.eval()
-        self.flat_dynamics.eval()
-        self.dynamics.eval()
-
         states, skill = inputs['states'], inputs['actions']
         N, T, _ = states.shape
         skill_length = T - 1

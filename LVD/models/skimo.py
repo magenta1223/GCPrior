@@ -35,7 +35,7 @@ class Skimo_Model(BaseModule):
         self.joint_learn = self.fe_path == ''
 
         state_encoder_config = edict(
-            n_blocks = self.n_processing_layers,
+            n_blocks = self.n_Layers,
             in_feature = self.state_dim, # state_dim + latent_dim 
             hidden_dim = self.hidden_dim, 
             # hidden_dim = self.hidden_dim, 
@@ -49,7 +49,7 @@ class Skimo_Model(BaseModule):
 
         # state decoder
         state_decoder_config = edict(
-            n_blocks = self.n_processing_layers,#self.n_processing_layers,
+            n_blocks = self.n_Layers,#self.n_processing_layers,
             in_feature = 256, # state_dim + latent_dim 
             hidden_dim = self.hidden_dim, 
             # hidden_dim = self.hidden_dim, 
@@ -65,7 +65,7 @@ class Skimo_Model(BaseModule):
         ## skill prior module
 
         dynamics_config = edict(
-            n_blocks =  self.n_processing_layers,# 
+            n_blocks =  self.n_Layers,# 
             in_feature =  self.latent_state_dim + self.latent_dim,  
             # in_feature = self.state_dim * 2, # state_dim + latent_dim 
             hidden_dim = self.hidden_dim, 
@@ -81,7 +81,7 @@ class Skimo_Model(BaseModule):
 
 
         prior_config = edict(
-            n_blocks = self.n_processing_layers, #self.n_processing_layers,
+            n_blocks = self.n_Layers, #self.n_processing_layers,
             in_feature =  self.state_dim, # state_dim + latent_dim 
             hidden_dim = self.hidden_dim, 
             out_dim = self.latent_dim * 2,
@@ -112,7 +112,7 @@ class Skimo_Model(BaseModule):
         )
 
         decoder_config = edict(
-            n_blocks = self.n_processing_layers, #self.n_processing_layers,
+            n_blocks = self.n_Layers, #self.n_processing_layers,
             state_dim = self.state_dim,
             # state_dim = self.latent_state_dim,
             z_dim = self.latent_dim, 

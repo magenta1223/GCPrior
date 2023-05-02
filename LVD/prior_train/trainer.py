@@ -538,7 +538,7 @@ def get_loader(
         ),
 
         val_data_size = 5000,
-        maze_path = args.maze_path
+        maze_path = kwargs.get("maze_path", "")
     )
 
     for k, v in env_default_conf.items():
