@@ -1,6 +1,5 @@
 from copy import deepcopy
 import numpy as np
-from ...contrib.spirl.maze_data_loader import MazeStateSequenceDataset
 from easydict import EasyDict as edict
 
 import random
@@ -14,7 +13,7 @@ import h5py
 from torch.utils.data import Dataset
 from ...contrib.spirl.pytorch_utils import RepeatedDataLoader
 import pickle
-from torch.utils.data.dataloader import DataLoader, SequentialSampler, BatchSampler
+from torch.utils.data.dataloader import DataLoader, SequentialSampler
 import torch
 
 def parse_h5(file_path):

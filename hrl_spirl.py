@@ -19,7 +19,7 @@ import d4rl
 
 
 
-from proposed.LVD.envs import ENV_TASK
+from LVD.envs import ENV_TASK
 from LVD.configs.build import Linear_Config
 from LVD.modules.base import *
 from LVD.modules.policy import *
@@ -33,7 +33,7 @@ from LVD.utils import *
 # from LVD.collector.gcid import LowFixedHierarchicalTimeLimitCollector
 from LVD.collector.spirl import LowFixedHierarchicalTimeLimitCollector
 from LVD.collector.storage import Buffer_H
-from proposed.LVD.rl.rl_utils import *
+from LVD.rl.rl_utils import *
 
 
 from LVD.configs.env import ENV_CONFIGS
