@@ -65,7 +65,7 @@ class MazeEnvConfig(BaseDataConfig):
 
 
             # RL
-            time_limit = 3000, # orig 2000
+            time_limit = 5000, # orig 2000
             n_hidden = 5,
             target_kl_start  = 2, # orig 1 
             target_kl_end = 2, # orig 1 
@@ -78,8 +78,11 @@ class MazeEnvConfig(BaseDataConfig):
             q_weight = 1, 
             precollect = 10,
             early_stop_threshold = 0.8,
-            prior_state_dim = 4,
-            policy_state_dim = 6, # 기존 방법론의 경우는 다 붙여서 넣으니까
+            # prior_state_dim = 4,
+            # policy_state_dim = 6, # 기존 방법론의 경우는 다 붙여서 넣으니까
+
+            prior_state_dim = 32 + 4 * 10, # latent_env_dim + 10 * prior_state_dim
+            policy_state_dim = 32 + 4 * 10 + 2, # 기존 방법론의 경우는 다 붙여서 넣으니까
 
             # etc.
             res=128,

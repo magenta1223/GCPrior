@@ -86,7 +86,15 @@ def goal_checker_calvin(goal_state):
 
 
 def goal_checker_maze(state):
-    return state[4:]
+    # return state[4:]
+
+    goal = state[-2:]
+    complete_threshold = 1
+    goal_dist = np.linalg.norm(state[32:34] - goal)
+    completed = (goal_dist <= complete_threshold)
+
+    return "Success" if completed else "Fail"
+
 
     # if ((state[:2] - state[2:]) ** 2).sum() < 0.1:
     #     return "Done"
@@ -107,7 +115,8 @@ def get_goal_calvin(state):
 def get_goal_maze(state):
     # state[:9] = 0
     # return state[30:]
-    return state[4:]
+    # return state[4:]
+    return state[32 + 40:]
 
 
 def goal_transform_kitchen(state):
@@ -123,7 +132,7 @@ def goal_transform_calvin(state):
 def goal_transform_maze(state):
     # return state[21:]
     # return state[2:]
-    return state[:2]
+    return state[32:34]
 
 
 
@@ -139,7 +148,7 @@ def state_process_calvin(state):
 def state_process_maze(state):
     # return state[:21]
     # return state[:39]
-    return state[:4]
+    return state[32:36]
 
 
 
@@ -297,10 +306,12 @@ class StateProcessor:
         """
         Check the state satisfiy which goal state
         """
+        if self.env_name == "maze":
+            return self.__goal_checkers__[self.env_name](state) 
+
         if mode =="state":
             return self.__goal_checkers__[self.env_name](self.__state2goals__[self.env_name](state)) 
-        else:
-            return self.__goal_checkers__[self.env_name](self.get_goals(state)) 
+
 
 
 

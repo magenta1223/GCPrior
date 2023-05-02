@@ -21,7 +21,7 @@ from ..configs.model import *
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-
+import gc
 
 
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
@@ -299,7 +299,6 @@ class BaseTrainer:
 
 
         for i, batch in enumerate(loader):
-            print("loaded!!!!\n")
             self.model.train()
             loss = self.model.optimize(batch, e)
             
@@ -331,7 +330,8 @@ class BaseTrainer:
 
             # if self.warmup_steps != 0:
             #     self.set_lr(1/sqrt(max(self.iteration, self.warmup_steps)))
-            del batch
+
+
         
         if self.model.structure == "vqvae":
             pass

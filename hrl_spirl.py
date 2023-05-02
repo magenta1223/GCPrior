@@ -132,39 +132,49 @@ def train_single_task(env, env_name, tasks, task_cls, args):
 
     # ------------- Set Task ------------- #
 
+    ## ------------- Spirl Modules ------------- ##
+    # load = torch.load(f"/home/magenta1223/skill-based/SiMPL/{args.path}")
+    load = torch.load(args.path)
+    model = load['model'].eval()
+
     print(tasks)
     
     if env_name == "maze":
-        init_loc_candidate = np.array(env.reset_locations)
-        goal_loc = tasks[1]
-        dist = np.abs(init_loc_candidate - goal_loc).sum(axis = 1)
-        
-        # filter
-        # cond1 = dist >= 20
-        # cond2 = dist < 24
-        cond1 = dist >= 24
-        cond2 = dist < 28
-
-        init_loc_candidate = init_loc_candidate[np.where(cond1 & cond2)]
-        
-        # sort 
-        dist = np.abs(init_loc_candidate - goal_loc).sum(axis = 1)
-        init_loc_candidate = init_loc_candidate[dist.argsort()][-10:]
-        # sample 
-        init_loc = init_loc_candidate[random.sample(range(len(init_loc_candidate)), 1)[0]]
-
+        # set visual encoder in env
+        env.set_visual_encoder(model.visual_encoder)
 
         # init_loc_candidate = np.array(env.reset_locations)
         # goal_loc = tasks[1]
         # dist = np.abs(init_loc_candidate - goal_loc).sum(axis = 1)
+        
+        # # filter
+        # # cond1 = dist >= 20
+        # # cond2 = dist < 24
+        # cond1 = dist >= 24
+        # cond2 = dist < 28
+
+        # init_loc_candidate = init_loc_candidate[np.where(cond1 & cond2)]
+        
+        # # sort 
+        # dist = np.abs(init_loc_candidate - goal_loc).sum(axis = 1)
         # init_loc_candidate = init_loc_candidate[dist.argsort()][-10:]
-        # # 그래도 할만한 애들을 뽑아야지.. 
+        # # sample 
         # init_loc = init_loc_candidate[random.sample(range(len(init_loc_candidate)), 1)[0]]
+
+
+        # # init_loc_candidate = np.array(env.reset_locations)
+        # # goal_loc = tasks[1]
+        # # dist = np.abs(init_loc_candidate - goal_loc).sum(axis = 1)
+        # # init_loc_candidate = init_loc_candidate[dist.argsort()][-10:]
+        # # # 그래도 할만한 애들을 뽑아야지.. 
+        # # init_loc = init_loc_candidate[random.sample(range(len(init_loc_candidate)), 1)[0]]
 
 
 
 
         # init_loc = [10, 10]
+
+        init_loc, goal_loc = tasks[0], tasks[1]
         task_obj = task_cls(init_loc, goal_loc)
 
         # init_loc, goal_loc = tasks[0], tasks[1]
@@ -173,11 +183,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
         task_obj = task_cls(tasks)
 
 
-    ## ------------- Spirl Modules ------------- ##
-    # load = torch.load(f"/home/magenta1223/skill-based/SiMPL/{args.path}")
-    load = torch.load(args.path)
 
-    model = load['model'].eval()
 
     # ------------- Hyper Parameteres ------------- #
     buffer_size = 20000
@@ -245,6 +251,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     # ------------- Buffers & Collectors ------------- #
     buffer = Buffer_H(args.policy_state_dim, latent_dim, buffer_size, tanh = model.tanh)
     
+    
 
 
 
@@ -311,7 +318,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     # ------------- Train RL ------------- #
     with env.set_task(task_obj):
         state = env.reset()
-        print("TASK : ",  state_processor.state_goal_checker(state, mode = "goal") )
+        print("TASK : ",  state_processor.state_goal_checker(state) )
                 # log에 success rate추가 .
         # ep = 0
         ewm_rwds = 0

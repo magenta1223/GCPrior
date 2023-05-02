@@ -256,12 +256,17 @@ class Maze_AgentCentric_StateConditioned(Dataset):
     
     def __len__(self):
         # return len(self.file_paths)
-        return int(self.SPLIT[self.phase] * len(self.file_paths))
+        # return int(self.SPLIT[self.phase] * len(self.file_paths))
+
+        # return  int(self.SPLIT[self.phase] * (len(self.file_paths) //2  ))
+        if self.phase == "train":
+            # return 20000
+            return  40000
+        else:
+            return 5000
 
 
     def load_data(self, file_path):
-
-
 
         with h5py.File(file_path, 'r') as f:
 
@@ -283,9 +288,9 @@ class Maze_AgentCentric_StateConditioned(Dataset):
         actions = [d['actions'] for d in data]
         images = [d['images'] for d in data]
         return {
-            'states': torch.tensor(np.stack(states)),
-            'actions': torch.tensor(np.stack(actions)),
-            'images': torch.tensor(np.stack(images))
+            'states': torch.from_numpy(np.stack(states)),
+            'actions': torch.from_numpy(np.stack(actions)),
+            'images': torch.from_numpy(np.stack(images))
         }
     
     def get_data_loader(self, batch_size, n_repeat, num_workers = 8):
@@ -301,9 +306,10 @@ class Maze_AgentCentric_StateConditioned(Dataset):
             n_repeat=1,
             pin_memory=True, # self.device == 'cuda'
             # pin_memory= False, # self.device == 'cuda'
+            collate_fn = self.collate_fn,
             worker_init_fn=lambda x: np.random.seed(np.random.randint(65536) + x)
             )
-        dataloader.set_sampler(SequentialSampler(self))
+        # dataloader.set_sampler(SequentialSampler(self))
         
         return dataloader
 
@@ -328,20 +334,21 @@ class Maze_AEDataset(Maze_AgentCentric_StateConditioned):
                 'images': images[start_idx : start_idx + self.subseq_len]
             }
 
-        f.close()
-
-
         return data
     
     def collate_fn(self, batch):
         data = [self.load_data(path)['images'] for path in batch]
         return {
-            'states': torch.tensor(np.stack(data))
+            'states': torch.from_numpy(np.stack(data))
         }
     
     def __len__(self):
         # return len(self.file_paths)
-        return int(self.SPLIT[self.phase] * len(self.file_paths))
+        # return int(self.SPLIT[self.phase] * len(self.file_paths))
+        if self.phase == "train":
+            return  40000
+        else:
+            return 5000    
         # return 5000
     
     def get_data_loader(self, batch_size, n_repeat, num_workers = 8):
@@ -367,6 +374,7 @@ class Maze_AEDataset(Maze_AgentCentric_StateConditioned):
             collate_fn=self.collate_fn,
             drop_last=False,
             pin_memory= True,
+            sampler = SequentialSampler(self)
         )
 
 

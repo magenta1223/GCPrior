@@ -69,6 +69,8 @@ class HierarchicalTimeLimitCollector:
         # print(GOAL_CHECKERS[self.env_name](STATE_PROCESSOR[self.env_name](state)))
         if self.env_name != "maze":
             print( self.state_processor.state_goal_checker(state)  )
+        else:
+            print( self.state_processor.state_goal_checker(state)  )
 
 
 

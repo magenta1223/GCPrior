@@ -252,10 +252,6 @@ class WAE(BaseModule):
             update_moving_average(self.target_state_encoder, self.state_encoder)
 
     def optimize(self, batch, e):
-
-        print(self.step)
-        self.step += 1
-
         self.loss_dict = {}
         self.outputs = {}
 

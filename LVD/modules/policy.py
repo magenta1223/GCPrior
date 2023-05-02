@@ -25,18 +25,21 @@ class HighPolicy_SC(ContextPolicyMixin, SequentialBuilder):
     """
     MLP Policy for SPiRL, SiMPL, Skimo
     """
-    def __init__(self, config, prior_policy, prior_state_dim = None):
+    def __init__(self, config, prior_policy, prior_state_dim = None, visual_encoder = None):
 
         super().__init__(config)
         self.log_sigma = nn.Parameter(torch.randn(self.out_dim)) # for sampling
         self.prior_policy = copy.deepcopy(prior_policy).requires_grad_(False)
         self.min_scale=0.001
         self.prior_state_dim = prior_state_dim
+        self.visual_encoder = visual_encoder
 
     def forward(self, states):
         return super().forward(states)
 
     def act(self, states):
+
+        
         
         dist_inputs = dict(
             states = prep_state(states, self.device),
