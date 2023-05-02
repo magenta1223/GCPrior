@@ -20,6 +20,7 @@ import random
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--env_name", default= "kitchen", type = str, choices= list(ENV_CONFIGS.keys()))
+    parser.add_argument("--maze_path", default= "/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_prep", type = str)
 
     # -------------------------- TRAINER -------------------------- #
     # parser.add_argument("--epochs", default = 70, type = int)

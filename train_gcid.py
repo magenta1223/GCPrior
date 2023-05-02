@@ -25,6 +25,7 @@ def main():
 
     parser.add_argument("--env_name", default= "kitchen", type = str, choices= list(ENV_CONFIGS.keys()))
     parser.add_argument("--maze_path", default= "/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_prep", type = str)
+    parser.add_argument("--visual_encoder_path", default= "./weights/maze/wae/log21_end.bin", type = str)
 
     # -------------------------- DATASET -------------------------- #
     # parser.add_argument("--last", action = "store_true", default= False)

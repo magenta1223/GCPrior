@@ -38,7 +38,8 @@ class StateConditioned_Model(BaseModule):
         if self.env_name == "maze":
             # self.state_dim = self.state_dim * 10 + self.latent_env_dim
             self.state_dim = self.state_dim + self.latent_env_dim
-            self.visual_encoder = torch.load("./weights/maze/wae/log21_end.bin")['model'].state_encoder.eval()
+            # self.visual_encoder = torch.load("./weights/maze/wae/log21_end.bin")['model'].state_encoder.eval()
+            self.visual_encoder = torch.load(self.visual_encoder_path)['model'].state_encoder.eval()
 
 
         ## skill prior module
