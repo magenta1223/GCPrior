@@ -120,7 +120,8 @@ class Maze_GC(MazeEnv):
 
 
             visual_embedidng = self.visual_encoder(img).detach().cpu()[0].numpy()
-            states = np.concatenate((np.tile(self._get_obs(), 10), visual_embedidng, np.array(self._target) ), axis = 0 )
+            # states = np.concatenate((np.tile(self._get_obs(), 10), visual_embedidng, np.array(self._target) ), axis = 0 )
+            states = np.concatenate((self._get_obs(), visual_embedidng, np.array(self._target) ), axis = 0 )
             return states
 
         else:
@@ -170,8 +171,7 @@ class Maze_GC(MazeEnv):
             # img = self.render(mode = "rgb_array")
 
             visual_embedidng = self.visual_encoder(img).detach().cpu()[0].numpy()
-            ob = np.concatenate((np.tile(ob, 10), visual_embedidng, np.array(self._target) ), axis = 0 )
-
+            ob = np.concatenate((ob, visual_embedidng, np.array(self._target) ), axis = 0 )
 
         else:
             ob =  np.concatenate((ob, np.array(self._target)), axis = 0)

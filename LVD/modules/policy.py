@@ -279,7 +279,7 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
             _inputs = dict(states = hs)
             policy_skills.append(self.dist(_inputs).sample()) 
             hs = self.prior_policy.dynamics(torch.cat((hs, policy_skills[-1]), dim = -1  ))
-        policy_skills = torch.stack(policy_skills, dim=1) # N_plan, skill_dim 
+        policy_skills = torch.stack(policy_skills, dim=1) # N_plan, planning_horizon, skill_dim 
 
         # CEM optimization.
         hs = state.repeat(self.num_policy_traj + self.num_sample_traj, 1)

@@ -537,7 +537,8 @@ def get_loader(
             device = "cpu"
         ),
 
-        val_data_size = 5000 
+        val_data_size = 5000,
+        maze_path = args.maze_path
     )
 
     for k, v in env_default_conf.items():
@@ -627,7 +628,8 @@ def get_loader(
         mixin_ratio =  conf.mixin_ratio,
         rollout_method = conf.rollout_method,
         plan_H = conf.plan_H,
-        only_proprioceptive = conf.only_proprioceptive
+        only_proprioceptive = conf.only_proprioceptive,
+        prefix = conf.maze_path
     )
 
     if phase == "train":

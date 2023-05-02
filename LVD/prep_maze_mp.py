@@ -10,6 +10,8 @@ import os
 import multiprocessing as mp
 from tqdm import tqdm
 
+import argparse
+
 
 def parse_h5(file_path):
     f = h5py.File(file_path)
@@ -40,10 +42,13 @@ def process_file(file_path, prep_path_prefix, wall, ground1, ground2):
         f.create_dataset("images", data=seq['agent_centric_view'])
 
 
-def main():
-    prep_path_prefix = "/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_prep/"
+def main(args):
+
+    prefix = args.prefix
+    
+    prep_path_prefix = f"{prefix}/maze_prep/"
     os.makedirs(prep_path_prefix, exist_ok= True)
-    file_paths = glob("/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze/**/*.h5")
+    file_paths = glob(f"{prefix}/maze/**/*.h5")
 
     color_dict = {
         "wall" : np.array([0.87, 0.62, 0.38]),
@@ -69,7 +74,11 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--prefix", default = "/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze")
+    
+    args = parser.parse_args()
+    main(args)
 
 
 # import h5py

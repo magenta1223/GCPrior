@@ -223,8 +223,8 @@ class Maze_AgentCentric_StateConditioned(Dataset):
     SPLIT = edict(train=0.99, val=0.01, test=0.0)
     def __init__(self, data_dir, data_conf, phase, resolution=None, shuffle=True, dataset_size=-1, *args, **kwargs):
         # super().__init__(data_dir, data_conf, phase, resolution=None, shuffle=True, dataset_size=-1)
-
-        self.file_paths = glob("/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_prep/*.h5")        
+        prefix = kwargs.get("prefix", "/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_prep")
+        self.file_paths = glob(f"{prefix}/*.h5")        
         # self.seqs = [parse_h5(file_path) for file_path in self.file_paths]
 
         self.n_seqs = len(self.file_paths)
