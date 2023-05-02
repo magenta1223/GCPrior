@@ -1,1 +1,1 @@
-from ..build.configs import *
+from .configs import *
