@@ -325,7 +325,7 @@ class Maze_AgentCentric_StateConditioned(Dataset):
             n_repeat=1,
             pin_memory=True, # self.device == 'cuda'
             # pin_memory= False, # self.device == 'cuda'
-            # collate_fn = self.collate_fn,
+            collate_fn = self.collate_fn,
             worker_init_fn=lambda x: np.random.seed(np.random.randint(65536) + x)
             )
         # dataloader.set_sampler(SequentialSampler(self))
