@@ -91,6 +91,7 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             print("here?")
 
             self.latent_state_dim *= 2
+            self.state_dim = 1028
             state_encoder = MultiModalEncoder(state_encoder_config)
             state_decoder = MultiModalDecoder(state_decoder_config)
         else:
@@ -168,8 +169,7 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
 
         ### ----------------- posterior modules ----------------- ###
         encoder_config = edict(
-            # in_feature = self.action_dim + self.state_dim,
-            in_feature = self.action_dim + 1028,
+            in_feature = self.action_dim + self.state_dim,
             # in_feature = self.action_dim + self.latent_state_dim,
             hidden_dim = self.hidden_dim,
             out_dim = self.latent_dim * 2,
@@ -188,15 +188,10 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         decoder_config = edict(
             n_blocks = self.n_Layers, #self.n_processing_layers,
             z_dim = self.latent_dim, 
-            # state_dim = self.state_dim,
-            # in_feature =  self.state_dim + self.latent_dim, # state_dim + latent_dim 
-            state_dim = 1028,
-            in_feature =  1028 + self.latent_dim, # state_dim + latent_dim
-
+            state_dim = self.state_dim,
+            in_feature =  self.state_dim + self.latent_dim, # state_dim + latent_dim 
             hidden_dim = self.hidden_dim, 
-            # out_dim = self.action_dim,
             out_dim = self.action_dim,
-
             norm_cls = nn.BatchNorm1d,
             act_cls = act_cls,
             block_cls = LinearBlock,

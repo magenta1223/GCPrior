@@ -35,18 +35,51 @@ class StateConditioned_Model(BaseModule):
         self.joint_learn = True
 
 
-        if self.env_name == "maze":
-            # self.state_dim = self.state_dim * 10 + self.latent_env_dim
-            self.state_dim = self.state_dim + self.latent_env_dim
-            # self.visual_encoder = torch.load("./weights/maze/wae/log21_end.bin")['model'].state_encoder.eval()
-            self.visual_encoder = torch.load(self.visual_encoder_path)['model'].state_encoder.eval()
+        state_encoder_config = edict(
+            n_blocks = self.n_Layers,
+            in_feature = self.state_dim, # state_dim + latent_dim 
+            hidden_dim = self.latent_state_dim * 2, 
+            # hidden_dim = self.hidden_dim, 
+            out_dim = self.latent_state_dim, # when variational inference
+            norm_cls =  norm_cls,
+            # norm_cls =  None,
+            act_cls = act_cls, #nn.LeakyReLU,
+            block_cls = LinearBlock,
+            bias = bias,
+            dropout = dropout
+        )
 
+        # state decoder
+        state_decoder_config = edict(
+            n_blocks = self.n_Layers,#self.n_processing_layers,
+            in_feature = self.latent_state_dim, # state_dim + latent_dim 
+            hidden_dim = self.latent_state_dim * 2, 
+            # hidden_dim = self.hidden_dim, 
+            out_dim = self.state_dim,
+            norm_cls = norm_cls,
+            # norm_cls =  None,
+            act_cls = act_cls, #nn.LeakyReLU,
+            block_cls = LinearBlock,
+            bias = bias,
+            dropout = dropout
+        )
+
+
+        if self.env_name == "maze":
+            print("here?")
+            self.latent_state_dim *= 2
+            self.state_dim = 1028
+            state_encoder = MultiModalEncoder(state_encoder_config)
+            state_decoder = MultiModalDecoder(state_decoder_config)
+        else:
+            state_encoder = None
+            state_decoder = None
 
         ## skill prior module
 
         prior_config = edict(
             n_blocks = self.n_Layers, #self.n_processing_layers,
-            in_feature =  self.state_dim, # state_dim + latent_dim 
+            in_feature =  self.latent_state_dim if self.env_name == "maze" else self.state_dim, # state_dim + latent_dim 
             hidden_dim = self.hidden_dim, 
             out_dim = self.latent_dim * 2,
             norm_cls = norm_cls,
@@ -77,11 +110,10 @@ class StateConditioned_Model(BaseModule):
 
         decoder_config = edict(
             n_blocks = self.n_Layers, #self.n_processing_layers,
-            state_dim = self.state_dim,
             # state_dim = self.latent_state_dim,
             z_dim = self.latent_dim, 
+            state_dim = self.state_dim,
             in_feature = self.latent_dim + self.state_dim, # state_dim + latent_dim 
-            # in_feature = self.latent_state_dim + self.latent_dim,
             hidden_dim = self.hidden_dim, 
             out_dim = self.action_dim,
             norm_cls = nn.BatchNorm1d,
@@ -91,11 +123,15 @@ class StateConditioned_Model(BaseModule):
             dropout = dropout           
         )
 
+
+
         prior = SequentialBuilder(Linear_Config(prior_config))
         
         
         self.skill_prior = PRIOR_WRAPPERS['sc'](
             prior_policy = prior,
+            state_encoder = state_encoder,
+            state_decoder = state_decoder
         )
 
         ## skill encoder
@@ -121,6 +157,7 @@ class StateConditioned_Model(BaseModule):
                 "metric" : "skill_metric"
             }
         }
+
 
         # Losses
         self.loss_fns = {
@@ -248,8 +285,14 @@ class StateConditioned_Model(BaseModule):
         #     prior_mean = prior_mean[non_branching_indices].mean()
         #     prior_std = prior_std[non_branching_indices].mean()
 
+
+
         # ----------- Add -------------- # 
         loss = recon + reg * self.reg_beta  + prior
+
+        if "recon_state" in self.outputs.keys():
+            recon_state = self.loss_fn('recon')(self.outputs['states_hat'], self.outputs['states']) # ? 
+            loss = loss + recon_state
 
 
         self.loss_dict = {           
@@ -257,8 +300,10 @@ class StateConditioned_Model(BaseModule):
             "Rec_skill" : recon.item(),
             "Reg" : reg.item(),
             "Prior" : prior.item(),
-            "skill_metric" : recon.item() + reg.item() * self.reg_beta
+            "skill_metric" : recon.item() + reg.item() * self.reg_beta,
+            "recon_state" : recon_state.item() if "recon_state" in self.outputs.keys() else 0
         }       
+
 
         return loss
     
