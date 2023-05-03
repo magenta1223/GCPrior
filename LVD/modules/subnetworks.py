@@ -3,6 +3,59 @@ import torch
 import torch.nn as nn
 from ..modules.base import SequentialBuilder, ContextPolicyMixin
 from ..utils import *
+from ..configs.build.configs import Linear_Config
+
+
+class MultiModalEncoder(nn.Module):
+    """
+    1. maze의 경우 multimodal 입력이 들어옴. 이를 기존 single modal 입력과 같은 방식으로처리하기 위함. 
+    2. 입력 state를 기준에 따라 분리
+    3. 별도의 encoder에 forward
+    4. concat
+    5. 이 역과정을 decoder에서 수행. 
+    """
+    
+    def __init__(self, config):
+        super(MultiModalEncoder, self).__init__()
+        
+        self.state_dim = 4
+        visual_config = {**config}
+        visual_config['in_feature'] = 1024 # 32 x 32
+        self.vector_enc = SequentialBuilder(Linear_Config(config))
+        self.visual_enc = SequentialBuilder(Linear_Config(visual_config))
+
+    def forward(self, x):
+
+        vec_emb = self.vector_enc(x[:, :self.state_dim])
+        visual_emb = self.visual_enc(x[:, self.state_dim:])
+        
+        return torch.cat(( vec_emb, visual_emb), dim = -1)
+
+
+class MultiModalDecoder(nn.Module):
+    def __init__(self, config):
+        super(MultiModalDecoder, self).__init__()
+
+        visual_config = {**config}
+        visual_config['out_dim'] = 1024 # 32 x 32
+        self.vector_dec = SequentialBuilder(Linear_Config(config))
+        self.visual_dec = SequentialBuilder(Linear_Config(visual_config))
+
+    def forward(self, x, rollout = False):
+        vec_emb, visual_emb = x.chunk(2, -1)
+        vec_pred = self.vector_dec(vec_emb)
+        visual_pred = torch.sigmoid(self.visual_dec(visual_emb)) # binary image
+        
+        if rollout:
+            visual_pred = torch.where(visual_pred >= 0.5, 1, 0)
+
+        return torch.cat(( vec_pred, visual_pred), dim = -1)
+
+
+
+
+
+
 
 class InverseDynamicsMLP(SequentialBuilder):
     def __init__(self, config):

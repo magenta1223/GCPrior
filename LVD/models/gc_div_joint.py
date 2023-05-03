@@ -30,11 +30,13 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         bias = True
         dropout = 0
 
-        if self.env_name == "maze":
-            self.state_dim = self.state_dim + self.latent_env_dim
-            visual_ae = torch.load(self.visual_encoder_path)['model']
-            self.visual_encoder = visual_ae.state_encoder.eval()
-            self.visual_decoder = visual_ae.state_decoder.eval()
+        # if self.env_name == "maze":
+        #     # self.state_dim = self.state_dim + self.latent_env_dim
+
+        #     self.state_dim = self.state_dim + 32 * 32
+        #     visual_ae = torch.load(self.visual_encoder_path)['model']
+        #     self.visual_encoder = visual_ae.state_encoder.eval()
+        #     self.visual_decoder = visual_ae.state_decoder.eval()
 
         # self.init_grad_clip_step = 100
 
@@ -88,14 +90,16 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         if self.env_name == "maze":
             print("here?")
 
-            self.latent_state_dim = self.state_dim
-            print(self.state_dim,  self.latent_env_dim)
-            state_encoder = nn.Identity()
-            state_decoder = nn.Identity()
+            self.latent_state_dim *= 2
+            state_encoder = MultiModalEncoder(state_encoder_config)
+            state_decoder = MultiModalDecoder(state_decoder_config)
         else:
             state_encoder = SequentialBuilder(Linear_Config(state_encoder_config))
             state_decoder = SequentialBuilder(Linear_Config(state_decoder_config))
         
+        # state_encoder = SequentialBuilder(Linear_Config(state_encoder_config))
+        # state_decoder = SequentialBuilder(Linear_Config(state_decoder_config))
+
 
         # ----------------- SUBMODULES ----------------- #
 
@@ -223,7 +227,8 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             # architecture parameters
             ema_update = True,
             tanh = self.tanh,
-            sample_interval = self.sample_interval
+            sample_interval = self.sample_interval,
+            env_name = self.env_name
         )
 
         ### ----------------- Skill Enc / Dec Modules ----------------- ###
@@ -449,16 +454,17 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
 
 
 
-    def forward(self, states, actions, G, imgs):
+    def forward(self, states, actions, G):
         
         N, T, _ = states.shape
 
-        if self.env_name == "maze":
-            # imgs  : N, T, 32, 32
-            N, T = imgs.shape[:2]
-            with torch.no_grad():
-                visual_embedidng = self.visual_encoder(imgs.view(N * T, -1).float()).view(N, T, -1) # N, T ,32
-                states = torch.cat((states, visual_embedidng), axis = -1)
+        # if self.env_name == "maze":
+        #     # # imgs  : N, T, 32, 32
+        #     N, T = imgs.shape[:2]
+        #     # with torch.no_grad():
+        #     #     visual_embedidng = self.visual_encoder(imgs.view(N * T, -1).float()).view(N, T, -1) # N, T ,32
+        #     #     states = torch.cat((states, visual_embedidng), axis = -1)
+        #     states = torch.cat((  states, imgs.view(N, T, -1)   ), dim = -1)
         
 
 
@@ -469,9 +475,15 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
 
         # # skill prior
         # self.outputs =  self.inverse_dynamics_policy(inputs, "train")
+        
+        if self.env_name == "maze":
+            skill_states = states[:,:,:4].clone()
+        else:
+            skill_states = states.clone()
+
 
         # skill Encoder 
-        enc_inputs = torch.cat( (states.clone()[:,:-1], actions), dim = -1)
+        enc_inputs = torch.cat( (skill_states.clone()[:,:-1], actions), dim = -1)
         q = self.skill_encoder(enc_inputs)[:, -1]
         q_clone = q.clone().detach()
         q_clone.requires_grad = False
@@ -494,7 +506,7 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             z = skill.clone().detach()
         
         # Skill Decoder 
-        decode_inputs = self.dec_input(states.clone(), skill, self.Hsteps)
+        decode_inputs = self.dec_input(skill_states.clone(), skill, self.Hsteps)
         N, T = decode_inputs.shape[:2]
         skill_hat = self.skill_decoder(decode_inputs.view(N * T, -1)).view(N, T, -1)
         
@@ -606,14 +618,22 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
     
     @torch.no_grad()
     def rollout(self, inputs):
-        if self.env_name == "maze":
-            # imgs  : N, T, 32, 32
-            states, imgs = inputs['states'], inputs['imgs']
-            N, T =imgs.shape[:2]
-            with torch.no_grad():
-                visual_embedidng = self.visual_encoder(imgs.view(N * T, -1).float()).view(N, T, -1) # N, T ,32
-                states = torch.cat((states, visual_embedidng), axis = -1)
-                inputs['states'] = states
+        # if self.env_name == "maze":
+        #     # imgs  : N, T, 32, 32
+        #     states, imgs = inputs['states'], inputs['imgs']
+        #     N, T =imgs.shape[:2]
+        #     with torch.no_grad():
+        #         visual_embedidng = self.visual_encoder(imgs.view(N * T, -1).float()).view(N, T, -1) # N, T ,32
+        #         states = torch.cat((states, visual_embedidng), axis = -1)
+        #         inputs['states'] = states
+
+        # if self.env_name == "maze":
+        #     # # imgs  : N, T, 32, 32
+        #     states, imgs = inputs['states'], inputs['imgs']
+        #     N, T = imgs.shape[:2]
+        #     states = torch.cat((  states, imgs.view(N, T, -1)   ), dim = -1)
+        #     inputs['states'] = states
+
 
         result = self.inverse_dynamics_policy(inputs, self.rollout_method)
 
@@ -621,20 +641,18 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             # indexing outlier 
             c = result['c']
             states_rollout = result['states_rollout']
-            skill_sampled = result['skill_sampled']         
+            skill_sampled = result['skill_sampled']      
+            
+            if self.env_name == "maze": 
+                dec_inputs = self.dec_input(states_rollout[:, :, :4], skill_sampled, states_rollout.shape[1])
+            else:
+                dec_inputs = self.dec_input(states_rollout, skill_sampled, states_rollout.shape[1])
 
-            dec_inputs = self.dec_input(states_rollout, skill_sampled, states_rollout.shape[1])
             N, T, _ = dec_inputs.shape
             actions_rollout = self.skill_decoder(dec_inputs.view(N * T, -1)).view(N, T, -1)
             
-            if self.env_name == "maze":
-                states_novel = torch.cat((inputs['states'][:, :c+1], states_rollout), dim = 1)
-                states, visual_features = states_novel[:, :, :self.n_obj], states_novel[:, :, self.n_obj:]
-                N, T = visual_features.shape[:2]
-                imgs = self.visual_decoder(visual_features.view(N * T, -1)).view(N, T, -1)
-                states_novel = torch.cat((states, imgs), dim = -1)
-            else:
-                states_novel = torch.cat((inputs['states'][:, :c+1], states_rollout), dim = 1)
+
+            states_novel = torch.cat((inputs['states'][:, :c+1], states_rollout), dim = 1)
             actions_novel = torch.cat((inputs['actions'][:, :c], actions_rollout), dim = 1)
             
             self.loss_dict['states_novel'] = states_novel[inputs['rollout']].detach().cpu()
@@ -655,9 +673,9 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         
 
 
-    def __main_network__(self, states, actions, G, rollout, imgs, validate = False):
+    def __main_network__(self, states, actions, G, rollout, validate = False):
 
-        self(states, actions, G, imgs)
+        self(states, actions, G)
         loss = self.compute_loss(actions)
         self.loss_dict['KL_threshold'] = self.KL_threshold
 
@@ -675,7 +693,6 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         rollout_inputs = dict(
             states = states,
             actions = actions,
-            imgs = imgs,
             rollout = rollout, 
         )
 
@@ -692,16 +709,11 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         # self.__main_network__(states, actions, G, rollout)
 
         # inputs & targets       
-        if self.env_name == "maze":
 
-            states, actions, G, imgs, rollout = batch.values()
-            states, actions, G, imgs, rollout = states.cuda(), actions.cuda(), G.cuda(),  imgs.cuda(), rollout.cuda()
-        else:
-            states, actions, G, rollout = batch.values()
-            states, actions, G, rollout = states.cuda(), actions.cuda(), G.cuda(), rollout.cuda()
-            imgs = None
+        states, actions, G, rollout = batch.values()
+        states, actions, G, rollout = states.float().cuda(), actions.cuda(), G.cuda(), rollout.cuda()
 
-        self.__main_network__(states, actions, G, rollout, imgs)
+        self.__main_network__(states, actions, G, rollout)
 
 
 
@@ -720,15 +732,10 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         # self.__main_network__(states, actions, G, rollout, validate= True)
 
 
-        if self.env_name == "maze":
-            states, actions, G, imgs, rollout = batch.values()
-            states, actions, G, imgs, rollout = states.cuda(), actions.cuda(), G.cuda(),  imgs.cuda(), rollout.cuda()
-        else:
-            states, actions, G, rollout = batch.values()
-            states, actions, G, rollout = states.cuda(), actions.cuda(), G.cuda(), rollout.cuda()
-            imgs = None
+        states, actions, G, rollout = batch.values()
+        states, actions, G, rollout = states.cuda(), actions.cuda(), G.cuda(), rollout.cuda()
 
-        self.__main_network__(states, actions, G, rollout, imgs, validate= True)
+        self.__main_network__(states, actions, G, rollout, validate= True)
 
 
         self.get_metrics()

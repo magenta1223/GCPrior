@@ -418,19 +418,19 @@ class Maze_AgentCentric_GoalConditioned_Diversity(Maze_AgentCentric_StateConditi
         G = deepcopy(states[goal_idx])
         # trajectory
         # states = seq_skill.states[start_idx : start_idx+self.subseq_len, :self.n_obj + self.n_env]
-        states = states[start_idx : start_idx+self.subseq_len, :self.state_dim]
+        states = states[start_idx : start_idx+self.subseq_len, :self.n_obj]
         actions = actions[start_idx:start_idx+self.subseq_len-1]
-        images = images[start_idx : start_idx + self.subseq_len]
+        images = images[start_idx : start_idx + self.subseq_len].reshape(self.subseq_len, -1)
         # if self.only_proprioceptive:
         #     states = states[:, :self.n_obj]
         
         # G = deepcopy(seq_skill.states[goal_idx])[self.n_obj:self.n_obj + self.n_goal]
 
+
         output = edict(
-            states=states,
+            states= np.concatenate((states, images), axis = -1),
             actions=actions,
             G = G,
-            images = images,
             rollout = True
             # rollout = True if start_idx < 280 - self.plan_H else False
         )
@@ -447,14 +447,13 @@ class Maze_AgentCentric_GoalConditioned_Diversity(Maze_AgentCentric_StateConditi
             # images = np.array(f['images'])[: self.subseq_len]
             # if self.only_proprioceptive:
             #     states = states[:, :self.n_obj]
-            states = states_images[:, :self.n_obj]
-            images = states_images[:, self.n_obj:].reshape(-1, 32,32)
+            # states = states_images[:, :self.n_obj]
+            # images = states_images[:, self.n_obj:].reshape(-1, 32,32)
 
             output = edict(
-                states = states[:self.subseq_len],
+                states = states_images[:self.subseq_len],
                 actions = actions[:self.subseq_len-1],
-                G = deepcopy(states[-1]),
-                images = images[: self.subseq_len],
+                G = deepcopy(states_images[-1][:self.n_obj] ),
                 rollout = False
                 # rollout = True if start_idx < 280 - self.plan_H else False
             )

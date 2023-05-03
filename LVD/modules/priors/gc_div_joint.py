@@ -306,7 +306,7 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
             
         hts_rollout = torch.stack(hts_rollout, dim = 1)
         N, T, _ = hts_rollout.shape
-        states_rollout = self.target_state_decoder( hts_rollout.view(N * T, -1) ).view(N, T, -1)
+        states_rollout = self.target_state_decoder( hts_rollout.view(N * T, -1), rollout = True ).view(N, T, -1)
 
         result =  {
             "c" : c,
