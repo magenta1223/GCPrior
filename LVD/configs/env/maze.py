@@ -6,6 +6,7 @@ from ...data.maze.maze_data_loader import *
 MODE_DICT = {
     # "sc" : Maze_StateConditioned,
     "sc" : Maze_AgentCentric_StateConditioned,
+    "gc_div_joint" : Maze_AgentCentric_GoalConditioned_Diversity,
     "wae" : Maze_AEDataset
 }
 

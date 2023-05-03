@@ -334,7 +334,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
 
             if (episode_i + 1) % args.render_period == 0:
                 if env_name == "maze":
-                    log[f'{task_name}_policy_vis'] = draw_maze(plt.gca(), env, list(self.buffer.episodes)[-args.render_period:])
+                    log[f'{task_name}_policy_vis'] = draw_maze(plt.gca(), env, list(self.buffer.episodes)[-20:])
                 else:
                     imgs = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
                     imgs = np.array(imgs).transpose(0, 3, 1, 2)

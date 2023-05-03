@@ -201,7 +201,7 @@ class D4RL_GoalConditioned_Diversity_Dataset(D4RL_GoalConditionedDataset):
         else:
             self.state_dim = self.n_obj + self.n_env
         
-        print("STATE DIM", self.state_dim)
+        # print("STATE DIM", self.state_dim)
         
         # 10 step 이후에 skill dynamics로 추론해 error 누적 최소화 
         self.buffer_prev = Offline_Buffer(state_dim= self.state_dim, action_dim= self.action_dim, trajectory_length = 19, max_size= int(1e5))
@@ -211,18 +211,14 @@ class D4RL_GoalConditioned_Diversity_Dataset(D4RL_GoalConditionedDataset):
         
         # rollout method
         skill_length = self.subseq_len - 1
-        if self.rollout_method == "rollout":
-            # 0~11 : 1 skill
-            # 12~  : 1skill per timestep
-            # total 100 epsiode planning
-            # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 19, max_size= 1024)
-            
-            rollout_length = skill_length + ((self.plan_H - skill_length) // skill_length)
-            self.buffer_now = Offline_Buffer(state_dim= self.state_dim, action_dim= self.action_dim, trajectory_length = rollout_length, max_size= 1024)
+        # 0~11 : 1 skill
+        # 12~  : 1skill per timestep
+        # total 100 epsiode planning
+        # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 19, max_size= 1024)
+        
+        rollout_length = skill_length + ((self.plan_H - skill_length) // skill_length)
+        self.buffer_now = Offline_Buffer(state_dim= self.state_dim, action_dim= self.action_dim, trajectory_length = rollout_length, max_size= 1024)
 
-        else:
-            rollout_length = 2 * skill_length + ((self.plan_H - skill_length * 2) // skill_length)
-            self.buffer_now = Offline_Buffer(state_dim= self.state_dim, action_dim= self.action_dim, trajectory_length = rollout_length, max_size= 1024)
 
 
 

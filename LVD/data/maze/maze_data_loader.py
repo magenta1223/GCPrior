@@ -251,7 +251,24 @@ class Maze_AgentCentric_StateConditioned(Dataset):
         self.num = 0
 
     def __getitem__(self, idx):
-        return self.file_paths[idx]
+        # return self.file_paths[idx]
+
+        file_path = self.file_paths[idx]
+
+        with h5py.File(file_path, 'r') as f:
+
+            states = np.array(f['states'])
+
+            start_idx = np.random.randint(0, states.shape[0] - self.subseq_len - 1)
+
+            data = {
+                'states': states[start_idx : start_idx + self.subseq_len],
+                'actions': np.array(f['actions'])[start_idx : start_idx + self.subseq_len -1],
+                'images': np.array(f['images'])[start_idx : start_idx + self.subseq_len]
+            }
+
+
+        return data
     
     def __len__(self):
         # return len(self.file_paths)
@@ -305,7 +322,7 @@ class Maze_AgentCentric_StateConditioned(Dataset):
             n_repeat=1,
             pin_memory=True, # self.device == 'cuda'
             # pin_memory= False, # self.device == 'cuda'
-            collate_fn = self.collate_fn,
+            # collate_fn = self.collate_fn,
             worker_init_fn=lambda x: np.random.seed(np.random.randint(65536) + x)
             )
         # dataloader.set_sampler(SequentialSampler(self))
@@ -313,6 +330,138 @@ class Maze_AgentCentric_StateConditioned(Dataset):
         return dataloader
 
 
+class Maze_AgentCentric_GoalConditioned_Diversity(Maze_AgentCentric_StateConditioned):
+    def __init__(self, data_dir, data_conf, phase, resolution=None, shuffle=True, dataset_size=-1, *args, **kwargs):
+        super().__init__(data_dir, data_conf, phase, resolution, shuffle, dataset_size, *args, **kwargs)
+        self.__mode__ = "skill_learning"
+
+        self.__getitem_methods__ = {
+            "skill_learning" : self.__skill_learning__,
+            "with_buffer" : self.__skill_learning_with_buffer__,
+        }
+
+                
+        # 10 step 이후에 skill dynamics로 추론해 error 누적 최소화 
+        self.buffer_prev = Offline_Buffer(state_dim= self.state_dim + 32 * 32, action_dim= self.action_dim, trajectory_length = 19, max_size= 1024)
+        # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 19, max_size= int(1e5))
+        # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 19, max_size= 1024)
+        # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 23, max_size= 1024)
+        
+        # rollout method
+        skill_length = self.subseq_len - 1
+        # 0~11 : 1 skill
+        # 12~  : 1skill per timestep
+        # total 100 epsiode planning
+        # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 19, max_size= 1024)
+        
+        rollout_length = skill_length + ((self.plan_H - skill_length) // skill_length)
+        self.buffer_now = Offline_Buffer(state_dim= self.state_dim + 32 * 32, action_dim= self.action_dim, trajectory_length = rollout_length, max_size= 1024)
+
+
+    def set_mode(self, mode):
+        assert mode in ['skill_learning', 'with_buffer']
+        self.__mode__ = mode 
+        print(f"MODE : {self.mode}")
+    
+    @property
+    def mode(self):
+        return self.__mode__
+
+    def sample_indices(self, states, min_idx = 0): 
+        """
+        return :
+            - start index of sub-trajectory
+            - goal index for hindsight relabeling
+        """
+
+        goal_max_index = len(states) - 1 # 마지막 state가 이상함. 
+        start_idx = np.random.randint(min_idx, states.shape[0] - self.subseq_len - 1)
+        
+        if self.last:
+            return start_idx, goal_max_index
+
+        # start + sub_seq_len 이후 중 아무거나 하나
+        goal_index = np.random.randint(start_idx + self.subseq_len, goal_max_index)
+
+        # 적절한 planning을 위해 relabeled 
+
+        return start_idx, goal_index
+
+    def enqueue(self, states, actions):
+        self.buffer_now.enqueue(states, actions)
+
+    def update_buffer(self):
+        print("BUFFER RESET!!! ")        
+        self.buffer_prev.copy_from(self.buffer_now)
+        # self.buffer_now.reset()
+
+    def __getitem__(self, index):
+        # mode에 따라 다른 sampl 
+        return self.__getitem_methods__[self.mode](index)
+        
+    def __skill_learning__(self, index):
+
+        file_path = self.file_paths[index]
+
+        with h5py.File(file_path, 'r') as f:
+
+            states = np.array(f['states'])
+            actions = np.array(f['actions'])
+            images = np.array(f['images'])
+
+        start_idx, goal_idx = self.sample_indices(states)
+
+        assert start_idx < goal_idx, "Invalid"
+
+
+        # hindsight relabeling 
+        G = deepcopy(states[goal_idx])
+        # trajectory
+        # states = seq_skill.states[start_idx : start_idx+self.subseq_len, :self.n_obj + self.n_env]
+        states = states[start_idx : start_idx+self.subseq_len, :self.state_dim]
+        actions = actions[start_idx:start_idx+self.subseq_len-1]
+        images = images[start_idx : start_idx + self.subseq_len]
+        # if self.only_proprioceptive:
+        #     states = states[:, :self.n_obj]
+        
+        # G = deepcopy(seq_skill.states[goal_idx])[self.n_obj:self.n_obj + self.n_goal]
+
+        output = edict(
+            states=states,
+            actions=actions,
+            G = G,
+            images = images,
+            rollout = True
+            # rollout = True if start_idx < 280 - self.plan_H else False
+        )
+
+        return output
+
+    def __skill_learning_with_buffer__(self, index):
+
+        if np.random.rand() < self.mixin_ratio:
+            # hindsight relabeling 
+            # trajectory
+            # states = seq_skill.states[start_idx : start_idx+self.subseq_len, :self.n_obj + self.n_env]
+            states_images, actions = self.buffer_now.sample()
+            # images = np.array(f['images'])[: self.subseq_len]
+            # if self.only_proprioceptive:
+            #     states = states[:, :self.n_obj]
+            states = states_images[:, :self.n_obj]
+            images = states_images[:, self.n_obj:].reshape(-1, 32,32)
+
+            output = edict(
+                states = states[:self.subseq_len],
+                actions = actions[:self.subseq_len-1],
+                G = deepcopy(states[-1]),
+                images = images[: self.subseq_len],
+                rollout = False
+                # rollout = True if start_idx < 280 - self.plan_H else False
+            )
+
+            return output
+        else:
+            return self.__skill_learning__(index)
 
 
 
