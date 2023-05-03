@@ -43,8 +43,9 @@ class StateConditioned_Prior(BaseModule):
             states_repr = self.state_encoder(states.view(N * T, -1))
             states_hat = self.state_decoder(states_repr).view(N, T, -1)
 
-            states_fixed = torch.randn(512, D).cuda()
-
+            state_emb = states_repr.view(N, T, -1)[:, 0]
+            states_fixed = torch.randn(512, *state_emb.shape[1:]).cuda()
+            
             prior = self.prior_policy.dist(states_repr.clone().detach().view(N, T, -1)[:, 0])
             return dict(
                 prior = prior,
