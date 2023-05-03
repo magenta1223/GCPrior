@@ -260,11 +260,12 @@ class Maze_AgentCentric_StateConditioned(Dataset):
             states = np.array(f['states'])
 
             start_idx = np.random.randint(0, states.shape[0] - self.subseq_len - 1)
+            states = states[start_idx : start_idx + self.subseq_len]
+            images = np.array(f['images'])[start_idx : start_idx + self.subseq_len].reshape(self.subseq_len, -1)
 
             data = {
-                'states': states[start_idx : start_idx + self.subseq_len],
+                'states': np.concatenate((states, images), axis = -1),
                 'actions': np.array(f['actions'])[start_idx : start_idx + self.subseq_len -1],
-                'images': np.array(f['images'])[start_idx : start_idx + self.subseq_len]
             }
 
 
@@ -325,7 +326,7 @@ class Maze_AgentCentric_StateConditioned(Dataset):
             n_repeat=1,
             pin_memory=True, # self.device == 'cuda'
             # pin_memory= False, # self.device == 'cuda'
-            collate_fn = self.collate_fn,
+            # collate_fn = self.collate_fn,
             worker_init_fn=lambda x: np.random.seed(np.random.randint(65536) + x)
             )
         # dataloader.set_sampler(SequentialSampler(self))
