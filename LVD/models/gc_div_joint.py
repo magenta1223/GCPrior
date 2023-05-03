@@ -168,7 +168,8 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
 
         ### ----------------- posterior modules ----------------- ###
         encoder_config = edict(
-            in_feature = self.action_dim + self.state_dim,
+            # in_feature = self.action_dim + self.state_dim,
+            in_feature = self.action_dim + 1028,
             # in_feature = self.action_dim + self.latent_state_dim,
             hidden_dim = self.hidden_dim,
             out_dim = self.latent_dim * 2,
@@ -186,11 +187,12 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
 
         decoder_config = edict(
             n_blocks = self.n_Layers, #self.n_processing_layers,
-            state_dim = self.state_dim,
-            # state_dim = self.latent_state_dim,
             z_dim = self.latent_dim, 
-            in_feature =  self.state_dim + self.latent_dim, # state_dim + latent_dim 
-            # in_feature = self.latent_state_dim + self.latent_dim,
+            # state_dim = self.state_dim,
+            # in_feature =  self.state_dim + self.latent_dim, # state_dim + latent_dim 
+            state_dim = 1028,
+            in_feature =  1028 + self.latent_dim, # state_dim + latent_dim
+
             hidden_dim = self.hidden_dim, 
             # out_dim = self.action_dim,
             out_dim = self.action_dim,
@@ -477,7 +479,9 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         # self.outputs =  self.inverse_dynamics_policy(inputs, "train")
         
         if self.env_name == "maze":
-            skill_states = states[:,:,:4].clone()
+            # skill_states = states[:,:,:4].clone()
+            skill_states = states.clone()
+
         else:
             skill_states = states.clone()
 
@@ -643,10 +647,12 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             states_rollout = result['states_rollout']
             skill_sampled = result['skill_sampled']      
             
-            if self.env_name == "maze": 
-                dec_inputs = self.dec_input(states_rollout[:, :, :4], skill_sampled, states_rollout.shape[1])
-            else:
-                dec_inputs = self.dec_input(states_rollout, skill_sampled, states_rollout.shape[1])
+            # if self.env_name == "maze": 
+            #     dec_inputs = self.dec_input(states_rollout[:, :, :4], skill_sampled, states_rollout.shape[1])
+            # else:
+            #     dec_inputs = self.dec_input(states_rollout, skill_sampled, states_rollout.shape[1])
+            dec_inputs = self.dec_input(states_rollout, skill_sampled, states_rollout.shape[1])
+
 
             N, T, _ = dec_inputs.shape
             actions_rollout = self.skill_decoder(dec_inputs.view(N * T, -1)).view(N, T, -1)
@@ -733,7 +739,7 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
 
 
         states, actions, G, rollout = batch.values()
-        states, actions, G, rollout = states.cuda(), actions.cuda(), G.cuda(), rollout.cuda()
+        states, actions, G, rollout = states.float().cuda(), actions.cuda(), G.cuda(), rollout.cuda()
 
         self.__main_network__(states, actions, G, rollout, validate= True)
 
