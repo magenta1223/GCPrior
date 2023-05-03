@@ -302,8 +302,8 @@ class StateConditioned_Model(BaseModule):
 
         return loss
     
-    def __main_network__(self, states, actions, imgs, validate = False):
-        self(states, actions, imgs)
+    def __main_network__(self, states, actions, validate = False):
+        self(states, actions)
         loss = self.compute_loss(actions)
 
         if not validate:
@@ -319,15 +319,11 @@ class StateConditioned_Model(BaseModule):
 
     def optimize(self, batch, e):
         # inputs & targets       
-        if self.env_name == "maze":
-            states, actions, imgs = batch.values()
-            states, actions, imgs = states.cuda(), actions.cuda(), imgs.cuda()
-        else:
-            states, actions = batch.values()
-            states, actions = states.cuda(), actions.cuda()
-            imgs = None
 
-        self.__main_network__(states, actions, imgs)
+        states, actions = batch.values()
+        states, actions = states.float().cuda(), actions.cuda()
+
+        self.__main_network__(states, actions)
 
         with torch.no_grad():
             self.get_metrics()
@@ -336,15 +332,11 @@ class StateConditioned_Model(BaseModule):
     
     def validate(self, batch, e):
         # inputs & targets       
-        if self.env_name == "maze":
-            states, actions, imgs = batch.values()
-            states, actions, imgs = states.cuda(), actions.cuda(), imgs.cuda()
-        else:
-            states, actions = batch.values()
-            states, actions = states.cuda(), actions.cuda()
-            imgs = None
 
-        self.__main_network__(states, actions, imgs, validate= True)
+        states, actions = batch.values()
+        states, actions = states.float().cuda(), actions.cuda()
+
+        self.__main_network__(states, actions, validate= True)
 
         with torch.no_grad():
             self.get_metrics()

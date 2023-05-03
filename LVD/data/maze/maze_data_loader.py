@@ -289,12 +289,15 @@ class Maze_AgentCentric_StateConditioned(Dataset):
             states = np.array(f['states'])
 
             start_idx = np.random.randint(0, states.shape[0] - self.subseq_len - 1)
+            states = states[start_idx : start_idx + self.subseq_len]
+            images = np.array(f['images'])[start_idx : start_idx + self.subseq_len].reshape(self.subseq_len, -1)
 
             data = {
-                'states': states[start_idx : start_idx + self.subseq_len],
+                'states': np.concatenate((states, images), axis = -1),
                 'actions': np.array(f['actions'])[start_idx : start_idx + self.subseq_len -1],
-                'images': np.array(f['images'])[start_idx : start_idx + self.subseq_len]
             }
+
+
 
         return data
     
@@ -302,11 +305,11 @@ class Maze_AgentCentric_StateConditioned(Dataset):
         data = [self.load_data(path) for path in batch]
         states = [d['states'] for d in data]
         actions = [d['actions'] for d in data]
-        images = [d['images'] for d in data]
+        # images = [d['images'] for d in data]
         return {
             'states': torch.from_numpy(np.stack(states)),
             'actions': torch.from_numpy(np.stack(actions)),
-            'images': torch.from_numpy(np.stack(images))
+            # 'images': torch.from_numpy(np.stack(images))
         }
     
     def get_data_loader(self, batch_size, n_repeat, num_workers = 8):
