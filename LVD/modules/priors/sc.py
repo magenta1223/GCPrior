@@ -38,12 +38,30 @@ class StateConditioned_Prior(BaseModule):
 
         # -------------- State Enc / Dec -------------- #
 
+        if hasattr(self, "state_encoder"):
+            N, T, D = states.shape
+            states_repr = self.state_encoder(states.view(N * T, -1))
+            states_hat = self.state_decoder(states_repr).view(N, T, -1)
+
+            states_fixed = torch.randn(512, D).cuda()
+
+            prior = self.prior_policy.dist(states_repr.clone().detach().view(N, T, -1)[:, 0])
+            return dict(
+                prior = prior,
+                states = states,
+                states_repr = states_repr,
+                states_hat = states_hat,
+                states_fixed_dist = states_fixed
+            )
+
+
+        else:
             
-        prior = self.prior_policy.dist(states[:, 0])
-        return dict(
-            prior = prior,
-            states = states,
-        )
+            prior = self.prior_policy.dist(states[:, 0])
+            return dict(
+                prior = prior,
+                states = states,
+            )
 
     def __eval__(self, inputs, *args):
         """
@@ -52,17 +70,23 @@ class StateConditioned_Prior(BaseModule):
             -  states 
         return: state conditioned prior, and detached version for metric
         """
-        
         states = inputs['states']
         if len(states.shape) < 2:
-            states = states.unsqueeze(0)
+            states = states.unsqueeze(0)     
+
+        if hasattr(self, "state_encoder"):
+            states_repr = self.state_encoder(states)
+
+            prior = self.prior_policy.dist(states_repr)
+            return dict(
+                prior = prior,
+            )
 
 
-        # 임시로.. state dim 세팅해서 씁시다. 
-        
-        states = states[:, :self.prior_policy.in_feature]
+        else:            
+            states = states[:, :self.prior_policy.in_feature]
 
-        prior = self.prior_policy.dist(states)
-        return dict(
-            prior = prior,
-        )
+            prior = self.prior_policy.dist(states)
+            return dict(
+                prior = prior,
+            )
