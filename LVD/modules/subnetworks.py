@@ -19,13 +19,14 @@ class MultiModalEncoder(nn.Module):
         super(MultiModalEncoder, self).__init__()
         
         self.state_dim = 4
+        
         visual_config = {**config}
         visual_config['in_feature'] = 1024 # 32 x 32
+        config['out_dim'] = 4
         self.vector_enc = SequentialBuilder(Linear_Config(config))
         self.visual_enc = SequentialBuilder(Linear_Config(visual_config))
 
     def forward(self, x):
-
         vec_emb = self.vector_enc(x[:, :self.state_dim])
         visual_emb = self.visual_enc(x[:, self.state_dim:])
         
@@ -38,11 +39,16 @@ class MultiModalDecoder(nn.Module):
 
         visual_config = {**config}
         visual_config['out_dim'] = 1024 # 32 x 32
+
+        config['in_feature'] = 4
+        self.state_emb_dim = 4
+
         self.vector_dec = SequentialBuilder(Linear_Config(config))
         self.visual_dec = SequentialBuilder(Linear_Config(visual_config))
 
     def forward(self, x, rollout = False):
-        vec_emb, visual_emb = x.chunk(2, -1)
+        # vec_emb, visual_emb = x.chunk(2, -1)
+        vec_emb, visual_emb = x[:, :self.state_emb_dim], x[:, self.state_emb_dim:]
         vec_pred = self.vector_dec(vec_emb)
         visual_pred = torch.sigmoid(self.visual_dec(visual_emb)) # binary image
         

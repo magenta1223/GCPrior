@@ -71,6 +71,7 @@ def main():
     # diversity controller
     # parser.add_argument("--sample_interval", default= 1, type = int)
 
+    parser.add_argument("--reg_beta", default = 0.0005, type = float, help = "Regularization Strength for training Beta-VAE SKILL enc/dec.")
 
     args = edict(vars(parser.parse_args()))
 
@@ -90,7 +91,7 @@ def main():
     _, val_loader = get_loader("val", **args)
     # _, test_loader = get_loader("test", **args) # diversity에 의한 성능 체크 용도. 실제 trainset은 어떻게 되는건지? 
 
-
+    train_conf.reg_beta = args.reg_beta
     
     print(train_conf)
 

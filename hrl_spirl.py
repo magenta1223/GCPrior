@@ -140,8 +140,6 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     print(tasks)
     
     if env_name == "maze":
-        # set visual encoder in env
-        env.set_visual_encoder(model.visual_encoder)
 
         # init_loc_candidate = np.array(env.reset_locations)
         # goal_loc = tasks[1]
@@ -198,9 +196,6 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     #     # prior_state_dim = 39
     #     state_dim = 4
     #     prior_state_dim = 4
-
-    
-
 
     latent_dim = 10
     

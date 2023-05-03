@@ -41,7 +41,8 @@ class Maze_GC(MazeEnv):
     def __init__(self, size, seed, reward_type, done_on_completed, visual_encoder = None):
         if reward_type not in self.reward_types:
             raise f'reward_type should be one of {self.reward_types}, but {reward_type} is given'
-        self.visual_encoder = visual_encoder
+        # self.viewer_setup()
+
         super().__init__(size, seed, reward_type, done_on_completed)
         self.agent_centric_res = 32
         self.render_width = 32
@@ -80,12 +81,12 @@ class Maze_GC(MazeEnv):
         
 
         # Goal 후보를 찾아야.. 
-
+        self._viewers = {}
         self.viewer = self._get_viewer(mode = "rgb_array")
-        self.viewer_setup()
+        # self.viewer = self._get_viewer(mode = "rgb_array")
+        # self.viewer_setup()
 
-    def set_visual_encoder(self, visual_encoder):
-        self.visual_encoder = visual_encoder
+
 
 
     @contextmanager
@@ -107,25 +108,13 @@ class Maze_GC(MazeEnv):
         qvel = self.init_qvel + self.np_random.randn(self.model.nv) * .1
         self.set_state(qpos, qvel)
         
-        if self.visual_encoder is not None:
-            with self.agent_centric_render():
-                img = self.sim.render(self.agent_centric_res, self.agent_centric_res, device_id=self.render_device) / 255
-
-
-            # img = self.render(mode = "rgb_array")
+        with self.agent_centric_render():
+            img = self.sim.render(self.agent_centric_res, self.agent_centric_res, device_id=self.render_device) / 255
             walls = np.abs(img - WALL).mean(axis=-1)
             grounds = np.minimum(np.abs(img - G1).mean(axis=-1), np.abs(img - G2).mean(axis=-1))
             img = np.stack((walls, grounds), axis=-1).argmax(axis=-1)
-            img = torch.from_numpy(img).view(-1).unsqueeze(0).cuda().float()
 
-
-            visual_embedidng = self.visual_encoder(img).detach().cpu()[0].numpy()
-            # states = np.concatenate((np.tile(self._get_obs(), 10), visual_embedidng, np.array(self._target) ), axis = 0 )
-            states = np.concatenate((self._get_obs(), visual_embedidng, np.array(self._target) ), axis = 0 )
-            return states
-
-        else:
-            return np.concatenate((self._get_obs(), np.array(self._target)), axis = 0)
+        return np.concatenate((self._get_obs(), img.reshape(-1), np.array(self._target)), axis = 0)
 
     @contextmanager
     def agent_centric_render(self):
@@ -142,7 +131,7 @@ class Maze_GC(MazeEnv):
         
 
 
-    def step(self, action):
+    def step(self, action, init = True):
 
 
 
@@ -158,24 +147,20 @@ class Maze_GC(MazeEnv):
         goal_dist = np.linalg.norm(ob[0:2] - self._target)
         completed = (goal_dist <= complete_threshold)
         done = self.done_on_completed and completed
-
-        if self.visual_encoder is not None:
-            with self.agent_centric_render():
-                img = self.sim.render(self.agent_centric_res, self.agent_centric_res, device_id=self.render_device)
-
-
-            walls = np.abs(img - WALL).mean(axis=-1)
-            grounds = np.minimum(np.abs(img - G1).mean(axis=-1), np.abs(img - G2).mean(axis=-1))
-            img = np.stack((walls, grounds), axis=-1).argmax(axis=-1)
-            img = torch.from_numpy(img).view(-1).unsqueeze(0).cuda().float()
-            # img = self.render(mode = "rgb_array")
-
-            visual_embedidng = self.visual_encoder(img).detach().cpu()[0].numpy()
-            ob = np.concatenate((ob, visual_embedidng, np.array(self._target) ), axis = 0 )
-
-        else:
-            ob =  np.concatenate((ob, np.array(self._target)), axis = 0)
         
+        if not init:
+            with self.agent_centric_render():
+                img = self.sim.render(self.agent_centric_res, self.agent_centric_res, device_id=self.render_device) / 255
+                walls = np.abs(img - WALL).mean(axis=-1)
+                grounds = np.minimum(np.abs(img - G1).mean(axis=-1), np.abs(img - G2).mean(axis=-1))
+                img = np.stack((walls, grounds), axis=-1).argmax(axis=-1)
+
+            ob = np.concatenate((self._get_obs(), img.reshape(-1), np.array(self._target)), axis = 0)
+        else:
+            ob = np.concatenate((self._get_obs(), np.array(self._target)), axis = 0)
+
+
+    
         
         if self.reward_type == 'sparse':
             reward = float(completed)

@@ -90,7 +90,7 @@ def goal_checker_maze(state):
 
     goal = state[-2:]
     complete_threshold = 1
-    goal_dist = np.linalg.norm(state[32:34] - goal)
+    goal_dist = np.linalg.norm(state[:2] - goal)
     completed = (goal_dist <= complete_threshold)
 
     return "Success" if completed else "Fail"
@@ -116,7 +116,8 @@ def get_goal_maze(state):
     # state[:9] = 0
     # return state[30:]
     # return state[4:]
-    return state[32 + 40:]
+    # return state[32 + 40:]
+    return np.concatenate((state[-2:], [0,0]), axis = 0)
 
 
 def goal_transform_kitchen(state):
@@ -148,7 +149,8 @@ def state_process_calvin(state):
 def state_process_maze(state):
     # return state[:21]
     # return state[:39]
-    return state[32:36]
+    # return state[32:36]
+    return state[:-2]
 
 
 

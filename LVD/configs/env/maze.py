@@ -50,7 +50,7 @@ class MazeEnvConfig(BaseDataConfig):
             mixin_start = 30,
             mixin_ratio = 0.05,
             plan_H = 100, 
-            epochs = 150, 
+            epochs = 70, 
             warmup_steps = 30,
 
             # Architecture
@@ -60,7 +60,7 @@ class MazeEnvConfig(BaseDataConfig):
             n_Layers = 5,
             hidden_dim = 128,
             # reg_beta = 0.01,
-            reg_beta = 0.005,
+            reg_beta = 0.01,
 
             
 

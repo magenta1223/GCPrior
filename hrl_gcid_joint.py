@@ -86,8 +86,10 @@ def train_policy_iter(collector, trainer, episode_i, batch_size, reuse_rate, pro
 def train_single_task(env, env_name, tasks, task_cls, args):
 
     # ------------- Set Task ------------- #
-
-    task_obj = task_cls(tasks)
+    if env_name == "maze":
+        task_obj = task_cls(tasks[0], tasks[1])
+    else:
+        task_obj = task_cls(tasks)
 
 
     ## ------------- Spirl Modules ------------- ##
@@ -103,11 +105,14 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     if env_name == "kitchen":
         state_dim = 30
     else:
-        state_dim =  21
+        state_dim =  1028
 
     latent_dim = 10
-    
-    learned_state_dim = model.inverse_dynamics_policy.state_encoder.out_dim
+    try:
+        learned_state_dim = model.inverse_dynamics_policy.state_encoder.out_dim
+    except:
+        learned_state_dim = model.latent_state_dim
+
 
     # ------------- Module Configuration ------------- #
     policy_config = edict(
@@ -212,8 +217,11 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     # config = {'batch_size': 256, 'reuse_rate': 256, "G" : G, "project_name" : args.wandb_project_name}
     config = {'batch_size': 256, 'reuse_rate': args.reuse_rate, "project_name" : args.wandb_project_name, "precollect" : args.precollect}
 
-    task_name = "-".join([ t[0].upper() for t in tasks])
-
+    if args.env_name != "maze":
+        task_name = "-".join([ t[0].upper() for t in tasks])
+    else:
+        # task_name = " to ".join([ f"[{t[0]},{t[1]}]" for t in tasks])
+        task_name = task_obj.__repr__()
 
     # env 제한 
     state_processor = StateProcessor(env_name= args.env_name)
