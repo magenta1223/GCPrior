@@ -205,7 +205,7 @@ class StateConditioned_Model(BaseModule):
             self.loss_dict['metric'] = self.loss_dict['Prior_S']
             
 
-    def forward(self, states, actions, imgs):
+    def forward(self, states, actions):
 
         
 
