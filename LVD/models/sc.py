@@ -285,7 +285,7 @@ class StateConditioned_Model(BaseModule):
         # ----------- Add -------------- # 
         loss = recon + reg * self.reg_beta  + prior
 
-        if "recon_state" in self.outputs.keys():
+        if "states_hat" in self.outputs.keys():
             recon_state = self.loss_fn('recon')(self.outputs['states_hat'], self.outputs['states']) # ? 
 
             z_tilde = self.outputs['states_repr']
@@ -301,8 +301,8 @@ class StateConditioned_Model(BaseModule):
             "Reg" : reg.item(),
             "Prior" : prior.item(),
             "skill_metric" : recon.item() + reg.item() * self.reg_beta,
-            "recon_state" : recon_state.item() if "recon_state" in self.outputs.keys() else 0,
-            "mmd_loss" : mmd_loss.item() if "recon_state" in self.outputs.keys() else 0
+            "recon_state" : recon_state.item() if "states_hat" in self.outputs.keys() else 0,
+            "mmd_loss" : mmd_loss.item() if "states_hat" in self.outputs.keys() else 0
         }       
 
 
