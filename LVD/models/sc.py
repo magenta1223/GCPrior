@@ -206,12 +206,7 @@ class StateConditioned_Model(BaseModule):
             
 
     def forward(self, states, actions, imgs):
-        if self.env_name == "maze":
-            # imgs  : N, T, 32, 32
-            N, T = imgs.shape[:2]
-            visual_embedidng = self.visual_encoder(imgs.view(N * T, -1).float()).view(N, T, -1) # N, T ,32
-            # states = torch.cat((states.repeat(1,1,10), visual_embedidng), axis = -1)
-            states = torch.cat((states, visual_embedidng), axis = -1)
+
         
 
         inputs = dict(
