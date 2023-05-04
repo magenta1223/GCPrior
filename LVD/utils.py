@@ -308,7 +308,10 @@ class StateProcessor:
         Check the state satisfiy which goal state
         """
         if self.env_name == "maze":
-            return self.__goal_checkers__[self.env_name](state) 
+            if mode =="state":
+                return self.__goal_checkers__[self.env_name](state) 
+            else:
+                return self.__goal_checkers__[self.env_name](state[-2:])
 
         if mode =="state":
             return self.__goal_checkers__[self.env_name](self.__state2goals__[self.env_name](state)) 

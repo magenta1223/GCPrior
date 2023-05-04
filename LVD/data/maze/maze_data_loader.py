@@ -346,7 +346,7 @@ class Maze_AgentCentric_GoalConditioned_Diversity(Maze_AgentCentric_StateConditi
 
                 
         # 10 step 이후에 skill dynamics로 추론해 error 누적 최소화 
-        self.buffer_prev = Offline_Buffer(state_dim= self.state_dim + 32 * 32, action_dim= self.action_dim, trajectory_length = 19, max_size= 1024)
+        self.buffer_prev = Offline_Buffer(state_dim= self.state_dim, action_dim= self.action_dim, trajectory_length = 19, max_size= 1024)
         # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 19, max_size= int(1e5))
         # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 19, max_size= 1024)
         # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 23, max_size= 1024)
@@ -359,7 +359,9 @@ class Maze_AgentCentric_GoalConditioned_Diversity(Maze_AgentCentric_StateConditi
         # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 19, max_size= 1024)
         
         rollout_length = skill_length + ((self.plan_H - skill_length) // skill_length)
-        self.buffer_now = Offline_Buffer(state_dim= self.state_dim + 32 * 32, action_dim= self.action_dim, trajectory_length = rollout_length, max_size= 1024)
+        # self.buffer_now = Offline_Buffer(state_dim= self.state_dim + 32 * 32, action_dim= self.action_dim, trajectory_length = rollout_length, max_size= 1024)
+        self.buffer_now = Offline_Buffer(state_dim= self.state_dim, action_dim= self.action_dim, trajectory_length = rollout_length, max_size= 1024)
+
 
 
     def set_mode(self, mode):

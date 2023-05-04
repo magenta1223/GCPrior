@@ -475,8 +475,8 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         # self.outputs =  self.inverse_dynamics_policy(inputs, "train")
         
         if self.env_name == "maze":
-            skill_states = states[:,:,:4].clone()
-            # skill_states = states.clone()
+            # skill_states = states[:,:,:4].clone()
+            skill_states = states.clone()
 
         else:
             skill_states = states.clone()
@@ -643,11 +643,11 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             states_rollout = result['states_rollout']
             skill_sampled = result['skill_sampled']      
             
-            if self.env_name == "maze": 
-                dec_inputs = self.dec_input(states_rollout[:, :, :4], skill_sampled, states_rollout.shape[1])
-            else:
-                dec_inputs = self.dec_input(states_rollout, skill_sampled, states_rollout.shape[1])
-            # dec_inputs = self.dec_input(states_rollout, skill_sampled, states_rollout.shape[1])
+            # if self.env_name == "maze": 
+            #     dec_inputs = self.dec_input(states_rollout[:, :, :4], skill_sampled, states_rollout.shape[1])
+            # else:
+            #     dec_inputs = self.dec_input(states_rollout, skill_sampled, states_rollout.shape[1])
+            dec_inputs = self.dec_input(states_rollout, skill_sampled, states_rollout.shape[1])
 
 
             N, T, _ = dec_inputs.shape

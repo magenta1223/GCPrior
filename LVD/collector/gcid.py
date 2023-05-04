@@ -34,6 +34,7 @@ class HierarchicalTimeLimitCollector:
         state = self.state_processor.state_process(state)
 
         # print(f"G : {self.state_processor.goal_checker(G)}")
+
         episode = HierarchicalEpisode(state)
         low_actor.eval()
         high_actor.eval()

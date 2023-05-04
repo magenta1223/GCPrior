@@ -33,7 +33,8 @@ class MazeEnvConfig(BaseDataConfig):
             # DATA 
             dataset_class= MODE_DICT[structure],   
             action_dim=2,
-            state_dim=4,
+            # state_dim=4,
+            state_dim=1028,
             n_obj = 4,
             n_env = 0,
             n_goal = 4,

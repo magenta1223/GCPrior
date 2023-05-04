@@ -18,17 +18,20 @@ class MultiModalEncoder(nn.Module):
     def __init__(self, config):
         super(MultiModalEncoder, self).__init__()
         
-        self.state_dim = 4
+        self.n_obj = 4
         
         visual_config = {**config}
         visual_config['in_feature'] = 1024 # 32 x 32
+
+        config['in_feature'] = 4
         config['out_dim'] = 4
+
         self.vector_enc = SequentialBuilder(Linear_Config(config))
         self.visual_enc = SequentialBuilder(Linear_Config(visual_config))
 
     def forward(self, x):
-        vec_emb = self.vector_enc(x[:, :self.state_dim])
-        visual_emb = self.visual_enc(x[:, self.state_dim:])
+        vec_emb = self.vector_enc(x[:, :self.n_obj])
+        visual_emb = self.visual_enc(x[:, self.n_obj:])
         
         return torch.cat(( vec_emb, visual_emb), dim = -1)
 
@@ -41,6 +44,7 @@ class MultiModalDecoder(nn.Module):
         visual_config['out_dim'] = 1024 # 32 x 32
 
         config['in_feature'] = 4
+        config['out_dim'] = 4
         self.state_emb_dim = 4
 
         self.vector_dec = SequentialBuilder(Linear_Config(config))
