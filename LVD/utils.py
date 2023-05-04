@@ -87,13 +87,12 @@ def goal_checker_calvin(goal_state):
 
 def goal_checker_maze(state):
     # return state[4:]
+    # complete_threshold = 1.0
+    # goal_dist = np.linalg.norm(state[:2] - state[-2:])
+    # completed = (goal_dist <= complete_threshold)
 
-    goal = state[-2:]
-    complete_threshold = 1
-    goal_dist = np.linalg.norm(state[:2] - goal)
-    completed = (goal_dist <= complete_threshold)
-
-    return "Success" if completed else "Fail"
+    # return "Success" if completed else "Fail"
+    return state[:2].astype(np.uint8)
 
 
     # if ((state[:2] - state[2:]) ** 2).sum() < 0.1:

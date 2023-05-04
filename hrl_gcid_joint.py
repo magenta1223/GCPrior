@@ -16,8 +16,10 @@ from torch.nn import functional as F
 
 import d4rl
 
+from LVD.contrib.simpl.reproduce.maze.maze_vis import draw_maze
 
 
+from LVD.configs.env import ENV_CONFIGS
 
 from LVD.envs import ENV_TASK
 from LVD.configs.build import Linear_Config
@@ -105,7 +107,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     if env_name == "kitchen":
         state_dim = 30
     else:
-        state_dim =  1028
+        state_dim =  1028 # 4 + image 
 
     latent_dim = 10
     try:
@@ -236,6 +238,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
 
         # log에 success rate추가 .
         # ep = 0
+        ewm_rwds = 0
         for episode_i in range(n_episode+1):
 
 
@@ -246,11 +249,31 @@ def train_single_task(env, env_name, tasks, task_cls, args):
             del log['tr_return']
 
             if (episode_i + 1) % args.render_period == 0:
-                imgs = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
-                imgs = np.array(imgs).transpose(0, 3, 1, 2)
-                log[f'{task_name}_rollout'] = wandb.Video(np.array(imgs), fps=32)
+                if env_name == "maze":
+                    log[f'{task_name}_policy_vis'] = draw_maze(plt.gca(), env, list(self.buffer.episodes)[-20:])
+                else:
+                    imgs = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
+                    imgs = np.array(imgs).transpose(0, 3, 1, 2)
+                    log[f'{task_name}_rollout'] = wandb.Video(np.array(imgs), fps=32)
+
+
+                # imgs = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
+                # imgs = np.array(imgs).transpose(0, 3, 1, 2)
+                # log[f'{task_name}_rollout'] = wandb.Video(np.array(imgs), fps=32)
 
             wandb.log(log)
+            plt.cla()
+
+            ewm_rwds = 0.8 * ewm_rwds + 0.2 * log[f'{task_name}_return']
+
+            if ewm_rwds > args.early_stop_threshold:
+                early_stop += 1
+            else: # 연속으로 넘겨야 함. 
+                early_stop = 0
+            
+            if early_stop == 10:
+                print("Converged enough. Early Stop!")
+                break
 
     
     # weights_path = "/home/magenta1223/skill-based/SiMPL/proposed/weights/sac"
@@ -291,7 +314,12 @@ def main():
 
 
     args = parser.parse_args()
+    env_config = ENV_CONFIGS[args.env_name]("sc")
 
+    env_default_conf = {**env_config.attrs}
+
+    for k, v in env_default_conf.items():
+        setattr(args, k, v)
     print(args)
 
     env_cls = ENV_TASK[args.env_name]['env_cls']

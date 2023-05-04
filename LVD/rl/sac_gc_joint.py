@@ -314,9 +314,7 @@ class SAC(BaseModule):
 
         # Q-function의 parameter 업데이트 양을 조사해보자. 
         # 퍼센티지로? ㄴㄴ 크기도 아닌데 
-        
-        
-
+                
         qf_losses = []  
         for qf, qf_optim in zip(self.qfs, self.qf_optims):
             if self.use_hidden:
@@ -393,7 +391,7 @@ class SAC(BaseModule):
         results = {}
         if self.auto_alpha is True:
             # dual gradient decent 
-            alpha_loss = (self.alpha * (self.target_kl - kl.clone().detach())).mean()
+            alpha_loss = (self.alpha * (self.target_kl - kl)).mean()
 
             if self.increasing_alpha is True:
                 alpha_loss = alpha_loss.clamp(-np.inf, 0)
