@@ -3,21 +3,16 @@ import os
 import random
 import time
 from datetime import datetime
-
 import torch
 from torch.nn import functional as F
 import torch.distributions as torch_dist
 from torch.distributions.kl import register_kl
-
 import numpy as np
 from d4rl.kitchen.kitchen_envs import OBS_ELEMENT_GOALS, OBS_ELEMENT_INDICES, BONUS_THRESH
-
-from .contrib.dists import TanhNormal
-
+from ..contrib.dists import TanhNormal
 import cv2
-from .envs import ENV_TASK
-
-from .utils import *
+from ..envs import ENV_TASK
+from ..utils import *
 from .env_vis import *
 
 

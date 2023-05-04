@@ -15,6 +15,9 @@ from ..envs.kitchen import KitchenEnv_GC
 from ..contrib.simpl.env.kitchen import KitchenTask
 from ..modules.priors import *
 
+from ..envs import ENV_TASK
+from ..env_vis import RENDER_FUNCS
+
 
 class GoalConditioned_Diversity_Joint_Model(BaseModule):
     """
@@ -30,26 +33,21 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         bias = True
         dropout = 0
 
-        # if self.env_name == "maze":
-        #     # self.state_dim = self.state_dim + self.latent_env_dim
-
-        #     self.state_dim = self.state_dim + 32 * 32
-        #     visual_ae = torch.load(self.visual_encoder_path)['model']
-        #     self.visual_encoder = visual_ae.state_encoder.eval()
-        #     self.visual_decoder = visual_ae.state_decoder.eval()
-
-        # self.init_grad_clip_step = 100
-
-
         norm_cls = nn.LayerNorm
-        # norm_cls = nn.BatchNorm1d
         act_cls = nn.Mish
 
-        # self.env = gym.make("simpl-kitchen-v0")
-        self.env = KitchenEnv_GC()
 
-        self.qpo_dim = self.env.robot.n_jnt + self.env.robot.n_obj
-        self.qv = self.env.init_qvel[:].copy()
+        env_cls = ENV_TASK[self.env_name]['env_cls']
+        configure = ENV_TASK[self.env_name]['cfg']
+
+        if configure is not None:
+            self.env = env_cls(**configure)
+        else:
+            self.env = env_cls()
+
+        self.render_funcs = RENDER_FUNCS[self.env_name]
+
+
         self.joint_learn = True
 
         if self.only_proprioceptive:
@@ -89,13 +87,15 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
 
         if self.env_name == "maze":
             print("here?")
+            self.render_period = 32
 
             # self.latent_state_dim *= 2
-            # self.state_dim = 1028
+            # self.state_dim = 36
             self.latent_state_dim += 4
             state_encoder = MultiModalEncoder(state_encoder_config)
             state_decoder = MultiModalDecoder(state_decoder_config)
         else:
+            self.render_period = 4
             state_encoder = SequentialBuilder(Linear_Config(state_encoder_config))
             state_decoder = SequentialBuilder(Linear_Config(state_decoder_config))
         
@@ -112,7 +112,7 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         prior_config = edict(
             # n_blocks = self.n_processing_layers, #self.n_processing_layers,
             n_blocks = self.n_Layers,
-            in_feature =  self.latent_state_dim, # state_dim + latent_dim 
+            in_feature =  self.latent_env_dim if self.env_name == "maze" else self.latent_state_dim, # state_dim + latent_dim 
             hidden_dim = self.hidden_dim, 
             out_dim = self.latent_dim * 2,
             norm_cls = norm_cls,
@@ -189,8 +189,10 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         decoder_config = edict(
             n_blocks = self.n_Layers, #self.n_processing_layers,
             z_dim = self.latent_dim, 
-            state_dim = self.state_dim,
-            in_feature =  self.state_dim + self.latent_dim, # state_dim + latent_dim 
+            state_dim = self.latent_env_dim,
+            # in_feature =  self.latent_env_dim + self.latent_dim if self.env_name == "maze" else self.state_dim + self.latent_dim, # state_dim + latent_dim 
+            in_feature =  32 * 32 + self.latent_dim if self.env_name == "maze" else self.state_dim + self.latent_dim, # state_dim + latent_dim 
+
             hidden_dim = self.hidden_dim, 
             out_dim = self.action_dim,
             norm_cls = nn.BatchNorm1d,
@@ -318,54 +320,6 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
                 torch.nn.utils.clip_grad_norm_(group['params'], self.init_grad_clip) 
 
 
-    def render_video_compare(self, states, actions, mode):
-        """
-        rollout을 통해 만들어낸 trajectory의
-        -state sequence를 강제로 세팅
-        -초기 state를 세팅하고, actino을 환경상에서 수행
-        두 개를 비교
-        """
-
-        imgs = []
-
-        video_len = states.shape[0]
-
-        if mode == "state":
-            for i in range(video_len):
-            # for i in range(self.Hsteps + 1):
-                self.env.set_state(states[i][:self.qpo_dim], self.qv)
-                imgs.append(self.env.render(mode = "rgb_array"))
-
-        else:
-            # action에서 qv가 달라서 보정 필요함.
-            # 일단 action을 수행 -> qv가 맞게 세팅됨. 근데 위치는 다름.
-            # set_state(next state, now_qv)
-            # 초기 state를 세팅 후 render 
-            self.env.set_state(states[0][:self.qpo_dim], self.qv)
-            imgs.append(self.env.render(mode = "rgb_array"))
-
-            # action을 수행. 그러나 data 수집 당시의 qv와 달라서 약간 달라짐. 강제로 교정 후 render
-            self.env.step(actions[0].detach().cpu().numpy())
-            now_qv = self.env.sim.get_state().qvel
-            self.env.set_state(states[1][:self.qpo_dim], now_qv)
-            
-            # flat_d_len = 10 if self.rollout_method == "rollout" else 20
-            flat_d_len = 10
-            for i in range(flat_d_len -1):
-                # render 
-                imgs.append(self.env.render(mode = "rgb_array"))
-                state, reward, done, info = self.env.step(actions[i].detach().cpu().numpy())
-
-            last_img = self.env.render(mode = "rgb_array")
-            imgs.append(last_img)
-                  
-            for i in range(self.Hsteps + 1, video_len):
-            # for i in range(self.Hsteps + 1):
-                imgs.append(last_img)
-
-
-        return imgs
-
 
     def get_metrics(self):
         """
@@ -396,7 +350,28 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             # state reconstruction 
             self.loss_dict['recon_state'] = self.loss_fn('recon')(self.outputs['states_hat'], self.outputs['states']) # ? 
 
-            # # renders
+
+            if (self.step + 1) % self.render_period == 0 and not self.training:
+                num = (self.step + 1) // self.render_period
+                i = 0 
+
+                mp4_path = f"./imgs/{self.env_name}/video/video_{num}.mp4"
+                self.render_funcs['imaginary_trajectory'](self.env, self.loss_dict['states_novel'][0], self.loss_dict['actions_novel'][0], self.c, mp4_path)
+
+            
+                subgoal_GT = self.render_funcs['scene']( self.env, self.outputs['states'][i, -1])
+                subgoal_D = self.render_funcs['scene']( self.env,self.outputs['subgoal_recon_D'][i,])
+                subgoal_F =self.render_funcs['scene'](self.env,self.outputs['subgoal_recon_f'][i])
+                subgoal_F_skill = self.render_funcs['scene'](self.env,self.outputs['subgoal_recon_D_f'][i])
+
+
+                img = np.concatenate((subgoal_GT, subgoal_D, subgoal_F, subgoal_F_skill), axis= 1)
+                cv2.imwrite(f"./imgs/{self.env_name}/img/img_{num}.png", img)
+                print(mp4_path)
+
+
+
+            # # render
             # if (self.step + 1) % 4 == 0 and not self.training:
             #     i = 0
 
@@ -475,11 +450,15 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         # self.outputs =  self.inverse_dynamics_policy(inputs, "train")
         
         if self.env_name == "maze":
-            # skill_states = states[:,:,:4].clone()
-            skill_states = states.clone()
+            skill_states = states[:,:,:4].clone()
+            # skill_states = states.clone()
+            # with torch.no_grad():
+            #     dec_states = self.inverse_dynamics_policy.state_encoder(states.view(N * T, -1)).view(N, T, -1)[:,:, :self.latent_env_dim]
+            dec_states = states[:, :, 4:].clone()
 
         else:
             skill_states = states.clone()
+            dec_states = states.clone()
 
 
         # skill Encoder 
@@ -506,7 +485,7 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             z = skill.clone().detach()
         
         # Skill Decoder 
-        decode_inputs = self.dec_input(skill_states.clone(), skill, self.Hsteps)
+        decode_inputs = self.dec_input(dec_states.clone(), skill, self.Hsteps)
         N, T = decode_inputs.shape[:2]
         skill_hat = self.skill_decoder(decode_inputs.view(N * T, -1)).view(N, T, -1)
         
@@ -644,11 +623,13 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             skill_sampled = result['skill_sampled']      
             
             # if self.env_name == "maze": 
-            #     dec_inputs = self.dec_input(states_rollout[:, :, :4], skill_sampled, states_rollout.shape[1])
+            #     skill_states = result['hts_rollout'][:,:, :self.latent_env_dim]
+            #     dec_inputs = self.dec_input(skill_states, skill_sampled, states_rollout.shape[1])
             # else:
             #     dec_inputs = self.dec_input(states_rollout, skill_sampled, states_rollout.shape[1])
-            dec_inputs = self.dec_input(states_rollout, skill_sampled, states_rollout.shape[1])
 
+
+            dec_inputs = self.dec_input(states_rollout[:,:,4:], skill_sampled, states_rollout.shape[1])
 
             N, T, _ = dec_inputs.shape
             actions_rollout = self.skill_decoder(dec_inputs.view(N * T, -1)).view(N, T, -1)
@@ -723,6 +704,8 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             self.get_metrics()
             self.inverse_dynamics_policy.soft_update()
         # self.step += 1
+
+
 
         return self.loss_dict
     

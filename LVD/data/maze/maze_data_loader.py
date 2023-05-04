@@ -359,8 +359,8 @@ class Maze_AgentCentric_GoalConditioned_Diversity(Maze_AgentCentric_StateConditi
         # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 19, max_size= 1024)
         
         rollout_length = skill_length + ((self.plan_H - skill_length) // skill_length)
-        # self.buffer_now = Offline_Buffer(state_dim= self.state_dim + 32 * 32, action_dim= self.action_dim, trajectory_length = rollout_length, max_size= 1024)
-        self.buffer_now = Offline_Buffer(state_dim= self.state_dim, action_dim= self.action_dim, trajectory_length = rollout_length, max_size= 1024)
+        self.buffer_now = Offline_Buffer(state_dim= self.state_dim + 32 * 32, action_dim= self.action_dim, trajectory_length = rollout_length, max_size= 1024)
+        # self.buffer_now = Offline_Buffer(state_dim= self.state_dim, action_dim= self.action_dim, trajectory_length = rollout_length, max_size= 1024)
 
 
 
@@ -422,6 +422,7 @@ class Maze_AgentCentric_GoalConditioned_Diversity(Maze_AgentCentric_StateConditi
 
         # hindsight relabeling 
         G = deepcopy(states[goal_idx])
+        G[2:] = 0 # remove acceleration 
         # trajectory
         # states = seq_skill.states[start_idx : start_idx+self.subseq_len, :self.n_obj + self.n_env]
         states = states[start_idx : start_idx+self.subseq_len, :self.n_obj]

@@ -100,7 +100,11 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
 
 
         # -------------- State-Conditioned Prior -------------- #
-        prior, prior_detach = self.prior_policy.dist(start, detached = True)
+        if self.env_name == "maze":
+            # only visual embedding 
+            prior, prior_detach = self.prior_policy.dist(start[:, :32], detached = True)
+        else:
+            prior, prior_detach = self.prior_policy.dist(start, detached = True)
 
         # -------------- Inverse Dynamics : Skill Learning -------------- #
         inverse_dynamics, inverse_dynamics_detach  = self.inverse_dynamics.dist(state = start, subgoal = subgoal, tanh = self.tanh)
@@ -279,8 +283,13 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
         # start ! 
         c = random.sample(range(1, skill_length - 1), 1)[0]
         _ht = hts[:, c].clone()
-        skill_sampled_orig = self.prior_policy.dist(_ht).sample()
 
+        if self.env_name == "maze":
+            skill_sampled_orig = self.prior_policy.dist(_ht[:, :32]).sample()
+
+        else:
+            skill_sampled_orig = self.prior_policy.dist(_ht).sample()
+    
 
         skill_sampled = skill_sampled_orig.clone()
         # 1 skill
@@ -297,7 +306,11 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
 
         # for f learning, execute 4 skill more
         for _ in range(9):
-            skill = self.prior_policy.dist(_ht).sample()
+            if self.env_name == "maze":
+                skill = self.prior_policy.dist(_ht[:, :32]).sample()
+            else:
+                skill = self.prior_policy.dist(_ht).sample()
+
             dynamics_input = torch.cat((_ht, skill), dim=-1)
             diff = self.dynamics(dynamics_input) 
             _ht = _ht + diff
@@ -313,7 +326,8 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
             "states_rollout" : states_rollout,
             "skill_sampled" : skill_sampled_orig,
             "invD_rollout" : invD_rollout,
-            "invD_GT" : invD_GT
+            "invD_GT" : invD_GT,
+            "hts_rollout" : hts_rollout 
         }
         return result 
 
@@ -458,9 +472,17 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
     def __prior__(self, inputs):
         states = inputs['states']
 
+        # with torch.no_grad():
+        #     ht = self.state_encoder(states)
+        #     prior = self.prior_policy.dist(ht)
         with torch.no_grad():
             ht = self.state_encoder(states)
-            prior = self.prior_policy.dist(ht)
+            if self.env_name == "maze":
+                # only visual embedding 
+                prior = self.prior_policy.dist(ht[:, :32])
+
+            else:
+                prior = self.prior_policy.dist(ht)
 
         return {
             "prior" : prior

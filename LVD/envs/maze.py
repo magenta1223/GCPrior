@@ -174,7 +174,19 @@ class Maze_GC(MazeEnv):
 
         return ob, reward, done, {}
 
-            
+    def render(self, mode = "rgb_array"):
+        if mode == "agent_centric":
+            with self.agent_centric_render():
+                img = self.sim.render(self.agent_centric_res, self.agent_centric_res, device_id=self.render_device) / 255
+                walls = np.abs(img - WALL).mean(axis=-1)
+                grounds = np.minimum(np.abs(img - G1).mean(axis=-1), np.abs(img - G2).mean(axis=-1))
+                # img = np.stack((walls, grounds), axis=-1).argmax(axis=-1)
+            return img * 255
+
+        else:
+            return super().render(mode)
+
+
     
 maze_config = {
     'size':20,

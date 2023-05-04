@@ -33,8 +33,8 @@ class MazeEnvConfig(BaseDataConfig):
             # DATA 
             dataset_class= MODE_DICT[structure],   
             action_dim=2,
-            # state_dim=4,
-            state_dim=1028,
+            state_dim=4,
+            # state_dim=36, # env_embedding dim 32 + pos_embed_dim 4
             n_obj = 4,
             n_env = 0,
             n_goal = 4,
@@ -51,7 +51,7 @@ class MazeEnvConfig(BaseDataConfig):
             mixin_start = 30,
             mixin_ratio = 0.05,
             plan_H = 100, 
-            epochs = 70, 
+            epochs = 150, 
             warmup_steps = 30,
 
             # Architecture
