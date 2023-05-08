@@ -50,8 +50,7 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
 
         self.joint_learn = True
 
-        if self.only_proprioceptive:
-            self.state_dim = self.n_obj
+
 
 
 
@@ -86,22 +85,39 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         )
 
         if self.env_name == "maze":
-            print("here?")
             self.render_period = 32
+            # state_encoder = MultiModalEncoder(state_encoder_config)
+            # state_decoder = MultiModalDecoder(state_decoder_config)
+            
+            
+            # output_res = 1
+            # last_layer = 32
+            # self.visual_encoder = nn.Sequential(
+            #     nn.Conv2d(1, 8, 3, 2, 1),
+            #     nn.BatchNorm2d(8),
+            #     act_cls(),
+            #     nn.Conv2d(8, 16, 3, 2, 1),
+            #     nn.BatchNorm2d(16),
+            #     act_cls(),
+            #     nn.Conv2d(16, last_layer, 3, 2, 1),                        
+            #     nn.AdaptiveAvgPool2d(output_res),
+            #     Flatten()
+            # )
 
-            # self.latent_state_dim *= 2
-            # self.state_dim = 36
-            self.latent_state_dim += 4
-            state_encoder = MultiModalEncoder(state_encoder_config)
-            state_decoder = MultiModalDecoder(state_decoder_config)
+            # self.enc_state_dim = self.state_dim + self.action_dim + last_layer * (output_res ** 2)
+            # self.dec_state_dim = last_layer * (output_res ** 2)
+            self.enc_state_dim = self.dec_state_dim = self.state_dim 
+
+
         else:
             self.render_period = 4
-            state_encoder = SequentialBuilder(Linear_Config(state_encoder_config))
-            state_decoder = SequentialBuilder(Linear_Config(state_decoder_config))
-        
-        # state_encoder = SequentialBuilder(Linear_Config(state_encoder_config))
-        # state_decoder = SequentialBuilder(Linear_Config(state_decoder_config))
+            self.enc_state_dim = self.dec_state_dim = self.state_dim # + self.action_dim
 
+            # state_encoder = SequentialBuilder(Linear_Config(state_encoder_config))
+            # state_decoder = SequentialBuilder(Linear_Config(state_decoder_config))
+
+        state_encoder = SequentialBuilder(Linear_Config(state_encoder_config))
+        state_decoder = SequentialBuilder(Linear_Config(state_decoder_config))
 
         # ----------------- SUBMODULES ----------------- #
 
@@ -112,7 +128,7 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         prior_config = edict(
             # n_blocks = self.n_processing_layers, #self.n_processing_layers,
             n_blocks = self.n_Layers,
-            in_feature =  self.latent_env_dim if self.env_name == "maze" else self.latent_state_dim, # state_dim + latent_dim 
+            in_feature =  self.latent_state_dim, # state_dim + latent_dim 
             hidden_dim = self.hidden_dim, 
             out_dim = self.latent_dim * 2,
             norm_cls = norm_cls,
@@ -170,8 +186,10 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
 
         ### ----------------- posterior modules ----------------- ###
         encoder_config = edict(
-            in_feature = self.action_dim + self.state_dim,
-            # in_feature = self.action_dim + self.latent_state_dim,
+            # in_feature = self.action_dim + self.state_dim,
+            in_feature = self.enc_state_dim + self.action_dim,
+            # in_feature = self.action_dim + 36 if self.env_name == "maze" else self.action_dim + self.state_dim,
+
             hidden_dim = self.hidden_dim,
             out_dim = self.latent_dim * 2,
             n_blocks = 1,
@@ -189,9 +207,15 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         decoder_config = edict(
             n_blocks = self.n_Layers, #self.n_processing_layers,
             z_dim = self.latent_dim, 
-            state_dim = self.latent_env_dim,
+            state_dim = self.dec_state_dim,
             # in_feature =  self.latent_env_dim + self.latent_dim if self.env_name == "maze" else self.state_dim + self.latent_dim, # state_dim + latent_dim 
-            in_feature =  32 * 32 + self.latent_dim if self.env_name == "maze" else self.state_dim + self.latent_dim, # state_dim + latent_dim 
+            # in_feature =  32 * 32 + self.latent_dim if self.env_name == "maze" else self.state_dim + self.latent_dim, # state_dim + latent_dim  latent_state_dim
+            # in_feature =  self.latent_state_dim + self.latent_dim if self.env_name == "maze" else self.state_dim + self.latent_dim, # state_dim + latent_dim  latent_state_dim
+            # in_feature =  self.state_dim + self.latent_dim, # state_dim + latent_dim  latent_state_dim
+            # in_feature =  self.state_dim + self.latent_dim -4 if self.env_name == "maze" else self.state_dim + self.latent_dim, # exclude position for decoder 
+            # in_feature = self.latent_dim + self.state_dim -4 if self.env_name == "maze" else self.state_dim + self.latent_dim,
+            in_feature = self.latent_dim + self.dec_state_dim,
+
 
             hidden_dim = self.hidden_dim, 
             out_dim = self.action_dim,
@@ -200,6 +224,7 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             block_cls = LinearBlock,
             bias = True,
             dropout = 0,
+            env_name = self.env_name
         )
 
         ## ----------------- Builds ----------------- ##
@@ -288,6 +313,19 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
                 "metric" : "recon_state"
             }
 
+        # if self.env_name == "maze":
+        #     visual_encoder_param_groups = [
+        #         {'params' : self.visual_encoder.parameters()},
+        #     ]
+
+        #     self.optimizers['visual_encoder'] = {
+        #         "optimizer" : RAdam(
+        #             visual_encoder_param_groups,            
+        #             lr = model_config.lr
+        #         ),
+        #         "metric" : "Rec_skill"
+        #     }
+
         # Losses
         self.loss_fns = {
             'recon' : ['mse', nn.MSELoss()],
@@ -351,114 +389,60 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             self.loss_dict['recon_state'] = self.loss_fn('recon')(self.outputs['states_hat'], self.outputs['states']) # ? 
 
 
-            if (self.step + 1) % self.render_period == 0 and not self.training:
-                num = (self.step + 1) // self.render_period
-                i = 0 
+            # if (self.step + 1) % self.render_period == 0 and not self.training:
+            #     num = (self.step + 1) // self.render_period
+            #     i = 0 
 
-                mp4_path = f"./imgs/{self.env_name}/video/video_{num}.mp4"
-                self.render_funcs['imaginary_trajectory'](self.env, self.loss_dict['states_novel'][0], self.loss_dict['actions_novel'][0], self.c, mp4_path)
+            #     mp4_path = f"./imgs/{self.env_name}/video/video_{num}.mp4"
+            #     self.render_funcs['imaginary_trajectory'](self.env, self.loss_dict['states_novel'][0], self.loss_dict['actions_novel'][0], self.c, mp4_path)
 
             
-                subgoal_GT = self.render_funcs['scene']( self.env, self.outputs['states'][i, -1])
-                subgoal_D = self.render_funcs['scene']( self.env,self.outputs['subgoal_recon_D'][i,])
-                subgoal_F =self.render_funcs['scene'](self.env,self.outputs['subgoal_recon_f'][i])
-                subgoal_F_skill = self.render_funcs['scene'](self.env,self.outputs['subgoal_recon_D_f'][i])
+            #     subgoal_GT = self.render_funcs['scene']( self.env, self.outputs['states'][i, -1])
+            #     subgoal_D = self.render_funcs['scene']( self.env,self.outputs['subgoal_recon_D'][i,])
+            #     subgoal_F =self.render_funcs['scene'](self.env,self.outputs['subgoal_recon_f'][i])
+            #     subgoal_F_skill = self.render_funcs['scene'](self.env,self.outputs['subgoal_recon_D_f'][i])
 
 
-                img = np.concatenate((subgoal_GT, subgoal_D, subgoal_F, subgoal_F_skill), axis= 1)
-                cv2.imwrite(f"./imgs/{self.env_name}/img/img_{num}.png", img)
-                print(mp4_path)
-
-
-
-            # # render
-            # if (self.step + 1) % 4 == 0 and not self.training:
-            #     i = 0
-
-            #     task_obj = KitchenTask(subtasks = ['kettle'])
-            #     num = (self.step + 1) // 4
-            
-            #     # if "states_novel" in self.loss_dict.keys():
-            #     with self.env.set_task(task_obj):
-            #         self.env.reset()
-            #         imgs_state = self.render_video_compare(self.loss_dict['states_novel'][0], self.loss_dict['actions_novel'][0], mode = "state")
-            #         self.env.reset()
-            #         imgs_action = self.render_video_compare(self.loss_dict['states_novel'][0], self.loss_dict['actions_novel'][0], mode = "action")
-
-            #     mp4_path = f"./imgs/video/video_{num}.mp4"
-            #     out = cv2.VideoWriter(mp4_path, cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), 5, (1200,400))
-
-            #     for i in range(len(imgs_state)):
-            #         # writing to a image array
-            #         img_s = imgs_state[i].astype(np.uint8)
-            #         img_a = imgs_action[i].astype(np.uint8)
-            #         img = np.concatenate((img_s,img_a, np.abs(img_s - img_a)), axis = 1)
-            #         text = f"S-A now {i} c {self.c}" if self.c != 0 else f"S-A now {i}"
-            #         cv2.putText(img = img,    text = text, color = (255,0,0),  org = (400 // 2, 400 // 2), fontFace= cv2.FONT_HERSHEY_SIMPLEX, fontScale= 2, lineType= cv2.LINE_AA)
-            #         out.write(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-            #     out.release() 
-
-            #     self.env.set_state(self.outputs['states'][i, -1][:self.qpo_dim], self.qv)
-            #     img_GT = self.env.render(mode = "rgb_array")
-            #     self.env.set_state(self.outputs['subgoal_recon_D'][i][:self.qpo_dim], self.qv)
-            #     img_D = self.env.render(mode = "rgb_array")
-            #     self.env.set_state(self.outputs['subgoal_recon_f'][i][:self.qpo_dim], self.qv)
-            #     img_F = self.env.render(mode = "rgb_array")
-            #     self.env.set_state(self.outputs['subgoal_recon_D_f'][i][:self.qpo_dim], self.qv)
-            #     img_F_D = self.env.render(mode = "rgb_array")
-
-            #     skill = self.outputs['z_sub']
-            #     dec_input = self.dec_input(self.outputs['states'], skill, self.Hsteps)
-            #     N, T, _ = dec_input.shape
-            #     raw_actions = self.skill_decoder(dec_input.view(N * T, -1)).view(N, T, -1)[i]
-                
-            #     with self.env.set_task(task_obj):
-            #         self.env.reset()
-            #         self.env.set_state(self.outputs['states'][i, 0][:self.qpo_dim], self.qv)
-            #         for idx in range(self.Hsteps):
-            #             self.env.step(raw_actions[idx].detach().cpu().numpy())
-
-            #     img_sub_skill = self.env.render(mode = "rgb_array")
-
-            #     img = np.concatenate((img_GT, img_D, img_F, img_F_D, img_sub_skill), axis= 1)
-            #     cv2.imwrite(f"./imgs/img/img_{num}.png", img)
+            #     img = np.concatenate((subgoal_GT, subgoal_D, subgoal_F, subgoal_F_skill), axis= 1)
+            #     cv2.imwrite(f"./imgs/{self.env_name}/img/img_{num}.png", img)
             #     print(mp4_path)
-
-
 
 
     def forward(self, states, actions, G):
         
         N, T, _ = states.shape
 
+
+
         # if self.env_name == "maze":
-        #     # # imgs  : N, T, 32, 32
-        #     N, T = imgs.shape[:2]
+        #     skill_states = states[:,:,:4].clone()
+        #     # skill_states = states.clone()
         #     # with torch.no_grad():
-        #     #     visual_embedidng = self.visual_encoder(imgs.view(N * T, -1).float()).view(N, T, -1) # N, T ,32
-        #     #     states = torch.cat((states, visual_embedidng), axis = -1)
-        #     states = torch.cat((  states, imgs.view(N, T, -1)   ), dim = -1)
+        #     #     dec_states = self.inverse_dynamics_policy.state_encoder(states.view(N * T, -1)).view(N, T, -1)[:,:, :self.latent_env_dim]
+        #     # dec_states = states[:, :, 4:].clone()
+            
+        #     # dec_states = self.visual_encoder(states[:, :, 4:].view(N * T, 1, 32, 32)).view(N, T, self.latent_state_dim)
+        #     # dec_states = torch.zeros(N, T, self.latent_state_dim).cuda()
+        #     # dec_states = self.visual_encoder(states[:, :, 4:].clone().view(N * T, -1)).view(N, T, -1)
+        #     dec_states = states[:, :, :4].clone() 
+
+        # else:
+        #     skill_states = states.clone()
+        #     dec_states = states.clone()
+
+        # if self.env_name == "maze":
+        #     skill_states = states[:, :, :4].clone()
+        # else:
+        #     skill_states = states.clone()
         
+        # if self.env_name == "maze":
+        #     pos_states = states[:,:,:4]
+        #     visual_states = self.visual_encoder(states[:,:,4:].view(N * T, 1, 32, 32)).view(N, T, -1)
+        #     skill_states = torch.cat((pos_states, visual_states), dim = -1)
+        # else:
+        #     skill_states = states.clone()
 
-
-        # inputs = dict(
-        #     states = states,
-        #     G = G
-        # )
-
-        # # skill prior
-        # self.outputs =  self.inverse_dynamics_policy(inputs, "train")
-        
-        if self.env_name == "maze":
-            skill_states = states[:,:,:4].clone()
-            # skill_states = states.clone()
-            # with torch.no_grad():
-            #     dec_states = self.inverse_dynamics_policy.state_encoder(states.view(N * T, -1)).view(N, T, -1)[:,:, :self.latent_env_dim]
-            dec_states = states[:, :, 4:].clone()
-
-        else:
-            skill_states = states.clone()
-            dec_states = states.clone()
+        skill_states = states.clone()
 
 
         # skill Encoder 
@@ -485,7 +469,13 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             z = skill.clone().detach()
         
         # Skill Decoder 
-        decode_inputs = self.dec_input(dec_states.clone(), skill, self.Hsteps)
+        # decode_inputs = self.dec_input(states[:,:,4:].clone(), skill, self.Hsteps)
+        # if self.env_name == "maze":
+        #     decode_inputs = self.dec_input(visual_states, skill, self.Hsteps)
+        # else:
+        #     decode_inputs = self.dec_input(states.clone(), skill, self.Hsteps)
+        decode_inputs = self.dec_input(skill_states.clone(), skill, self.Hsteps)
+
         N, T = decode_inputs.shape[:2]
         skill_hat = self.skill_decoder(decode_inputs.view(N * T, -1)).view(N, T, -1)
         
@@ -597,23 +587,6 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
     
     @torch.no_grad()
     def rollout(self, inputs):
-        # if self.env_name == "maze":
-        #     # imgs  : N, T, 32, 32
-        #     states, imgs = inputs['states'], inputs['imgs']
-        #     N, T =imgs.shape[:2]
-        #     with torch.no_grad():
-        #         visual_embedidng = self.visual_encoder(imgs.view(N * T, -1).float()).view(N, T, -1) # N, T ,32
-        #         states = torch.cat((states, visual_embedidng), axis = -1)
-        #         inputs['states'] = states
-
-        # if self.env_name == "maze":
-        #     # # imgs  : N, T, 32, 32
-        #     states, imgs = inputs['states'], inputs['imgs']
-        #     N, T = imgs.shape[:2]
-        #     states = torch.cat((  states, imgs.view(N, T, -1)   ), dim = -1)
-        #     inputs['states'] = states
-
-
         result = self.inverse_dynamics_policy(inputs, self.rollout_method)
 
         if self.rollout_method == "rollout":
@@ -621,15 +594,20 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             c = result['c']
             states_rollout = result['states_rollout']
             skill_sampled = result['skill_sampled']      
-            
-            # if self.env_name == "maze": 
-            #     skill_states = result['hts_rollout'][:,:, :self.latent_env_dim]
-            #     dec_inputs = self.dec_input(skill_states, skill_sampled, states_rollout.shape[1])
+
+
+
+            N, T = states_rollout.shape[:2]
+            # if self.env_name == "maze":
+            #     visual_states = self.visual_encoder(states_rollout[:,:,4:].view(N * T, 1, 32, 32)).view(N, T, -1)
+            #     dec_inputs = self.dec_input(visual_states, skill_sampled, states_rollout.shape[1])
             # else:
             #     dec_inputs = self.dec_input(states_rollout, skill_sampled, states_rollout.shape[1])
 
+            dec_inputs = self.dec_input(states_rollout, skill_sampled, states_rollout.shape[1])
 
-            dec_inputs = self.dec_input(states_rollout[:,:,4:], skill_sampled, states_rollout.shape[1])
+
+            # dec_inputs = self.dec_input(states_rollout, skill_sampled, states_rollout.shape[1])
 
             N, T, _ = dec_inputs.shape
             actions_rollout = self.skill_decoder(dec_inputs.view(N * T, -1)).view(N, T, -1)
@@ -687,42 +665,23 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             self.train()
 
     def optimize(self, batch, e):
-        # states, actions, G, rollout = batch.values()
-        # states, actions, G, rollout = states.cuda(), actions.cuda(), G.cuda(), rollout.cuda()
-        # self.__main_network__(states, actions, G, rollout)
-
         # inputs & targets       
+        # self.step += 1
+        # print(self.step * 64)
 
         states, actions, G, rollout = batch.values()
         states, actions, G, rollout = states.float().cuda(), actions.cuda(), G.cuda(), rollout.cuda()
-
         self.__main_network__(states, actions, G, rollout)
-
-
-
         with torch.no_grad():
             self.get_metrics()
             self.inverse_dynamics_policy.soft_update()
-        # self.step += 1
-
-
-
         return self.loss_dict
     
-    
+
     def validate(self, batch, e):
-
-        # states, actions, G, rollout  = batch.values()
-        # states, actions, G, rollout = states.cuda(), actions.cuda(), G.cuda(), rollout.cuda()
-        # self.__main_network__(states, actions, G, rollout, validate= True)
-
-
         states, actions, G, rollout = batch.values()
         states, actions, G, rollout = states.float().cuda(), actions.cuda(), G.cuda(), rollout.cuda()
-
         self.__main_network__(states, actions, G, rollout, validate= True)
-
-
         self.get_metrics()
         self.step += 1
 

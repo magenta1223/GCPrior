@@ -9,7 +9,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from ..modules.base import BaseModule
 from ..contrib.simpl.math import clipped_kl, inverse_softplus
-from ..utils import prep_state, nll_dist, kl_annealing, get_dist, AverageMeter
+from ..utils import prep_state, nll_dist, kl_annealing, get_dist, AverageMeter, Scheduler_Helper
 from ..contrib.momentum_encode import update_moving_average
 from ..contrib.dists import *
 
@@ -44,7 +44,7 @@ class SAC(BaseModule):
         param_groups = [
             { "params" : self.policy.inverse_dynamics.inverse_dynamics.parameters()},
             { "params" : self.policy.inverse_dynamics.dynamics.parameters()},
-            { "params" : self.policy.inverse_dynamics.state_encoder.parameters()}
+            # { "params" : self.policy.inverse_dynamics.state_encoder.parameters()}
         ]
         
         # if self.policy.inverse_dynamics.dynamics is not None:
@@ -52,14 +52,15 @@ class SAC(BaseModule):
                 
         self.consistency_optim = torch.optim.Adam(
             param_groups,
-            lr= 1e-8 # 마지막 lr 
+            lr= self.consistency_lr # 마지막 lr 
         )
 
-        self.consistency_scheduler = ReduceLROnPlateau(
+        self.consistency_scheduler = Scheduler_Helper(
             optimizer = self.consistency_optim,
             factor = 0.5,
             patience = 10, # 4 epsisode
-            verbose= True
+            verbose= True,
+            module_name = "inverse D, D"
         )
 
         self.consistency_meter = AverageMeter()

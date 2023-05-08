@@ -70,17 +70,23 @@ def maze_imaginary_trajectory(env, states, actions, c, path):
     task = ENV_TASK['maze']['task_cls']([10, 10], [15, 15])
 
 
+    pos = states[:, :2].detach().cpu().numpy()
     imgs_state = states[:, 4:].reshape(-1, 32, 32) * 255
     imgs_state = np.tile(imgs_state[:,:,:, None], (1,1,1,3))
-    imgs_state[:, 15:17, 15:17] = [127, 127,127]
+    imgs_state[:, 15:17, 15:17] = [255, 0,0]
     imgs_state = imgs_state.astype(np.uint8)
 
-    out = cv2.VideoWriter(path, cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), 5, (32,32))
+    
+
+    out = cv2.VideoWriter(path, cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), 5, (200, 200))
     for i in range(len(imgs_state)):
         # writing to a image array
-        img = imgs_state[i].astype(np.uint8)
-        text = f"S now {i} c {c}" if c != 0 else f"S-A now {i}"
-        # cv2.putText(img = img,    text = text, color = (255,0,0),  org = (32 // 2, 32 // 2), fontFace= cv2.FONT_HERSHEY_SIMPLEX, fontScale= 2, lineType= cv2.LINE_AA)
+        img = cv2.resize(imgs_state[i], (200, 200))
+        text = f"Now {i} C {c}" if c != 0 else f"S-A now {i}"
+        cv2.putText(img = img, text = text, color = (255,0,0),  org = (0 // 2, 200 // 2), fontFace= cv2.FONT_HERSHEY_SIMPLEX, fontScale= 0.6, lineType= cv2.LINE_AA)
+        text = f"{pos[i][0]:.2f} {pos[i][1]:.2f}"
+        cv2.putText(img = img, text = text, color = (255,0,0),  org = (0 // 2, 300 // 2), fontFace= cv2.FONT_HERSHEY_SIMPLEX, fontScale= 0.6, lineType= cv2.LINE_AA)
+
         out.write(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     out.release() 
 
@@ -94,5 +100,6 @@ def maze_render(env, states):
     imgs_state = np.tile(imgs_state[:,:,:, None], (1,1,1,3))
     imgs_state[:, 15:17, 15:17] = [127, 127,127]
     imgs_state = imgs_state.astype(np.uint8)
+    
 
     return imgs_state

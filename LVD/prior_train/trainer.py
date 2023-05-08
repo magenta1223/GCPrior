@@ -629,8 +629,11 @@ def get_loader(
         rollout_method = conf.rollout_method,
         plan_H = conf.plan_H,
         only_proprioceptive = conf.only_proprioceptive,
-        prefix = conf.maze_path
+        prefix = conf.maze_path,
+        visual = conf.visual if hasattr(conf, "visual") else False
     )
+
+    # print(conf.visual)
 
     if phase == "train":
 

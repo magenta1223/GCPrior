@@ -13,7 +13,7 @@ seed_everything()
 
 # # Generating single task policy with SAC 
 
-StateProcessor
+
 
 
 def render_task(env, env_name, policy, low_actor, tanh = False):

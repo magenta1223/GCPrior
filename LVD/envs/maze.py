@@ -12,6 +12,7 @@ from ..contrib.simpl.env.maze import MazeEnv, MazeTask, AgentCentricMazeEnv
 
 import torch
 import random
+from copy import deepcopy
 
 init_loc_noise = 0.1
 complete_threshold = 1.0
@@ -38,11 +39,12 @@ class MazeTask_Custom:
 
 class Maze_GC(MazeEnv):
 
-    def __init__(self, size, seed, reward_type, done_on_completed, visual_encoder = None):
+    def __init__(self, size, seed, reward_type, done_on_completed, relative = False, visual_encoder = None):
         if reward_type not in self.reward_types:
             raise f'reward_type should be one of {self.reward_types}, but {reward_type} is given'
         # self.viewer_setup()
-
+        self.size = size
+        self.relative = relative
         super().__init__(size, seed, reward_type, done_on_completed)
         self.agent_centric_res = 32
         self.render_width = 32
@@ -107,14 +109,24 @@ class Maze_GC(MazeEnv):
         qpos = init_loc + self.np_random.uniform(low=-init_loc_noise, high=init_loc_noise, size=self.model.nq)
         qvel = self.init_qvel + self.np_random.randn(self.model.nv) * .1
         self.set_state(qpos, qvel)
-        
-        with self.agent_centric_render():
-            img = self.sim.render(self.agent_centric_res, self.agent_centric_res, device_id=self.render_device) / 255
-            walls = np.abs(img - WALL).mean(axis=-1)
-            grounds = np.minimum(np.abs(img - G1).mean(axis=-1), np.abs(img - G2).mean(axis=-1))
-            img = np.stack((walls, grounds), axis=-1).argmax(axis=-1)
 
-        return np.concatenate((self._get_obs(), img.reshape(-1), np.array(self._target)), axis = 0)
+        ob = deepcopy(self._get_obs())
+        target = deepcopy(self._target)
+        if self.relative:
+            ob[:2] -= self.task.init_loc
+            target -= self.task.init_loc
+
+        ob = np.concatenate((ob, target), axis = 0)
+       
+        return ob
+        # with self.agent_centric_render():
+        #     img = self.sim.render(self.agent_centric_res, self.agent_centric_res, device_id=self.render_device) / 255
+        #     walls = np.abs(img - WALL).mean(axis=-1)
+        #     grounds = np.minimum(np.abs(img - G1).mean(axis=-1), np.abs(img - G2).mean(axis=-1))
+        #     img = np.stack((walls, grounds), axis=-1).argmax(axis=-1)
+
+
+        # return np.concatenate((self._get_obs(), img.reshape(-1), np.array(self._target)), axis = 0)
 
     @contextmanager
     def agent_centric_render(self):
@@ -142,28 +154,37 @@ class Maze_GC(MazeEnv):
 
         self.do_simulation(action, self.frame_skip)
         self.set_marker()
-        ob = self._get_obs()
+        ob = deepcopy(self._get_obs())
 
         goal_dist = np.linalg.norm(ob[0:2] - self._target)
         completed = (goal_dist <= complete_threshold)
         done = self.done_on_completed and completed
         
-        if not init:
-            with self.agent_centric_render():
-                img = self.sim.render(self.agent_centric_res, self.agent_centric_res, device_id=self.render_device) / 255
-                walls = np.abs(img - WALL).mean(axis=-1)
-                grounds = np.minimum(np.abs(img - G1).mean(axis=-1), np.abs(img - G2).mean(axis=-1))
-                img = np.stack((walls, grounds), axis=-1).argmax(axis=-1)
+        # if not init:
+        #     with self.agent_centric_render():
+        #         img = self.sim.render(self.agent_centric_res, self.agent_centric_res, device_id=self.render_device) / 255
+        #         walls = np.abs(img - WALL).mean(axis=-1)
+        #         grounds = np.minimum(np.abs(img - G1).mean(axis=-1), np.abs(img - G2).mean(axis=-1))
+        #         img = np.stack((walls, grounds), axis=-1).argmax(axis=-1)
+        #     ob = np.concatenate((self._get_obs(), img.reshape(-1), np.array(self._target)), axis = 0)
+        # else:
+        #     ob = np.concatenate((self._get_obs(), np.array(self._target)), axis = 0)
 
-            ob = np.concatenate((self._get_obs(), img.reshape(-1), np.array(self._target)), axis = 0)
-        else:
-            ob = np.concatenate((self._get_obs(), np.array(self._target)), axis = 0)
 
+        target = deepcopy(self._target)
+        if self.relative:
+            ob[:2] -= self.task.init_loc
+            target -= self.task.init_loc
+        ob = np.concatenate((ob, target), axis = 0)
+
+        # ob = np.concatenate((self._get_obs(), np.array(self._target)), axis = 0)
+
+        # ob -= np.array(self.task.init_loc)
 
     
         
         if self.reward_type == 'sparse':
-            reward = float(completed)
+            reward = float(completed) * 100
         elif self.reward_type == 'dense':
             reward = np.exp(-goal_dist)
         else:
@@ -189,7 +210,7 @@ class Maze_GC(MazeEnv):
 
     
 maze_config = {
-    'size':20,
+    'size':40,
     'seed': 0,
     'reward_type':'sparse',
     'done_on_completed': True,
@@ -234,31 +255,42 @@ MAZE_TASKS = np.array([
     # [18,5]
 
     # MAZE 20 HARD TASK
-    [[10, 10], [16,  9]], 
-    [[10, 10], [ 2, 15]],
-    [[19, 13], [ 1,  8]],
-    [[10, 10], [18, 13]],
-    [[10, 10], [ 5, 15]],
-    [[10, 10], [ 5,  3]],
-    [[10, 10], [ 4, 18]],
-    [[10, 10], [ 3,  3]],
-    [[10, 10], [18, 11]],
-    [[10, 10], [ 2, 12]],
+    # [[10, 10], [16,  9]], 
+    # [[10, 10], [ 2, 15]],
+    # [[19, 13], [ 1,  8]],
+    # [[10, 10], [18, 13]],
+    # [[10, 10], [ 5, 15]],
+    # [[10, 10], [ 5,  3]],
+    # [[10, 10], [ 4, 18]],
+    # [[10, 10], [ 3,  3]],
+    # [[10, 10], [18, 11]],
+    # [[10, 10], [ 2, 12]],
 
 
 
     # MAZE 40
-    # [[20, 20], [10, 25]],
-    # [[20, 20], [ 4, 23]],
-    # [[20, 20], [21, 34]],
-    # [[20, 20], [19, 33]],
-    # [[20, 20], [18,  5]],
-    # [[20, 20], [12, 12]],
-    # [[20, 20], [10,  8]],
-    # [[20, 20], [ 9, 11]],
-    # [[20, 20], [31, 26]],
-    # [[20, 20], [ 5, 14]],
+    # [[20, 22], [10, 25]],
+    # [[20, 22], [ 4, 23]],
+    # [[20, 22], [21, 34]],
+    # [[20, 22], [19, 33]],
+    # # [[20, 22], [18,  5]],
+    # [[20, 22], [12, 12]],
+    # [[20, 22], [10,  8]],
+    # [[20, 22], [ 9, 11]],
+    # [[20, 22], [31, 26]],
+    # [[20, 22], [ 5, 14]],
     
+    # [[10, 24], [10, 25]], # 바로 위임
+    # [[10, 24], [ 4, 23]], # 바로 옆임 ? 
+    # [[10, 24], [21, 34]],
+    # [[10, 24], [19, 33]],
+    [[10, 24], [18,  5]],
+    [[10, 24], [12, 12]],
+    [[10, 24], [10,  8]],
+    [[10, 24], [ 9, 11]],
+    [[10, 24], [31, 26]],
+    [[10, 24], [ 5, 14]],
+
     # [12,13],
     # [8,20],
     # [14,7],

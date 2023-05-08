@@ -274,6 +274,7 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
         hs = state.repeat(self.num_policy_traj, 1) 
             
         # rollout by policy
+        # TODO : prior_policy에 rollout method 구현
         policy_skills = []
         for t in range(planning_horizon):
             _inputs = dict(states = hs)

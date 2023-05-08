@@ -85,14 +85,15 @@ def goal_checker_calvin(goal_state):
     return task[:-1]
 
 
-def goal_checker_maze(state):
+def goal_checker_maze(state, env):
     # return state[4:]
     # complete_threshold = 1.0
     # goal_dist = np.linalg.norm(state[:2] - state[-2:])
     # completed = (goal_dist <= complete_threshold)
 
     # return "Success" if completed else "Fail"
-    return state[:2].astype(np.uint8)
+    # return (state[:2] * env.size).astype(np.uint8)
+    return (state[:2] * 1).astype(int)
 
 
     # if ((state[:2] - state[2:]) ** 2).sum() < 0.1:
@@ -303,15 +304,15 @@ class StateProcessor:
     def state_process(self, state):
         return self.__state_processors__[self.env_name](state)
     
-    def state_goal_checker(self, state, mode = "state"):
+    def state_goal_checker(self, state, env, mode = "state"):
         """
         Check the state satisfiy which goal state
         """
         if self.env_name == "maze":
             if mode =="state":
-                return self.__goal_checkers__[self.env_name](state) 
+                return self.__goal_checkers__[self.env_name](state, env) 
             else:
-                return self.__goal_checkers__[self.env_name](state[-2:])
+                return self.__goal_checkers__[self.env_name](state[-2:], env)
 
         if mode =="state":
             return self.__goal_checkers__[self.env_name](self.__state2goals__[self.env_name](state)) 

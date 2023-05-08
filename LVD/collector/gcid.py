@@ -87,7 +87,7 @@ class HierarchicalTimeLimitCollector:
                 
     
         # print(GOAL_CHECKERS[self.env_name](STATE_PROCESSOR[self.env_name] (state)))
-        print( self.state_processor.state_goal_checker(state)  )
+        print( self.state_processor.state_goal_checker(state, self.env)  )
 
 
         return episode, torch.tensor(G, dtype = torch.float32).unsqueeze(0)

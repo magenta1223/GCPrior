@@ -20,6 +20,7 @@ from LVD.contrib.simpl.reproduce.maze.maze_vis import draw_maze
 
 
 from LVD.configs.env import ENV_CONFIGS
+from LVD.configs.model import MODEL_CONFIGS
 
 from LVD.envs import ENV_TASK
 from LVD.configs.build import Linear_Config
@@ -35,8 +36,12 @@ from LVD.collector.gcid import LowFixedHierarchicalTimeLimitCollector
 from LVD.collector.storage import Buffer_H
 from LVD.rl.rl_utils import *
 
-
+from LVD.configs.env import ENV_CONFIGS
+from LVD.contrib.simpl.reproduce.maze.maze_vis import draw_maze
 seed_everything()
+
+
+
 
 
 
@@ -68,6 +73,7 @@ def train_policy_iter(collector, trainer, episode_i, batch_size, reuse_rate, pro
             episode = episode_i,
         )
         # Q-warmup
+        print("Warmup Value function")
         trainer.warmup_Q(step_inputs)
 
 
@@ -79,7 +85,7 @@ def train_policy_iter(collector, trainer, episode_i, batch_size, reuse_rate, pro
         )
         stat = trainer.step(step_inputs)
 
-    # log.update(itemize(stat))
+    log.update(itemize(stat))
 
     return log, True
 
@@ -107,7 +113,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     if env_name == "kitchen":
         state_dim = 30
     else:
-        state_dim =  1028 # 4 + image 
+        state_dim =  4 # 4 + image 
 
     latent_dim = 10
     try:
@@ -135,7 +141,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
         in_feature = learned_state_dim + latent_dim if args.use_hidden else state_dim // 2 + latent_dim, # state dim 
         hidden_dim = args.hidden_dim, # 128
         out_dim = 1, # 10 * 2
-        norm_cls = nn.LayerNorm,
+        norm_cls = None,
         act_cls = nn.Mish,
         block_cls = LinearBlock,
         bias = True,
@@ -162,6 +168,8 @@ def train_single_task(env, env_name, tasks, task_cls, args):
 
     ## ------------- Low Decoder ------------- ##
     low_actor = deepcopy(model.skill_decoder.eval())
+    if hasattr(model, "visual_encoder"):
+        low_actor.set_visual_encoder(None)
 
     # ------------- Buffers & Collectors ------------- #
     buffer = Buffer_H(state_dim, latent_dim, buffer_size, tanh = model.tanh)
@@ -185,8 +193,9 @@ def train_single_task(env, env_name, tasks, task_cls, args):
         'buffer' : buffer, 
         'qfs' : qfs,
         'discount' : 0.99,
-        'tau' : 0.0005,
+        'tau' : 0.005,
         'policy_lr' : args.policy_lr,
+        'consistency_lr' :args.consistency_lr, #args.policy_lr if env_name == "maze" else 1e-8,
         'qf_lr' : 3e-4,
         'alpha_lr' : 3e-4,
         'prior_policy_lr' : 1e-5,
@@ -232,39 +241,58 @@ def train_single_task(env, env_name, tasks, task_cls, args):
         state = env.reset()
         task = state_processor.get_goals(state)
 
-        print("TASK : ",  state_processor.state_goal_checker(state, mode = "goal") )
+        print("TASK : ",  state_processor.state_goal_checker(state, env, mode = "goal") )
 
         # print("TASK : ",  GOAL_CHECKERS[args.env_name](   GOAL_TRANSFORM[args.env_name](state)  ))
 
         # log에 success rate추가 .
         # ep = 0
         ewm_rwds = 0
+        early_stop = 0
         for episode_i in range(n_episode+1):
 
 
             log, updated = train_policy_iter(collector, self, episode_i, **config)
+
+            
             log['episode_i'] = episode_i
             # log['task_name'] = task_name
-            log[f'{task_name}_return'] = log['tr_return']
-            del log['tr_return']
+            # log[f'{task_name}_return'] = log['tr_return']
+            # del log['tr_return']
 
             if (episode_i + 1) % args.render_period == 0:
                 if env_name == "maze":
-                    log[f'{task_name}_policy_vis'] = draw_maze(plt.gca(), env, list(self.buffer.episodes)[-20:])
+                    log[f'policy_vis'] = draw_maze(plt.gca(), env, list(self.buffer.episodes)[-20:])
                 else:
                     imgs = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
                     imgs = np.array(imgs).transpose(0, 3, 1, 2)
-                    log[f'{task_name}_rollout'] = wandb.Video(np.array(imgs), fps=32)
+                    if args.env_name == "maze":
+                        fps = 100
+                    else:
+                        fps = 50
+                    log[f'rollout'] = wandb.Video(np.array(imgs), fps=fps)
+
+                # check success rate by 20 rollout 
+                with self.policy.expl(), collector.low_actor.expl() : #, collector.env.step_render():
+                    episode, G = collector.collect_episode(self.policy)
+
+                if np.array(episode.dones).sum() != 0: # success 
+                    print("success")
 
 
                 # imgs = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
                 # imgs = np.array(imgs).transpose(0, 3, 1, 2)
                 # log[f'{task_name}_rollout'] = wandb.Video(np.array(imgs), fps=32)
+            
+            new_log = {}
+            for k, v in log.items():
+                new_log[f"{task_name}/{k}"] = v
 
-            wandb.log(log)
+
+            wandb.log(new_log)
             plt.cla()
 
-            ewm_rwds = 0.8 * ewm_rwds + 0.2 * log[f'{task_name}_return']
+            ewm_rwds = 0.8 * ewm_rwds + 0.2 * log[f'tr_return']
 
             if ewm_rwds > args.early_stop_threshold:
                 early_stop += 1
@@ -285,23 +313,23 @@ def main():
     parser.add_argument("--env_name", default = "kitchen", type = str)
     parser.add_argument("--wandb", action = "store_true")    
     parser.add_argument("-p", "--path", default = "")
-    parser.add_argument("-tl", "--time_limit", default = 280, type = int)
-    parser.add_argument("-nh", "--n_hidden", default = 5, type = int)
-    parser.add_argument("-hd", "--hidden_dim", default = 128, type =int)
-    parser.add_argument("-kls", "--target_kl_start", default = 20, type =float)
-    parser.add_argument("-kle", "--target_kl_end", default = 5, type =float)
-    parser.add_argument("-a", "--init_alpha", default = 0.1, type =float)
-    parser.add_argument("--only_increase", action = "store_true", default = False)    
-    parser.add_argument("--auto_alpha", action = "store_true", default = False)    
-    parser.add_argument("--gcprior", action = "store_true", default = False)    
-    parser.add_argument("--use_hidden", action = "store_true", default = False)    
-    parser.add_argument("--finetune", action = "store_true", default = False)    
+    # parser.add_argument("-tl", "--time_limit", default = 280, type = int)
+    # parser.add_argument("-nh", "--n_hidden", default = 5, type = int)
+    # parser.add_argument("-hd", "--hidden_dim", default = 128, type =int)
+    # parser.add_argument("-kls", "--target_kl_start", default = 20, type =float)
+    # parser.add_argument("-kle", "--target_kl_end", default = 5, type =float)
+    # parser.add_argument("-a", "--init_alpha", default = 0.1, type =float)
+    # parser.add_argument("--only_increase", action = "store_true", default = False)    
+    # parser.add_argument("--auto_alpha", action = "store_true", default = False)    
+    # parser.add_argument("--gcprior", action = "store_true", default = False)    
+    # parser.add_argument("--use_hidden", action = "store_true", default = False)    
+    # parser.add_argument("--finetune", action = "store_true", default = False)    
     parser.add_argument("--wandb_project_name", default = "GCPolicy_Level")    
     parser.add_argument("-rp", "--render_period", default = 10, type = int)
-    parser.add_argument("-ne", "--n_episode", default = 300, type = int)
-    parser.add_argument("--reuse_rate", default = 256, type = int)
+    # parser.add_argument("-ne", "--n_episode", default = 300, type = int)
+    # parser.add_argument("--reuse_rate", default = 256, type = int)
 
-    parser.add_argument("-plr", "--policy_lr", default = 3e-4, type =float)
+    # parser.add_argument("-plr", "--policy_lr", default = 3e-4, type =float)
 
 
     parser.add_argument("--env", type = str, default = "simpl", choices= ['simpl', 'gc'])    
@@ -314,9 +342,11 @@ def main():
 
 
     args = parser.parse_args()
-    env_config = ENV_CONFIGS[args.env_name]("sc")
-
+    env_config = ENV_CONFIGS[args.env_name]("gc_div_joint")
     env_default_conf = {**env_config.attrs}
+    # env_config = MODEL_CONFIGS["gc_div_joint"]("gc_div_joint")
+    # env_default_conf = {**env_config.attrs}
+
 
     for k, v in env_default_conf.items():
         setattr(args, k, v)
@@ -326,6 +356,9 @@ def main():
     task_cls = ENV_TASK[args.env_name]['task_cls']
     ALL_TASKS = ENV_TASK[args.env_name]['tasks']
     configure = ENV_TASK[args.env_name]['cfg']
+
+    if hasattr(args, "relative"):
+        configure['relative'] = args.relative
 
 
     if configure is not None:

@@ -37,7 +37,6 @@ from LVD.rl.rl_utils import *
 
 
 from LVD.configs.env import ENV_CONFIGS
-
 from LVD.contrib.simpl.reproduce.maze.maze_vis import draw_maze
 
 
@@ -79,7 +78,6 @@ def render_task(env, env_name, policy, low_actor, tanh = False):
 
     return imgs
 
-seed_everything()
 
 
 

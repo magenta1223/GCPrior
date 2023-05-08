@@ -54,7 +54,7 @@ class SequentialBuilder(BaseModule):
             layers.append(cls(*args))
         self.layers = nn.ModuleList(layers)
 
-    def forward(self, x):
+    def forward(self, x, *args, **kwargs):
         out = x 
         for layer in self.layers:
             out = layer(out)
@@ -156,3 +156,12 @@ class ContextPolicyMixin:
     def dist_with_z(self, batch_state, batch_z, tanh = False):
         batch_state_z = torch.cat([batch_state, batch_z], dim=-1)
         return self.dist(batch_state_z, tanh= tanh)
+    
+
+class Flatten(nn.Module):
+    def __init__(self):
+        super(Flatten, self).__init__()
+
+    def forward(self, x):
+        
+        return x.view(-1, np.prod(x.shape[1:]))

@@ -15,6 +15,7 @@ from ...contrib.spirl.pytorch_utils import RepeatedDataLoader
 import pickle
 from torch.utils.data.dataloader import DataLoader, SequentialSampler
 import torch
+import pickle 
 
 def parse_h5(file_path):
     f = h5py.File(file_path)
@@ -90,6 +91,8 @@ class Maze_StateConditioned(Dataset):
     def __len__(self):
         if self.dataset_size != -1:
             return self.dataset_size
+        
+        print(int(self.SPLIT[self.phase] * self.n_obs / self.subseq_len))
         return int(self.SPLIT[self.phase] * self.n_obs / self.subseq_len)
 
 
@@ -222,11 +225,36 @@ class Maze_AgentCentric_StateConditioned(Dataset):
     SPLIT = edict(train=0.99, val=0.01, test=0.0)
     def __init__(self, data_dir, data_conf, phase, resolution=None, shuffle=True, dataset_size=-1, *args, **kwargs):
         # super().__init__(data_dir, data_conf, phase, resolution=None, shuffle=True, dataset_size=-1)
-        prefix = kwargs.get("prefix", "/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_prep")
-        self.file_paths = glob(f"{prefix}/*.h5")        
+        # self.visual = kwargs['visual']
+        # if self.visual == "visual_feature":
+        #     prefix = "/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_prep_visual_feature"
+        # else: 
+        #     prefix = "/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_prep"
+
+        # self.file_paths = glob(f"{prefix}/*.h5")        
         # self.seqs = [parse_h5(file_path) for file_path in self.file_paths]
 
-        self.n_seqs = len(self.file_paths)
+
+
+        # with open("/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_prep/maze_dataset.pkl", mode = "rb") as f:
+        #     dataset = pickle.load(f)
+
+        # self.states = dataset['states']
+        # self.actions = dataset['actions']
+        # self.images = dataset['images']
+        # self.n_seqs = len(self.states)
+
+        with open("/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze.pkl", mode ="rb") as f:
+            self.seqs = pickle.load(f)
+        
+        # def normalize(seq):
+        #     seq['states'][:, :2] = seq['states'][:, :2] / 40 - 0.5
+        #     seq['states'][:, 2:] = seq['states'][:, 2:] / 10
+        #     return  seq
+        # self.seqs = [ normalize(seq)  for seq in self.seqs]
+
+
+        self.n_seqs = len(self.seqs)
         self.phase = phase
         self.dataset_size = dataset_size
         self.shuffle = shuffle
@@ -251,22 +279,18 @@ class Maze_AgentCentric_StateConditioned(Dataset):
         self.num = 0
 
     def __getitem__(self, idx):
-        # return self.file_paths[idx]
+        seq = self.seqs[idx]
+        states = seq['states']
+        actions = seq['actions']
 
-        file_path = self.file_paths[idx]
+        start_idx = np.random.randint(0, states.shape[0] - self.subseq_len - 1)
+        states = states[start_idx : start_idx + self.subseq_len]
+        actions = actions[start_idx : start_idx + self.subseq_len -1]
 
-        with h5py.File(file_path, 'r') as f:
-
-            states = np.array(f['states'])
-
-            start_idx = np.random.randint(0, states.shape[0] - self.subseq_len - 1)
-            states = states[start_idx : start_idx + self.subseq_len]
-            images = np.array(f['images'])[start_idx : start_idx + self.subseq_len].reshape(self.subseq_len, -1)
-
-            data = {
-                'states': np.concatenate((states, images), axis = -1),
-                'actions': np.array(f['actions'])[start_idx : start_idx + self.subseq_len -1],
-            }
+        data = {
+            'states': states,
+            'actions': actions,
+        }
 
 
         return data
@@ -278,7 +302,7 @@ class Maze_AgentCentric_StateConditioned(Dataset):
         # return  int(self.SPLIT[self.phase] * (len(self.file_paths) //2  ))
         if self.phase == "train":
             # return 20000
-            return  40000
+            return  int(self.SPLIT[self.phase] * self.n_seqs)
         else:
             return 5000
 
@@ -323,7 +347,7 @@ class Maze_AgentCentric_StateConditioned(Dataset):
             shuffle=False,
             num_workers=num_workers,
             drop_last=False,
-            n_repeat=1,
+            n_repeat=n_repeat,
             pin_memory=True, # self.device == 'cuda'
             # pin_memory= False, # self.device == 'cuda'
             # collate_fn = self.collate_fn,
@@ -344,12 +368,14 @@ class Maze_AgentCentric_GoalConditioned_Diversity(Maze_AgentCentric_StateConditi
             "with_buffer" : self.__skill_learning_with_buffer__,
         }
 
-                
+        if self.visual == "visual_feature":
+            self.buffer_dim = self.state_dim
+        else:
+            self.buffer_dim = self.state_dim #+ 1024
+
         # 10 step 이후에 skill dynamics로 추론해 error 누적 최소화 
-        self.buffer_prev = Offline_Buffer(state_dim= self.state_dim, action_dim= self.action_dim, trajectory_length = 19, max_size= 1024)
-        # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 19, max_size= int(1e5))
-        # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 19, max_size= 1024)
-        # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 23, max_size= 1024)
+        self.buffer_prev = Offline_Buffer(state_dim= self.buffer_dim, action_dim= self.action_dim, trajectory_length = 19, max_size= 1024)
+
         
         # rollout method
         skill_length = self.subseq_len - 1
@@ -359,9 +385,8 @@ class Maze_AgentCentric_GoalConditioned_Diversity(Maze_AgentCentric_StateConditi
         # self.buffer_now = Offline_Buffer(state_dim= 30, action_dim= 9, trajectory_length = 19, max_size= 1024)
         
         rollout_length = skill_length + ((self.plan_H - skill_length) // skill_length)
-        self.buffer_now = Offline_Buffer(state_dim= self.state_dim + 32 * 32, action_dim= self.action_dim, trajectory_length = rollout_length, max_size= 1024)
+        self.buffer_now = Offline_Buffer(state_dim= self.buffer_dim, action_dim= self.action_dim, trajectory_length = rollout_length, max_size= 1024)
         # self.buffer_now = Offline_Buffer(state_dim= self.state_dim, action_dim= self.action_dim, trajectory_length = rollout_length, max_size= 1024)
-
 
 
     def set_mode(self, mode):
@@ -407,55 +432,76 @@ class Maze_AgentCentric_GoalConditioned_Diversity(Maze_AgentCentric_StateConditi
         
     def __skill_learning__(self, index):
 
-        file_path = self.file_paths[index]
+        # states = self.states[index]
+        # actions = self.actions[index]
+        # # visual_input = self.images[index]
 
-        with h5py.File(file_path, 'r') as f:
+        # start_idx, goal_idx = self.sample_indices(states)
+        # assert start_idx < goal_idx, "Invalid"
 
-            states = np.array(f['states'])
-            actions = np.array(f['actions'])
-            images = np.array(f['images'])
+        # G = deepcopy(states[goal_idx])
+        # states = states[start_idx : start_idx + self.subseq_len]
+        # actions = actions[start_idx : start_idx + self.subseq_len -1]
+        # # visual_input = visual_input[start_idx : start_idx + self.subseq_len].reshape(self.subseq_len, -1)
+
+        # data = edict(
+        #     # states= np.concatenate((states, visual_input), axis = -1),
+        #     states= states,
+        #     actions=actions,
+        #     G = G,
+        #     rollout = True
+        #     # rollout = True if start_idx < 280 - self.plan_H else False
+        # )
+
+        # augmentation
+        # 아무 지점이나 하나 뽑고 거길 기준으로 정함.
+        # relative position을 사용. 
+
+        seq = self.seqs[index]
+        states = deepcopy(seq['states'])
+        actions = seq['actions']
+        
+        # relative position. 
+        criterion = states[np.random.randint(0, states.shape[0]), :2]
+        
+        # criterion = np.random.rand(2) * 40
+        states[:, :2] -= criterion
+        
+
+
+
+
 
         start_idx, goal_idx = self.sample_indices(states)
-
         assert start_idx < goal_idx, "Invalid"
 
 
-        # hindsight relabeling 
-        G = deepcopy(states[goal_idx])
-        G[2:] = 0 # remove acceleration 
-        # trajectory
-        # states = seq_skill.states[start_idx : start_idx+self.subseq_len, :self.n_obj + self.n_env]
-        states = states[start_idx : start_idx+self.subseq_len, :self.n_obj]
-        actions = actions[start_idx:start_idx+self.subseq_len-1]
-        images = images[start_idx : start_idx + self.subseq_len].reshape(self.subseq_len, -1)
-        # if self.only_proprioceptive:
-        #     states = states[:, :self.n_obj]
         
-        # G = deepcopy(seq_skill.states[goal_idx])[self.n_obj:self.n_obj + self.n_goal]
 
 
-        output = edict(
-            states= np.concatenate((states, images), axis = -1),
-            actions=actions,
-            G = G,
-            rollout = True
-            # rollout = True if start_idx < 280 - self.plan_H else False
-        )
+        G = states[goal_idx]
+        G[2:] = 0
+        states = states[start_idx : start_idx + self.subseq_len]
+        actions = actions[start_idx : start_idx + self.subseq_len -1]
 
-        return output
+        data = {
+            'states': states,
+            'actions': actions,
+            'G' : G,
+            'rollout' : True
+        }
+
+        return data
 
     def __skill_learning_with_buffer__(self, index):
 
         if np.random.rand() < self.mixin_ratio:
             # hindsight relabeling 
-            # trajectory
-            # states = seq_skill.states[start_idx : start_idx+self.subseq_len, :self.n_obj + self.n_env]
             states_images, actions = self.buffer_now.sample()
-            # images = np.array(f['images'])[: self.subseq_len]
-            # if self.only_proprioceptive:
-            #     states = states[:, :self.n_obj]
-            # states = states_images[:, :self.n_obj]
-            # images = states_images[:, self.n_obj:].reshape(-1, 32,32)
+            
+            # # relative position 
+            # states_images[:, :2] -= states_images[0, :2]
+            # G[ :2] -= states_images[0, :2]
 
             output = edict(
                 states = states_images[:self.subseq_len],

@@ -52,7 +52,7 @@ class SAC(BaseModule):
                 
         self.consistency_optim = torch.optim.Adam(
             param_groups,
-            lr= 1e-8 # 마지막 lr 
+            lr= self.consistency_lr # 마지막 lr 
         )
 
         self.consistency_scheduler = ReduceLROnPlateau(
