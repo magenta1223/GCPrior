@@ -28,7 +28,7 @@ class KitchenEnvConfig(BaseDataConfig):
             n_obj = 9,
             n_env = 21,
             n_goal = 30,
-            env_name="kitchen-mixed-v0",
+            env_name="kitchen",
             subseq_len = 11, 
             only_proprioceptive = False,
             crop_rand_subseq=True,
@@ -51,6 +51,28 @@ class KitchenEnvConfig(BaseDataConfig):
             hidden_dim = 128,
             reg_beta = 0.0005,
             prior_state_dim = 30,
+
+            # RL
+            time_limit = 280, # orig 2000
+            n_hidden = 5,
+            target_kl_start  = 50, # orig 1 
+            target_kl_end = 15, # orig 1 
+            init_alpha = 0.005,
+            only_increase = True,
+            auto_alpha = False,
+            reuse_rate = 512,
+            q_warmup = 5000,
+            q_weight = 1, 
+            precollect = 20,
+            early_stop_threshold = 3.6,
+            use_hidden= True,
+            finetune = True,
+            n_episode = 300,
+            consistency_lr = 1e-8,
+            policy_lr = 1e-8,
+            gcprior = False,
+            relative = False,
+
 
             # etc.
             res=128,

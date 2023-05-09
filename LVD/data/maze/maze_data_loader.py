@@ -234,8 +234,9 @@ class Maze_AgentCentric_StateConditioned(Dataset):
         # self.file_paths = glob(f"{prefix}/*.h5")        
         # self.seqs = [parse_h5(file_path) for file_path in self.file_paths]
 
-
-
+        
+        self.relative = kwargs['relative']
+    
         # with open("/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_prep/maze_dataset.pkl", mode = "rb") as f:
         #     dataset = pickle.load(f)
 
@@ -244,9 +245,11 @@ class Maze_AgentCentric_StateConditioned(Dataset):
         # self.images = dataset['images']
         # self.n_seqs = len(self.states)
 
-        with open("/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze.pkl", mode ="rb") as f:
+        # with open("/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze.pkl", mode ="rb") as f:
+        #     self.seqs = pickle.load(f)
+        with open("/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_states_skild.pkl", mode ="rb") as f:
             self.seqs = pickle.load(f)
-        
+
         # def normalize(seq):
         #     seq['states'][:, :2] = seq['states'][:, :2] / 40 - 0.5
         #     seq['states'][:, 2:] = seq['states'][:, 2:] / 10
@@ -304,7 +307,7 @@ class Maze_AgentCentric_StateConditioned(Dataset):
             # return 20000
             return  int(self.SPLIT[self.phase] * self.n_seqs)
         else:
-            return 5000
+            return int(self.SPLIT[self.phase] * self.n_seqs)
 
 
     def load_data(self, file_path):
@@ -432,46 +435,16 @@ class Maze_AgentCentric_GoalConditioned_Diversity(Maze_AgentCentric_StateConditi
         
     def __skill_learning__(self, index):
 
-        # states = self.states[index]
-        # actions = self.actions[index]
-        # # visual_input = self.images[index]
-
-        # start_idx, goal_idx = self.sample_indices(states)
-        # assert start_idx < goal_idx, "Invalid"
-
-        # G = deepcopy(states[goal_idx])
-        # states = states[start_idx : start_idx + self.subseq_len]
-        # actions = actions[start_idx : start_idx + self.subseq_len -1]
-        # # visual_input = visual_input[start_idx : start_idx + self.subseq_len].reshape(self.subseq_len, -1)
-
-        # data = edict(
-        #     # states= np.concatenate((states, visual_input), axis = -1),
-        #     states= states,
-        #     actions=actions,
-        #     G = G,
-        #     rollout = True
-        #     # rollout = True if start_idx < 280 - self.plan_H else False
-        # )
-
-        # augmentation
-        # 아무 지점이나 하나 뽑고 거길 기준으로 정함.
-        # relative position을 사용. 
-
         seq = self.seqs[index]
-        states = deepcopy(seq['states'])
+        # states = deepcopy(seq['states'])
+        states = deepcopy(seq['obs'])
         actions = seq['actions']
         
         # relative position. 
-        criterion = states[np.random.randint(0, states.shape[0]), :2]
+        if self.relative:
+            criterion = states[np.random.randint(0, states.shape[0]), :2]
+            states[:, :2] -= criterion
         
-        # criterion = np.random.rand(2) * 40
-        states[:, :2] -= criterion
-        
-
-
-
-
-
         start_idx, goal_idx = self.sample_indices(states)
         assert start_idx < goal_idx, "Invalid"
 

@@ -316,8 +316,8 @@ class StateProcessor:
 
         if mode =="state":
             return self.__goal_checkers__[self.env_name](self.__state2goals__[self.env_name](state)) 
-
-
+        else:
+            return self.__goal_checkers__[self.env_name](self.__get_goals__[self.env_name](state)) 
 
 
 class Scheduler_Helper(torch.optim.lr_scheduler.ReduceLROnPlateau):

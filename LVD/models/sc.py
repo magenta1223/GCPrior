@@ -123,15 +123,32 @@ class StateConditioned_Model(BaseModule):
             dropout = dropout           
         )
 
+        highlevel_policy_config = edict(
+            n_blocks =  self.n_Layers,# 
+            in_feature = self.state_dim + self.n_goal, # state_dim + latent_dim 
+            hidden_dim = self.hidden_dim, 
+            out_dim = self.latent_dim * 2,
+            norm_cls = norm_cls,
+            act_cls = act_cls, #nn.LeakyReLU,
+            block_cls = LinearBlock,
+            true = True,
+            tanh = False,
+            bias = bias,
+            dropout = dropout    
+        )
+
+
 
 
         prior = SequentialBuilder(Linear_Config(prior_config))
+        highlevel_policy = SequentialBuilder(Linear_Config(highlevel_policy_config))
         
         
         self.skill_prior = PRIOR_WRAPPERS['sc'](
             prior_policy = prior,
             state_encoder = state_encoder,
-            state_decoder = state_decoder
+            state_decoder = state_decoder,
+            highlevel_policy = highlevel_policy,
         )
 
         ## skill encoder
@@ -200,17 +217,19 @@ class StateConditioned_Model(BaseModule):
         with torch.no_grad():
             # KL (post || state-conditioned prior)
             self.loss_dict['Prior_S']  = self.loss_fn('reg')(self.outputs['post_detach'], self.outputs['prior']).mean().item()
-            
+            self.loss_dict['Policy_loss']  = self.loss_fn('reg')(self.outputs['post_detach'], self.outputs['policy_skill']).mean().item()
+
             # dummy metric 
             self.loss_dict['metric'] = self.loss_dict['Prior_S']
             
 
-    def forward(self, states, actions):
+    def forward(self, states, actions, G):
 
         
 
         inputs = dict(
             states = states,
+            G = G
         )
 
         # skill prior
@@ -261,10 +280,24 @@ class StateConditioned_Model(BaseModule):
                 self.outputs['z_normal'],
                 tanh = self.tanh
             ).mean()
+
+            policy_loss = self.loss_fn('prior')(
+                self.outputs['z'],
+                self.outputs['policy_skill'], # distributions to optimize
+                self.outputs['z_normal'],
+                tanh = self.tanh
+            ).mean()
+
         else:
             prior = self.loss_fn('prior')(
                 self.outputs['z'],
                 self.outputs['prior'], 
+                tanh = self.tanh
+            ).mean()
+
+            policy_loss = self.loss_fn('prior')(
+                self.outputs['z'],
+                self.outputs['policy_skill'], # distributions to optimize
                 tanh = self.tanh
             ).mean()
 
@@ -283,7 +316,7 @@ class StateConditioned_Model(BaseModule):
 
 
         # ----------- Add -------------- # 
-        loss = recon + reg * self.reg_beta  + prior
+        loss = recon + reg * self.reg_beta  + prior + policy_loss
 
         if "states_hat" in self.outputs.keys():
             recon_state = self.loss_fn('recon')(self.outputs['states_hat'], self.outputs['states']) # ? 
@@ -300,6 +333,7 @@ class StateConditioned_Model(BaseModule):
             "Rec_skill" : recon.item(),
             "Reg" : reg.item(),
             "Prior" : prior.item(),
+            "Policy_loss" : policy_loss.item(),
             "skill_metric" : recon.item() + reg.item() * self.reg_beta,
             "recon_state" : recon_state.item() if "states_hat" in self.outputs.keys() else 0,
             "mmd_loss" : mmd_loss.item() if "states_hat" in self.outputs.keys() else 0
@@ -308,8 +342,8 @@ class StateConditioned_Model(BaseModule):
 
         return loss
     
-    def __main_network__(self, states, actions, validate = False):
-        self(states, actions)
+    def __main_network__(self, states, actions, G, validate = False):
+        self(states, actions, G)
         loss = self.compute_loss(actions)
 
         if not validate:
@@ -326,10 +360,10 @@ class StateConditioned_Model(BaseModule):
     def optimize(self, batch, e):
         # inputs & targets       
 
-        states, actions = batch.values()
-        states, actions = states.float().cuda(), actions.cuda()
+        states, actions, G = batch.values()
+        states, actions, G = states.float().cuda(), actions.cuda(), G.cuda()
 
-        self.__main_network__(states, actions)
+        self.__main_network__(states, actions, G)
 
         with torch.no_grad():
             self.get_metrics()
@@ -339,10 +373,10 @@ class StateConditioned_Model(BaseModule):
     def validate(self, batch, e):
         # inputs & targets       
 
-        states, actions = batch.values()
-        states, actions = states.float().cuda(), actions.cuda()
+        states, actions, G = batch.values()
+        states, actions, G = states.float().cuda(), actions.cuda(), G.cuda()
 
-        self.__main_network__(states, actions, validate= True)
+        self.__main_network__(states, actions, G, validate= True)
 
         with torch.no_grad():
             self.get_metrics()

@@ -58,7 +58,7 @@ class HierarchicalTimeLimitCollector:
                 low_action = low_actor.act(state)
 
 
-            state, reward, done, info = self.env.step(low_action,  init = False)
+            state, reward, done, info = self.env.step(low_action)
             # state = STATE_PROCESSOR[self.env_name](state)
             state = self.state_processor.state_process(state)
 

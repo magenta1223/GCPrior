@@ -33,36 +33,21 @@ class StateConditioned_Prior(BaseModule):
         return: state conditioned prior, and detached version for metric
         """
         
-        states = inputs['states']
+        # states = inputs['states']
+        states, G = inputs['states'], inputs['G']
+
         N, T, _ = states.shape
 
+
         # -------------- State Enc / Dec -------------- #
+        prior = self.prior_policy.dist(states[:, 0])
+        policy_skill = self.highlevel_policy.dist(torch.cat((states[:,0], G), dim = -1))
 
-        if hasattr(self, "state_encoder"):
-            N, T, D = states.shape
-            states_repr = self.state_encoder(states.view(N * T, -1))
-            states_hat = self.state_decoder(states_repr).view(N, T, -1)
-
-            state_emb = states_repr.view(N, T, -1)[:, 0]
-            states_fixed = torch.randn(512, *state_emb.shape[1:]).cuda()
-            
-            prior = self.prior_policy.dist(states_repr.clone().detach().view(N, T, -1)[:, 0])
-            return dict(
-                prior = prior,
-                states = states,
-                states_repr = states_repr,
-                states_hat = states_hat,
-                states_fixed_dist = states_fixed
-            )
-
-
-        else:
-            
-            prior = self.prior_policy.dist(states[:, 0])
-            return dict(
-                prior = prior,
-                states = states,
-            )
+        return dict(
+            prior = prior,
+            states = states,
+            policy_skill = policy_skill,
+        )
 
     def __eval__(self, inputs, *args):
         """
@@ -71,23 +56,16 @@ class StateConditioned_Prior(BaseModule):
             -  states 
         return: state conditioned prior, and detached version for metric
         """
-        states = inputs['states']
+        states, G = inputs['states'], inputs['G']
         if len(states.shape) < 2:
             states = states.unsqueeze(0)     
 
-        if hasattr(self, "state_encoder"):
-            states_repr = self.state_encoder(states)
+        
+        # states = states[:, :self.prior_policy.in_feature]
+        policy_skill = self.highlevel_policy.dist(torch.cat((states, G.cuda()), dim = -1))
 
-            prior = self.prior_policy.dist(states_repr)
-            return dict(
-                prior = prior,
-            )
-
-
-        else:            
-            states = states[:, :self.prior_policy.in_feature]
-
-            prior = self.prior_policy.dist(states)
-            return dict(
-                prior = prior,
-            )
+        prior = self.prior_policy.dist(states)
+        return dict(
+            prior = prior,
+            policy_skill = policy_skill,
+        )

@@ -45,7 +45,7 @@ class MazeEnvConfig(BaseDataConfig):
             crop_rand_subseq=True,
             max_seq_len = 300,
             data_dir = "./LVD/data/maze/maze.pkl",
-            epoch_cycles_train = 1,
+            epoch_cycles_train = 20,
             batch_size  = 256,
             visual = "image",
 
@@ -63,7 +63,7 @@ class MazeEnvConfig(BaseDataConfig):
             n_Layers = 5,
             hidden_dim = 128,
             # reg_beta = 0.01,
-            reg_beta = 0.01,
+            reg_beta = 0.001,
 
             
 
@@ -73,7 +73,7 @@ class MazeEnvConfig(BaseDataConfig):
             n_hidden = 5,
             target_kl_start  = 5, # orig 1 
             target_kl_end = 5, # orig 1 
-            init_alpha = 0.01,
+            init_alpha = 0.05,
             only_increase = False,
             auto_alpha = False,
             reuse_rate = 128,
@@ -87,7 +87,7 @@ class MazeEnvConfig(BaseDataConfig):
             consistency_lr = 1e-8,
             policy_lr = 3e-4,
             gcprior = False,
-            relative = True,
+            relative = False,
             # prior_state_dim = 4,
             # policy_state_dim = 6, # 기존 방법론의 경우는 다 붙여서 넣으니까
 

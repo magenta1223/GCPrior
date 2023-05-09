@@ -70,6 +70,8 @@ class Buffer_H(Buffer):
         if not skimo and tanh:
             super().__init__(state_dim, action_dim * 4, max_size)
             print(state_dim, action_dim)
+        elif not skimo and not tanh:
+            super().__init__(state_dim, action_dim * 3, max_size)
         else:
             super().__init__(state_dim, action_dim, max_size)
 

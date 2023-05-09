@@ -41,13 +41,45 @@ class D4RL_StateConditionedDataset(D4RLSequenceSplitDataset):
         for k, v in kwargs.items():
             setattr(self, k, v)    
 
+    def sample_indices(self, states, min_idx = 0): 
+        """
+        return :
+            - start index of sub-trajectory
+            - goal index for hindsight relabeling
+        """
+
+        goal_max_index = len(states) - 1 # 마지막 state가 이상함. 
+        start_idx = np.random.randint(min_idx, states.shape[0] - self.subseq_len - 1)
+        
+        if self.last:
+            return start_idx, goal_max_index
+
+        # start + sub_seq_len 이후 중 아무거나 하나
+        goal_index = np.random.randint(start_idx + self.subseq_len, goal_max_index)
+        # _min_ = min(start_idx + self.subseq_len + 50, goal_max_index- 1)
+        # _max_ = goal_max_index
+        # goal_index = np.random.randint(_min_, _max_)
+
+
+        # 적절한 planning을 위해 relabeled 
+
+        return start_idx, goal_index
+
+
+
     def __getitem__(self, index):
         # sample start index in data range
         seq = self._sample_seq()
-        start_idx = np.random.randint(0, seq.states.shape[0] - self.subseq_len - 1)
+
+        start_idx, goal_idx = self.sample_indices(seq.states)
+
+        G = deepcopy(seq.states[goal_idx])[:self.n_obj + self.n_env]
+        G[ : self.n_obj] = 0 # only env state
+
         output = dict(
             states = seq.states[start_idx:start_idx+self.subseq_len, :self.n_obj + self.n_env],
             actions = seq.actions[start_idx:start_idx+self.subseq_len-1],
+            G = G
             # pad_mask = np.ones((self.subseq_len,)),
             # state_labels = seq.state_labels[start_idx:start_idx+self.subseq_len]
         )
@@ -55,6 +87,8 @@ class D4RL_StateConditionedDataset(D4RLSequenceSplitDataset):
             output.states = output.states[..., :int(output.states.shape[-1]/2)]
 
         return output
+
+
 
 class D4RL_StateConditioned_Diversity_Dataset(D4RL_StateConditionedDataset):
     def __init__(self, data_dir, data_conf, phase, resolution=None, shuffle=True, dataset_size=-1, *args, **kwargs):
@@ -130,29 +164,7 @@ class D4RL_GoalConditionedDataset(D4RL_StateConditionedDataset):
     # def __init__(self, data_dir, data_conf, phase, resolution=None, shuffle=True, dataset_size=-1, *args, **kwargs):
     #     super().__init__(data_dir, data_conf, phase, resolution, shuffle, dataset_size, *args, **kwargs)
 
-    def sample_indices(self, states, min_idx = 0): 
-        """
-        return :
-            - start index of sub-trajectory
-            - goal index for hindsight relabeling
-        """
 
-        goal_max_index = len(states) - 1 # 마지막 state가 이상함. 
-        start_idx = np.random.randint(min_idx, states.shape[0] - self.subseq_len - 1)
-        
-        if self.last:
-            return start_idx, goal_max_index
-
-        # start + sub_seq_len 이후 중 아무거나 하나
-        goal_index = np.random.randint(start_idx + self.subseq_len, goal_max_index)
-        # _min_ = min(start_idx + self.subseq_len + 50, goal_max_index- 1)
-        # _max_ = goal_max_index
-        # goal_index = np.random.randint(_min_, _max_)
-
-
-        # 적절한 planning을 위해 relabeled 
-
-        return start_idx, goal_index
         
 
 
