@@ -247,7 +247,7 @@ class Maze_AgentCentric_StateConditioned(Dataset):
 
         # with open("/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze.pkl", mode ="rb") as f:
         #     self.seqs = pickle.load(f)
-        with open("/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_states_skild.pkl", mode ="rb") as f:
+        with open("./LVD/data/maze/maze_states_skild.pkl", mode ="rb") as f:
             self.seqs = pickle.load(f)
 
         # def normalize(seq):
@@ -281,18 +281,46 @@ class Maze_AgentCentric_StateConditioned(Dataset):
 
         self.num = 0
 
+    def sample_indices(self, states, min_idx = 0): 
+        """
+        return :
+            - start index of sub-trajectory
+            - goal index for hindsight relabeling
+        """
+
+        goal_max_index = len(states) - 1 # 마지막 state가 이상함. 
+        start_idx = np.random.randint(min_idx, states.shape[0] - self.subseq_len - 1)
+        
+        if self.last:
+            return start_idx, goal_max_index
+
+        # start + sub_seq_len 이후 중 아무거나 하나
+        goal_index = np.random.randint(start_idx + self.subseq_len, goal_max_index)
+
+        # 적절한 planning을 위해 relabeled 
+
+        return start_idx, goal_index
+
     def __getitem__(self, idx):
+
+
         seq = self.seqs[idx]
-        states = seq['states']
+        states = seq['obs']
         actions = seq['actions']
 
-        start_idx = np.random.randint(0, states.shape[0] - self.subseq_len - 1)
+        start_idx, goal_idx = self.sample_indices(states)
+        assert start_idx < goal_idx, "Invalid"
+
         states = states[start_idx : start_idx + self.subseq_len]
         actions = actions[start_idx : start_idx + self.subseq_len -1]
+
+        G = states[goal_idx]
+        G[2:] = 0
 
         data = {
             'states': states,
             'actions': actions,
+            'G' : G,
         }
 
 
@@ -310,35 +338,6 @@ class Maze_AgentCentric_StateConditioned(Dataset):
             return int(self.SPLIT[self.phase] * self.n_seqs)
 
 
-    def load_data(self, file_path):
-
-        with h5py.File(file_path, 'r') as f:
-
-            states = np.array(f['states'])
-
-            start_idx = np.random.randint(0, states.shape[0] - self.subseq_len - 1)
-            states = states[start_idx : start_idx + self.subseq_len]
-            images = np.array(f['images'])[start_idx : start_idx + self.subseq_len].reshape(self.subseq_len, -1)
-
-            data = {
-                'states': np.concatenate((states, images), axis = -1),
-                'actions': np.array(f['actions'])[start_idx : start_idx + self.subseq_len -1],
-            }
-
-
-
-        return data
-    
-    def collate_fn(self, batch):
-        data = [self.load_data(path) for path in batch]
-        states = [d['states'] for d in data]
-        actions = [d['actions'] for d in data]
-        # images = [d['images'] for d in data]
-        return {
-            'states': torch.from_numpy(np.stack(states)),
-            'actions': torch.from_numpy(np.stack(actions)),
-            # 'images': torch.from_numpy(np.stack(images))
-        }
     
     def get_data_loader(self, batch_size, n_repeat, num_workers = 8):
         print('len {} dataset {}'.format(self.phase, len(self)))
@@ -401,25 +400,6 @@ class Maze_AgentCentric_GoalConditioned_Diversity(Maze_AgentCentric_StateConditi
     def mode(self):
         return self.__mode__
 
-    def sample_indices(self, states, min_idx = 0): 
-        """
-        return :
-            - start index of sub-trajectory
-            - goal index for hindsight relabeling
-        """
-
-        goal_max_index = len(states) - 1 # 마지막 state가 이상함. 
-        start_idx = np.random.randint(min_idx, states.shape[0] - self.subseq_len - 1)
-        
-        if self.last:
-            return start_idx, goal_max_index
-
-        # start + sub_seq_len 이후 중 아무거나 하나
-        goal_index = np.random.randint(start_idx + self.subseq_len, goal_max_index)
-
-        # 적절한 planning을 위해 relabeled 
-
-        return start_idx, goal_index
 
     def enqueue(self, states, actions):
         self.buffer_now.enqueue(states, actions)

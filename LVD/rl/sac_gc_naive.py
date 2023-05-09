@@ -181,7 +181,7 @@ class SAC(BaseModule):
         step_inputs['dists'] = dist_out['policy_skill'] # 
         step_inputs['policy_actions'] = step_inputs['dists'].rsample() 
 
-        entropy_term, prior_dists = self.entropy(step_inputs, kl_clip= False) # policy의 dist로는 gradient 전파함 .
+        entropy_term, prior_dists = self.entropy(step_inputs, kl_clip= None) # policy의 dist로는 gradient 전파함 .
         min_qs = torch.min(*[qf(step_inputs['states'], step_inputs['policy_actions']) for qf in self.qfs])
 
 
