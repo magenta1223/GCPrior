@@ -65,21 +65,13 @@ class StateConditioned_Model(BaseModule):
         )
 
 
-        if self.env_name == "maze":
-            print("here?")
-            self.latent_state_dim *= 2
-            self.state_dim = 1028
-            state_encoder = MultiModalEncoder(state_encoder_config)
-            state_decoder = MultiModalDecoder(state_decoder_config)
-        else:
-            state_encoder = None
-            state_decoder = None
+
 
         ## skill prior module
 
         prior_config = edict(
             n_blocks = self.n_Layers, #self.n_processing_layers,
-            in_feature =  self.latent_state_dim if self.env_name == "maze" else self.state_dim, # state_dim + latent_dim 
+            in_feature =  self.state_dim, # state_dim + latent_dim 
             hidden_dim = self.hidden_dim, 
             out_dim = self.latent_dim * 2,
             norm_cls = norm_cls,
@@ -146,8 +138,6 @@ class StateConditioned_Model(BaseModule):
         
         self.skill_prior = PRIOR_WRAPPERS['sc'](
             prior_policy = prior,
-            state_encoder = state_encoder,
-            state_decoder = state_decoder,
             highlevel_policy = highlevel_policy,
         )
 
