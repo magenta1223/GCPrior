@@ -233,6 +233,11 @@ def train_single_task(env, env_name, tasks, task_cls, args):
 
     # env 제한 
     state_processor = StateProcessor(env_name= args.env_name)
+
+    weights_path = f"./weights/{args.env_name}/sc/sac"
+    os.makedirs(weights_path, exist_ok= True)
+
+
     # ------------- Train RL ------------- #
     with env.set_task(task_obj):
         state = env.reset()
@@ -301,7 +306,6 @@ def train_single_task(env, env_name, tasks, task_cls, args):
                 break
 
     
-    weights_path = "./weights/sac"
     torch.save(self, f"{weights_path}/{task_name}.bin")
         
 def main():

@@ -287,6 +287,10 @@ def train_single_task(env, env_name, tasks, task_cls, args):
 
     # env 제한 
 
+    weights_path = f"./weights/{args.env_name}/skimo/sac"
+    os.makedirs(weights_path, exist_ok= True)
+
+
     # ------------- Train RL ------------- #
     with env.set_task(task_obj):
         state = env.reset()
