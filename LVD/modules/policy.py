@@ -21,6 +21,9 @@ class MLPQF(SequentialBuilder):
         return super().forward(concat).squeeze(-1)
 
 
+
+
+
 class HighPolicy_SC(ContextPolicyMixin, SequentialBuilder):
     """
     MLP Policy for SPiRL, SiMPL, Skimo
@@ -49,7 +52,8 @@ class HighPolicy_SC(ContextPolicyMixin, SequentialBuilder):
         loc, scale = dist.base_dist.loc, dist.base_dist.scale
 
 
-        return dist.rsample().detach().cpu().squeeze(0).numpy(), loc.detach().cpu().squeeze(0).numpy(), scale.detach().cpu().squeeze(0).numpy()
+        # return dist.rsample().detach().cpu().squeeze(0).numpy(), loc.detach().cpu().squeeze(0).numpy(), scale.detach().cpu().squeeze(0).numpy()
+        return self.transform_numpy(dist.rsample()), self.transform_numpy(loc), self.transform_numpy(scale)
 
 
         # if self.prior_policy.tanh:

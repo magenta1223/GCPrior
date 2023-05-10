@@ -157,6 +157,11 @@ class ContextPolicyMixin:
         batch_state_z = torch.cat([batch_state, batch_z], dim=-1)
         return self.dist(batch_state_z, tanh= tanh)
     
+    @staticmethod
+    def transform_numpy(x):
+        return x.detach().cpu().squeeze(0).numpy()
+
+
 
 class Flatten(nn.Module):
     def __init__(self):
