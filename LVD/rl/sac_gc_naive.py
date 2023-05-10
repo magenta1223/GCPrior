@@ -121,7 +121,7 @@ class SAC(BaseModule):
 
 
             step_inputs['done'] = True
-            step_inputs['G'] = step_inputs['G'].repeat(step_inputs['batch_size'], 1)
+            step_inputs['G'] = step_inputs['G'].repeat(step_inputs['batch_size'], 1).cuda()
 
             if self.tanh:
                 # 요녀석들은 전부 evaluation mode에서 뽑아낸 action들임. 
@@ -300,7 +300,7 @@ class SAC(BaseModule):
 
 
             step_inputs['done'] = True
-            step_inputs['G'] = step_inputs['G'].repeat(step_inputs['batch_size'], 1)
+            step_inputs['G'] = step_inputs['G'].repeat(step_inputs['batch_size'], 1).cuda()
 
             if self.tanh:
                 # 요녀석들은 전부 evaluation mode에서 뽑아낸 action들임. 
