@@ -83,7 +83,6 @@ class StateConditioned_Prior(BaseModule):
 
 
         # -------------- State Enc / Dec -------------- #
-        prior = self.prior_policy.dist(states[:, 0], tanh = self.tanh)
         if self.tanh:
             prior_dist = prior._normal.base_dist
         else:
@@ -95,7 +94,7 @@ class StateConditioned_Prior(BaseModule):
         # policy_skill = self.highlevel_policy.dist(torch.cat((states[:,0], G), dim = -1))
 
 
-        res_locs, res_pre_scales = self.highlevel_policy(torch.cat((states[:,0], G))).chunk(2, dim=-1)
+        res_locs, res_pre_scales = self.highlevel_policy(torch.cat((states, G), dim = -1)).chunk(2, dim=-1)
 
         # 혼합
         locs = res_locs + prior_locs

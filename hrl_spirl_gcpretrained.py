@@ -153,7 +153,6 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     qfs = [ MLPQF(Linear_Config(qf_config))  for _ in range(2)]
 
     ## ------------- High Policy ------------- ##
-    model.skill_prior.tanh = False
     policy = HighPolicy_GC_Naive(Linear_Config(policy_config), model.skill_prior)        
 
     ## ------------- Prior Policy ------------- ##
