@@ -199,8 +199,8 @@ def train_single_task(env, env_name, tasks, task_cls, args):
         'prior_policy_lr' : 1e-5,
         'auto_alpha': args.auto_alpha,
         # 'target_kl': 2.5, # prior에서 벗어난 행동의 허용치 이면서 동시에 목표치
-        'target_kl_start' : 6,
-        'target_kl_end' : 6,
+        'target_kl_start' : args.target_kl_start,
+        'target_kl_end' : args.target_kl_end,
         'kl_clip': 10, # 
         'increasing_alpha': args.only_increase,
         'init_alpha' : args.init_alpha,
