@@ -62,19 +62,23 @@ class KitchenEnv_GC(KitchenEnv):
 #     [0,1,2,3]]
 # )
 
-all_tasks = ['bottom burner', 'top burner', 'light switch', 'slide cabinet', 'hinge cabinet', 'microwave', 'kettle']
-
 
 tasks = np.array(
-    [[5,6,0,3], # MKBS
-    [5,0,1,3],  # MBTS
-    [6,0,2,4],  # KBLH
-    [5,1,2,4],  # MTLH
-    [5,0,3,4],  # MBSH
-    [6,0,2,3],  # KBLS
-    [5,6,0,4],  # MKBH
-    [5,6,1,4],  # MKTH
-    [5,6,0,2],  # MKBL
+    
+    [
+        # Well-aligned, Not missing
+        [5,6,0,3], # MKBS
+        [5,0,1,3],  # MBTS
+        # Mis-aligned, Not missing
+        [6,0,2,4],  # KBLH
+        [5,1,2,4],  # MTLH
+        # Well-algined, Missing
+        [5,0,3,4],  # MBSH
+        [6,0,2,3],  # KBLS
+        # Mis-algined, Missing 
+        [6,1,2,4],  # KTLH
+        [5,1,3,4],  # MTSH
+        # [5,6,0,2],  # MKBL
     ]
 )
 
