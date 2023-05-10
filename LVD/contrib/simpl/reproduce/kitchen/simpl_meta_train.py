@@ -20,7 +20,7 @@ config = dict(
     simpl=dict(init_enc_prior_reg=1e-3, target_enc_prior_kl=2, # task encoder와 prior간의 kl : ok
                init_enc_post_reg=1e-4, target_enc_post_kl=10, # task encoder와 posterior간의 kl
                init_policy_prior_reg=0.05, target_policy_prior_kl=0.1, # policy와 prior간의 kl : ok
-               init_policy_post_reg=0.03, target_policy_post_kl=4, kl_clip=6), # policy와 posterior간의 kl 
+               init_policy_post_reg=0.03, target_policy_post_kl=4, kl_clip=6, prior_state_dim = 30), # policy와 posterior간의 kl 
     enc_buffer_size=3000, # 3000
     buffer_size=3000, # 3000
     e_dim = 6,

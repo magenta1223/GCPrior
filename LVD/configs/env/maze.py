@@ -63,7 +63,7 @@ class MazeEnvConfig(BaseDataConfig):
             n_Layers = 5,
             hidden_dim = 128,
             # reg_beta = 0.01,
-            reg_beta = 0.001,
+            reg_beta = 0.01,
 
             
 

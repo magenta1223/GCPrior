@@ -7,7 +7,6 @@ import torch
 import wandb
 import os
 
-import sys
 
 import sys
 
@@ -64,7 +63,7 @@ def simpl_warm_up_buffer(
         task_indices = [
             task_idx for task_idx, buffer in enumerate(buffers)
             if buffer.size < batch_size
-        ]
+        ] # ah.. buffer.size가 
 
 
 def simpl_meta_train_iter(
@@ -133,6 +132,7 @@ if __name__ == '__main__':
     torch.multiprocessing.set_start_method('spawn')
 
     import_pathes = {
+        'maze_size40': 'maze.simpl_meta_train_size40',
         'maze_40t': 'maze.simpl_meta_train_40t',
         'maze_20t': 'maze.simpl_meta_train_20t',
         'kitchen': 'kitchen.simpl_meta_train',
@@ -194,6 +194,7 @@ if __name__ == '__main__':
     print("Collecting.. \n")
     # collector
     spirl_low_policy.explore = False
+    print("TIME LIMIT : ", config['time_limit'] )
     collector = LowFixedHierarchicalTimeLimitCollector(
         env, spirl_low_policy, horizon=horizon, time_limit=config['time_limit']
     )

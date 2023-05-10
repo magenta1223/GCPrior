@@ -192,7 +192,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
         'qfs' : qfs,
         'discount' : 0.99,
         'tau' : 0.005,
-        'policy_lr' : 3e-8,#args.policy_lr,
+        'policy_lr' : args.consistency_lr,#args.policy_lr,
         'consistency_lr' :args.consistency_lr, #args.policy_lr if env_name == "maze" else 1e-8,
         'qf_lr' : 3e-4,
         'alpha_lr' : 3e-4,
@@ -203,7 +203,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
         'target_kl_end' : 6,
         'kl_clip': 10, # 
         'increasing_alpha': args.only_increase,
-        'init_alpha' : 0.1,
+        'init_alpha' : args.init_alpha,
         'goal_conditioned' : True,
         'tune_idp' : False,
         'warmup' : 0,

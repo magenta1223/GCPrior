@@ -69,7 +69,8 @@ class KitchenEnvConfig(BaseDataConfig):
             finetune = True,
             n_episode = 300,
             consistency_lr = 1e-8,
-            policy_lr = 1e-8,
+            # policy_lr = 1e-8,
+            policy_lr = 3e-6,
             gcprior = False,
             relative = False,
 
