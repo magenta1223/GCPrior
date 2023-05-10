@@ -301,9 +301,8 @@ def train_single_task(env, env_name, tasks, task_cls, args):
                 break
 
     
-    # weights_path = "/home/magenta1223/skill-based/SiMPL/proposed/weights/sac"
-    # task_name = "-".join(tasks)
-    # torch.save(self, f"{weights_path}/{task_name}.bin")
+    weights_path = "./weights/sac"
+    torch.save(self, f"{weights_path}/{task_name}.bin")
         
 def main():
     parser = argparse.ArgumentParser()
