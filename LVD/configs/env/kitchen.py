@@ -74,6 +74,7 @@ class KitchenEnvConfig(BaseDataConfig):
             policy_lr = 3e-6,
             gcprior = False,
             relative = False,
+            robotics = True,
 
 
             # etc.

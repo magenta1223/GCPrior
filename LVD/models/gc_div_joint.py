@@ -45,13 +45,14 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         else:
             self.env = env_cls()
 
+
         self.render_funcs = RENDER_FUNCS[self.env_name]
 
 
         self.joint_learn = True
 
 
-
+        
 
 
         # state encoder
@@ -237,12 +238,18 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         prior = SequentialBuilder(Linear_Config(prior_config))
         flat_dynamics = SequentialBuilder(Linear_Config(dynamics_config))
         dynamics = SequentialBuilder(Linear_Config(dynamics_config))
+
+        if self.robotics:
+            prior_proprioceptive = SequentialBuilder(Linear_Config(prior_config))
+        else:
+            prior_proprioceptive = None
         
         prior_wrapper_cls = PRIOR_WRAPPERS['gc_div_joint']
 
         self.inverse_dynamics_policy = prior_wrapper_cls(
             # components  
             prior_policy = prior,
+            prior_proprioceptive = prior_proprioceptive,
             state_encoder = state_encoder,
             state_decoder = state_decoder,
             inverse_dynamics = inverse_dynamics,
@@ -312,6 +319,18 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
                 ),
                 "metric" : "recon_state"
             }
+
+        if self.robotics:
+            self.optimizers['ppc'] = {
+                "optimizer" : RAdam(
+                    [{'params' : self.inverse_dynamics_policy.prior_proprioceptive.parameters()}],            
+                    lr = model_config.lr
+                ),
+                "metric" : None
+            }
+
+
+
 
         # if self.env_name == "maze":
         #     visual_encoder_param_groups = [
@@ -563,6 +582,17 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         mmd_loss = compute_mmd(z_tilde, z)
         loss = loss + recon_state + mmd_loss
 
+
+        if self.robotics:
+            ppc_loss = self.loss_fn('prior')(
+                self.outputs['z'],
+                self.outputs['prior_ppc'], # proprioceptive for stitching
+                self.outputs['z_normal'],
+                tanh = self.tanh
+            ).mean()
+
+            loss += ppc_loss
+
             
         self.loss_dict = {           
             # total
@@ -579,7 +609,8 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
             "F_skill_kld" : reg_term.item(),
             "skill_metric" : recon.item() + reg.item() * self.reg_beta,
             "Rec_state" : recon_state.item(),
-            "mmd_loss" : mmd_loss.item()
+            "mmd_loss" : mmd_loss.item(),
+            "ppc_loss" : ppc_loss.item() if self.robotics else 0
         }       
 
 

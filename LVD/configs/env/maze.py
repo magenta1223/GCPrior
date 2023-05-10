@@ -88,6 +88,7 @@ class MazeEnvConfig(BaseDataConfig):
             policy_lr = 3e-4,
             gcprior = False,
             relative = False,
+            robotics = False,
             # prior_state_dim = 4,
             # policy_state_dim = 6, # 기존 방법론의 경우는 다 붙여서 넣으니까
 

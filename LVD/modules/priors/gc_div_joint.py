@@ -108,6 +108,9 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
         prior, prior_detach = self.prior_policy.dist(start, detached = True)
 
 
+            
+
+
         # -------------- Inverse Dynamics : Skill Learning -------------- #
         inverse_dynamics, inverse_dynamics_detach  = self.inverse_dynamics.dist(state = start, subgoal = subgoal, tanh = self.tanh)
         
@@ -132,10 +135,6 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
         subgoal_f = diff_subgoal_f + start
         invD_sub1, _ = self.target_inverse_dynamics.dist(state = start, subgoal = subgoal_f, tanh = self.tanh)
 
-        # invD_sub, _ = self.target_inverse_dynamics.dist(state = start, subgoal = subgoal_f, tanh = self.tanh)
-
-        # skill_sub1 = invD_sub1.rsample()
-
         if self.tanh:
             skill_sub1_normal, skill_sub1 = invD_sub1.rsample_with_pre_tanh_value()
         else:
@@ -146,11 +145,6 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
         dynamics_input = torch.cat((start, skill_sub1), dim = -1)
         diff_subgoal_D = self.target_dynamics(dynamics_input)
         subgoal_D = start + diff_subgoal_D 
-
-        # invD_sub2, _ = self.target_inverse_dynamics.dist(state = start, subgoal = subgoal_D + start, tanh = self.tanh)
-        # skill_sub2 = invD_sub2.rsample()
-        # dynamics_input = torch.cat((start, skill_sub2), dim = -1)
-        # subgoal_D2 = self.target_dynamics(dynamics_input)
 
 
         # -------------- Rollout for metric -------------- #
@@ -219,9 +213,11 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
             # "D_target_metric" : subgoal, 
             # "flat_D" : flat_D,
             # "flat_D_target" : hts[:, 1:],
-
-
         }
+
+        if self.prior_proprioceptive is not None:
+            result['prior_ppc'] = self.prior_proprioceptive.dist(start)
+
 
 
         return result
@@ -286,8 +282,12 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
         c = random.sample(range(1, skill_length - 1), 1)[0]
         _ht = hts[:, c].clone()
 
-
-        skill_sampled_orig = self.prior_policy.dist(_ht).sample()
+        
+        if self.prior_proprioceptive is not None:
+            # env state agnostic
+            skill_sampled_orig = self.prior_proprioceptive.dist(_ht).sample()
+        else:
+            skill_sampled_orig = self.prior_policy.dist(_ht).sample()
     
 
         skill_sampled = skill_sampled_orig.clone()
