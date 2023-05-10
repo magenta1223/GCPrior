@@ -141,7 +141,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
         in_feature = state_dim + latent_dim, # state dim 
         hidden_dim = args.hidden_dim, # 128
         out_dim = 1, # 10 * 2
-        norm_cls = None,
+        norm_cls = nn.LayerNorm if args.norm else None,
         act_cls = nn.Mish,
         block_cls = LinearBlock,
         bias = True,
@@ -310,6 +310,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--env_name", default = "kitchen", type = str)
     parser.add_argument("--wandb", action = "store_true")    
+    parser.add_argument("--norm", action = "store_true", default= False)    
+
     parser.add_argument("-p", "--path", default = "")
     # parser.add_argument("-tl", "--time_limit", default = 280, type = int)
     # parser.add_argument("-nh", "--n_hidden", default = 5, type = int)
