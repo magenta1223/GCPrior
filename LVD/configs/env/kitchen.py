@@ -29,6 +29,7 @@ class KitchenEnvConfig(BaseDataConfig):
             n_env = 21,
             n_goal = 30,
             env_name="kitchen",
+            env_name_offline="kitchen-mixed-v0",
             subseq_len = 11, 
             only_proprioceptive = False,
             crop_rand_subseq=True,

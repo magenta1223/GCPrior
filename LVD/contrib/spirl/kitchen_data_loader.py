@@ -26,7 +26,7 @@ class D4RLSequenceSplitDataset(Dataset):
 
 
         # env
-        env = gym.make(self.spec.env_name)
+        env = gym.make(self.spec.env_name_offline)
         self.dataset = env.get_dataset()
         # split dataset into sequences
         seq_end_idxs = np.where(self.dataset['terminals'])[0]
