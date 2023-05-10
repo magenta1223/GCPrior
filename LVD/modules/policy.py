@@ -234,7 +234,77 @@ class HighPolicy_GC_Naive(ContextPolicyMixin, SequentialBuilder):
     def soft_update(self):
         self.prior_policy.soft_update()
 
+class HighPolicy_GC_Dreamer(ContextPolicyMixin, SequentialBuilder):
+    """
+    MLP Policy for LVD
+    """
+    def __init__(self, config, prior_policy, state_dim = None):
+        super().__init__(config)
+        self.log_sigma = nn.Parameter(torch.randn(self.out_dim)) # for sampling
+        self.min_scale=0.001
+        self.prior_policy = deepcopy(prior_policy) # learnable
+        del self.layers
 
+    def forward(self, states):
+        return super().forward(states)
+
+    def act(self, states, G):
+        # 환경별로 state를 처리하는 방법이 다름.
+        # 여기서 수행하지 말고, collector에서 전처리해서 넣자. 
+        dist_inputs = dict(
+            states = prep_state(states, self.device),
+            G = prep_state(G, self.device),
+        )
+
+        dist = self.dist(dist_inputs, "eval")['policy_skill']
+        # TODO explore 여부에 따라 mu or sample을 결정
+        if self.prior_policy.tanh:
+            z_normal, z = dist.rsample_with_pre_tanh_value()
+            # to calculate kld analytically 
+            loc, scale = dist._normal.base_dist.loc, dist._normal.base_dist.scale 
+
+            return z_normal.detach().cpu().squeeze(0).numpy(), z.detach().cpu().squeeze(0).numpy(), loc.detach().cpu().squeeze(0).numpy(), scale.detach().cpu().squeeze(0).numpy()
+        else:
+            loc, scale = dist.base_dist.loc, dist.base_dist.scale
+            return dist.rsample().detach().cpu().squeeze(0).numpy(), loc.detach().cpu().squeeze(0).numpy(), scale.detach().cpu().squeeze(0).numpy()
+
+    def dist(self, inputs, prior_mode): # mode = "train"
+        states, G = inputs['states'], inputs['G']
+
+        # 
+        states = prep_state(states, self.device)
+        G = prep_state(G, self.device)
+
+        if states.shape[0] != G.shape[0]:
+            # expand
+            G = G.repeat(states.shape[0], 1)
+
+        _inputs = dict(
+            states = states,
+            G = G
+        )
+
+        if 'next_states' in inputs.keys():
+            _inputs['next_states'] = prep_state(inputs['next_states'], self.device)
+
+        outputs = self.prior_policy(_inputs, prior_mode)
+
+        return outputs
+
+    def set_policy(self, prior_policy):
+        self.prior_policy = copy.deepcopy(prior_policy).requires_grad_(False)
+    
+
+    def finetune(self, inputs):
+        """
+        Finetune inverse D & D
+        """
+        outputs = self.prior_policy(inputs, "finetune")
+        
+        return outputs
+
+    def soft_update(self):
+        self.prior_policy.soft_update()
 
 
 class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):

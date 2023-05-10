@@ -2,7 +2,7 @@ from easydict import EasyDict as edict
 
 
 sc_config = edict(
-    tanh = False,
+    tanh = True,
     skill_concat = False,
     subgoal_loss = "prior",
     rollout_method = "rollout",

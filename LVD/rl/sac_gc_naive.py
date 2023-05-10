@@ -43,7 +43,7 @@ class SAC(BaseModule):
         # finetune : subgoal generator
         self.policy_optim = torch.optim.Adam(
             [
-                { "params" : self.policy.prior_policy.parameters()}, # 보상최대화하는 subgoal 뽑기. 
+                { "params" : self.policy.prior_policy.highlevel_policy.parameters()}, # 보상최대화하는 subgoal 뽑기. 
             ],
             lr = self.policy_lr # 낮추면 잘 안됨. 왜? 
         )

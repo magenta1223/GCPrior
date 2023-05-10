@@ -35,37 +35,6 @@ class StateConditioned_Model(BaseModule):
         self.joint_learn = True
 
 
-        state_encoder_config = edict(
-            n_blocks = self.n_Layers,
-            in_feature = self.state_dim, # state_dim + latent_dim 
-            hidden_dim = self.latent_state_dim * 2, 
-            # hidden_dim = self.hidden_dim, 
-            out_dim = self.latent_state_dim, # when variational inference
-            norm_cls =  norm_cls,
-            # norm_cls =  None,
-            act_cls = act_cls, #nn.LeakyReLU,
-            block_cls = LinearBlock,
-            bias = bias,
-            dropout = dropout
-        )
-
-        # state decoder
-        state_decoder_config = edict(
-            n_blocks = self.n_Layers,#self.n_processing_layers,
-            in_feature = self.latent_state_dim, # state_dim + latent_dim 
-            hidden_dim = self.latent_state_dim * 2, 
-            # hidden_dim = self.hidden_dim, 
-            out_dim = self.state_dim,
-            norm_cls = norm_cls,
-            # norm_cls =  None,
-            act_cls = act_cls, #nn.LeakyReLU,
-            block_cls = LinearBlock,
-            bias = bias,
-            dropout = dropout
-        )
-
-
-
 
         ## skill prior module
 
@@ -139,6 +108,7 @@ class StateConditioned_Model(BaseModule):
         self.skill_prior = PRIOR_WRAPPERS['sc'](
             prior_policy = prior,
             highlevel_policy = highlevel_policy,
+            tanh = self.tanh
         )
 
         ## skill encoder

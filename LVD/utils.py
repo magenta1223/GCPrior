@@ -156,18 +156,31 @@ def state_process_maze(state):
 
 # --------------------------- Distribution --------------------------- #
 
-def get_dist(model_output, log_scale = None,  detached = False, tanh = False):
+def get_dist(model_output, log_scale = None, scale = None,  detached = False, tanh = False):
     if detached:
         model_output = model_output.clone().detach()
         model_output.requires_grad = False
 
-    if log_scale is None:
+    # if log_scale is None:
+    #     mu, log_scale = model_output.chunk(2, -1)
+    # else:
+    #     mu = model_output
+
+
+    if log_scale is None and scale is None:
         mu, log_scale = model_output.chunk(2, -1)
+        scale = log_scale.clamp(-10, 2).exp()
     else:
         mu = model_output
+        if log_scale is not None:
+            scale = log_scale.clamp(-10, 2).exp()
 
-    log_scale = log_scale.clamp(-10, 2)
-    scale = log_scale.exp()
+
+
+
+    # log_scale = log_scale.clamp(-10, 2)
+    # if scale is None:
+        # scale = log_scale.exp()
 
     if tanh:
         return TanhNormal(mu, scale)
