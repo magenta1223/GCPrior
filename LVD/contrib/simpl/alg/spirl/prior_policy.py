@@ -6,7 +6,10 @@ import torch.nn.functional as F
 
 from simpl.nn import MLP
 from simpl.rl.policy import StochasticNNPolicy
-from LVD.utils import get_dist
+
+import sys
+sys.path.append("./LVD")
+from utils import get_dist
 
 def inverse_softplus(x):
     return torch.log(torch.exp(x) - 1)
