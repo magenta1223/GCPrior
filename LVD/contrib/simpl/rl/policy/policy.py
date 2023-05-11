@@ -1,5 +1,9 @@
 from contextlib import contextmanager
 
+import sys
+
+sys.path.append("./LVD")
+
 import numpy as np
 import torch
 import torch.distributions as torch_dist
