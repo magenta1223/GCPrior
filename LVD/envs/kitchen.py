@@ -73,8 +73,8 @@ tasks = np.array(
         [6,0,2,4],  # KBLH
         [5,1,2,4],  # MTLH
         # Well-algined, Missing
-        [5,0,3,4],  # MBSH
-        [6,0,2,3],  # KBLS
+        [5,6,0,1],
+        [5,6,0,2],
         # Mis-algined, Missing 
         [6,1,2,4],  # KTLH
         [5,1,3,4],  # MTSH
