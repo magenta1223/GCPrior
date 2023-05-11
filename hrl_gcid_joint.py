@@ -376,7 +376,7 @@ def main():
     ALL_TASKS = ENV_TASK[args.env_name]['tasks']
     configure = ENV_TASK[args.env_name]['cfg']
 
-    if hasattr(args, "relative"):
+    if hasattr(args, "relative") and configure is not None:
         configure['relative'] = args.relative
 
 
