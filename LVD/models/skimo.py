@@ -344,6 +344,7 @@ class Skimo_Model(BaseModule):
 
         with torch.no_grad():
             self.get_metrics()
+            self.prior_policy.soft_update()
 
         return self.loss_dict
     

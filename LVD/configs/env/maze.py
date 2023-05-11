@@ -75,7 +75,7 @@ class MazeEnvConfig(BaseDataConfig):
             target_kl_end = 5, # orig 1 
             init_alpha = 0.05,
             only_increase = False,
-            auto_alpha = False,
+            auto_alpha = True,
             reuse_rate = 128,
             q_warmup = 5000,
             q_weight = 1, 
@@ -83,7 +83,7 @@ class MazeEnvConfig(BaseDataConfig):
             early_stop_threshold = 0.8 * 100,
             use_hidden= True,
             finetune = True,
-            n_episode = 300,
+            n_episode = 150,
             consistency_lr = 1e-8,
             policy_lr = 3e-4,
             gcprior = False,

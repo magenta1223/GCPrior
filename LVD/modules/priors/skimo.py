@@ -18,7 +18,6 @@ class Skimo_Prior(BaseModule):
         self.ema_update = None
         super().__init__(submodules)
 
-        self.target_dynamics = copy.deepcopy(self.dynamics)
         self.target_state_encoder = copy.deepcopy(self.state_encoder)
         self.step = 0
 
@@ -36,7 +35,6 @@ class Skimo_Prior(BaseModule):
         # hard update 
         if self.step % 2 == 0:
             update_moving_average(self.target_state_encoder, self.state_encoder)
-        update_moving_average(self.target_dynamics, self.dynamics, 1)
 
     def forward(self, inputs, mode = "train", *args, **kwargs):
         # print(self.methods.keys())

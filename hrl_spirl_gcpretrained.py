@@ -19,7 +19,6 @@ import d4rl
 from LVD.contrib.simpl.reproduce.maze.maze_vis import draw_maze
 
 
-from LVD.configs.env import ENV_CONFIGS
 from LVD.configs.model import MODEL_CONFIGS
 
 from LVD.envs import ENV_TASK
@@ -35,6 +34,7 @@ from LVD.utils import *
 from LVD.collector.gcid import LowFixedHierarchicalTimeLimitCollector
 from LVD.collector.storage import Buffer_H
 from LVD.rl.rl_utils import *
+from LVD.envs import ENV_TASK
 
 from LVD.configs.env import ENV_CONFIGS
 from LVD.contrib.simpl.reproduce.maze.maze_vis import draw_maze
