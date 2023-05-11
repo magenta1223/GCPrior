@@ -133,16 +133,12 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
         sg_input = torch.cat((start,  G), dim = -1)
         diff_subgoal_f = self.subgoal_generator(sg_input)
         subgoal_f = diff_subgoal_f + start
-        invD_sub1, _ = self.target_inverse_dynamics.dist(state = start, subgoal = subgoal_f, tanh = self.tanh)
+        invD_sub, _ = self.target_inverse_dynamics.dist(state = start, subgoal = subgoal_f, tanh = self.tanh)
 
-        if self.tanh:
-            skill_sub1_normal, skill_sub1 = invD_sub1.rsample_with_pre_tanh_value()
-        else:
-            skill_sub1 = invD_sub1.rsample()
-            skill_sub1_normal = None
+        skill_sub = invD_sub.rsample()
 
 
-        dynamics_input = torch.cat((start, skill_sub1), dim = -1)
+        dynamics_input = torch.cat((start, skill_sub), dim = -1)
         diff_subgoal_D = self.target_dynamics(dynamics_input)
         subgoal_D = start + diff_subgoal_D 
 
@@ -194,8 +190,8 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
             # "subgoal_target" : subgoal,
             "subgoal_target" : subgoal_target,
 
-            "invD_sub" : invD_sub1,
-            "z_sub" : skill_sub1,
+            "invD_sub" : invD_sub,
+            "z_sub" : skill_sub,
             # "invD_sub2" : invD_sub2,
 
 
@@ -216,7 +212,7 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
         }
 
         if self.prior_proprioceptive is not None:
-            result['prior_ppc'] = self.prior_proprioceptive.dist(start)
+            result['prior_ppc'] = self.prior_proprioceptive.dist(states[:, 0])
 
 
 
@@ -267,6 +263,7 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
         self.state_encoder.eval()
         self.state_decoder.eval()
         self.prior_policy.eval()
+        self.prior_proprioceptive()
         self.inverse_dynamics.eval()
         self.flat_dynamics.eval()
         self.dynamics.eval()
@@ -285,7 +282,7 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
         
         if self.prior_proprioceptive is not None:
             # env state agnostic
-            skill_sampled_orig = self.prior_proprioceptive.dist(_ht).sample()
+            skill_sampled_orig = self.prior_proprioceptive.dist(states[:, 0]).sample()
         else:
             skill_sampled_orig = self.prior_policy.dist(_ht).sample()
     

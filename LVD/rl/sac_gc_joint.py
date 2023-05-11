@@ -35,15 +35,15 @@ class SAC(BaseModule):
         # finetune : subgoal generator
         self.policy_optim = torch.optim.Adam(
             [
-                { "params" : self.policy.inverse_dynamics.subgoal_generator.parameters()}, # 보상최대화하는 subgoal 뽑기. 
+                { "params" : self.policy.prior_policy.subgoal_generator.parameters()}, # 보상최대화하는 subgoal 뽑기. 
             ],
             lr = self.policy_lr # 낮추면 잘 안됨. 왜? 
         )
 
         # finetune : inverse dynamics, dynamics
         param_groups = [
-            { "params" : self.policy.inverse_dynamics.inverse_dynamics.parameters()},
-            { "params" : self.policy.inverse_dynamics.dynamics.parameters()},
+            { "params" : self.policy.prior_policy.inverse_dynamics.parameters()},
+            { "params" : self.policy.prior_policy.dynamics.parameters()},
             # { "params" : self.policy.inverse_dynamics.state_encoder.parameters()}
         ]
         
@@ -87,9 +87,9 @@ class SAC(BaseModule):
         self.sample_time_logger = AverageMeter()
 
     def save_prev_module(self, target = "all"):
-        self.prev_f = copy.deepcopy(self.policy.inverse_dynamics.subgoal_generator).requires_grad_(False)
-        self.prev_invD = copy.deepcopy(self.policy.inverse_dynamics.inverse_dynamics).requires_grad_(False)
-        self.prev_D = copy.deepcopy(self.policy.inverse_dynamics.dynamics).requires_grad_(False)
+        self.prev_f = copy.deepcopy(self.policy.prior_policy.subgoal_generator).requires_grad_(False)
+        self.prev_invD = copy.deepcopy(self.policy.prior_policy.inverse_dynamics).requires_grad_(False)
+        self.prev_D = copy.deepcopy(self.policy.prior_policy.dynamics).requires_grad_(False)
 
     @property
     def target_kl(self):
@@ -105,7 +105,7 @@ class SAC(BaseModule):
                 prior_dists = self.prior_policy(inputs, "eval")['inverse_D']
             else:
                 # prior_dists = self.prior_policy(inputs, "eval")['prior']
-                prior_dists = self.policy.inverse_dynamics(inputs, "prior")['prior']
+                prior_dists = self.policy.prior_policy(inputs, "prior")['prior']
                 # self.policy.inverse_dynamics.state_encoder()
 
         if kl_clip:                
@@ -143,8 +143,8 @@ class SAC(BaseModule):
             step_inputs['next_states'] = next_states
             step_inputs['__next_states__'] = next_states 
 
-            step_inputs['q_state'] = self.policy.inverse_dynamics.state_encoder(states)
-            step_inputs['q_next_state'] = self.policy.inverse_dynamics.state_encoder(next_states)
+            step_inputs['q_state'] = self.policy.prior_policy.state_encoder(states)
+            step_inputs['q_next_state'] = self.policy.prior_policy.state_encoder(next_states)
 
             step_inputs['done'] = True
             step_inputs['G'] = step_inputs['G'].repeat(step_inputs['batch_size'], 1)
@@ -363,7 +363,7 @@ class SAC(BaseModule):
         else:
             policy_loss = (- min_qs + self.alpha * entropy_term).mean()
 
-        if self.policy.inverse_dynamics.dynamics is not None:
+        if self.policy.prior_policy.dynamics is not None:
             # f는 make sense한 subgoal을 줘야 한다. 이건데 이게 GT subgoal이 아니긴 하거든
             dynamics_loss = F.mse_loss(dist_out['subgoal'], dist_out['subgoal_target'])
             policy_loss += dynamics_loss
@@ -413,13 +413,13 @@ class SAC(BaseModule):
             module = self.qfs
         elif module_name == "f":
             prev_module = self.prev_f
-            module = self.policy.inverse_dynamics.subgoal_generator
+            module = self.policy.prior_policy.subgoal_generator
         elif module_name == "invD":
             prev_module = self.prev_invD
-            module = self.policy.inverse_dynamics.inverse_dynamics
+            module = self.policy.prior_policy.inverse_dynamics
         else:
             prev_module = self.prev_D
-            module =  self.policy.inverse_dynamics.dynamics
+            module =  self.policy.prior_policy.dynamics
 
         with torch.no_grad():
             update_rate = []
@@ -455,8 +455,8 @@ class SAC(BaseModule):
             step_inputs['next_states'] = next_states
             step_inputs['__next_states__'] = next_states 
 
-            step_inputs['q_state'] = self.policy.inverse_dynamics.state_encoder(states)
-            step_inputs['q_next_state'] = self.policy.inverse_dynamics.state_encoder(next_states)
+            step_inputs['q_state'] = self.policy.prior_policy.state_encoder(states)
+            step_inputs['q_next_state'] = self.policy.prior_policy.state_encoder(next_states)
 
             step_inputs['done'] = True
             step_inputs['G'] = step_inputs['G'].repeat(step_inputs['batch_size'], 1)

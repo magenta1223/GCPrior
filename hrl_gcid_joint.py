@@ -241,6 +241,15 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     weights_path = f"./weights/{args.env_name}/gc_div_joint/sac"
     os.makedirs(weights_path, exist_ok= True)
 
+    torch.save({
+        "model" : self,
+        "collector" : collector,
+        "task" : task_obj,
+        "env" : env,
+    }, f"{weights_path}/{task_name}.bin")
+
+
+
     # ------------- Train RL ------------- #
     with env.set_task(task_obj):
         state = env.reset()
@@ -309,7 +318,14 @@ def train_single_task(env, env_name, tasks, task_cls, args):
                 break
 
     
-    torch.save(self, f"{weights_path}/{task_name}.bin")
+    # torch.save(self, f"{weights_path}/{task_name}.bin")
+    torch.save({
+        "model" : self,
+        "collector" : collector,
+        "task" : task_obj,
+        "env" : env,
+    }, f"{weights_path}/{task_name}.bin")
+
         
 def main():
     parser = argparse.ArgumentParser()
