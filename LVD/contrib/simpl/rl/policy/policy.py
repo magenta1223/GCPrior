@@ -2,8 +2,6 @@ from contextlib import contextmanager
 
 import sys
 
-sys.path.append("./LVD/contrib/")
-
 import numpy as np
 import torch
 import torch.distributions as torch_dist
@@ -12,8 +10,8 @@ import torch.nn.functional as F
 # from torch_truncnorm import TruncatedNormal
 from torch_truncnorm import TruncatedNormal
 
-from simpl.nn import MLP, ToDeviceMixin
-from simpl.math import inverse_softplus, inverse_sigmoid
+from ...nn import MLP, ToDeviceMixin
+from ...math import inverse_softplus, inverse_sigmoid
 
 
 class RandomPolicy:
