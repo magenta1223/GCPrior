@@ -240,7 +240,9 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         dynamics = SequentialBuilder(Linear_Config(dynamics_config))
 
         if self.robotics:
-            prior_proprioceptive = SequentialBuilder(Linear_Config(prior_config))
+            ppc_config = {**prior_config}
+            ppc_config['in_feature'] = self.state_dim
+            prior_proprioceptive = SequentialBuilder(Linear_Config(ppc_config))
         else:
             prior_proprioceptive = None
         
