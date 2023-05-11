@@ -263,7 +263,7 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
         self.state_encoder.eval()
         self.state_decoder.eval()
         self.prior_policy.eval()
-        self.prior_proprioceptive()
+        self.prior_proprioceptive.eval()
         self.inverse_dynamics.eval()
         self.flat_dynamics.eval()
         self.dynamics.eval()
