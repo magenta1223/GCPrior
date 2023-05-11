@@ -6,7 +6,7 @@ import torch.nn.functional as F
 
 from simpl.nn import MLP
 from simpl.rl.policy import StochasticNNPolicy
-
+from LVD.utils import get_dist
 
 def inverse_softplus(x):
     return torch.log(torch.exp(x) - 1)
@@ -40,17 +40,29 @@ class PriorResidualNormalMLPPolicy(StochasticNNPolicy):
 
 
         # distributions from prior state
-        prior_locs, prior_log_scales = self.prior_policy.dist_param(batch_prior_state)
+        try:
+            prior_locs, prior_log_scales = self.prior_policy.dist_param(batch_prior_state)
+        except:
+            prior_locs, prior_log_scales = self.prior_policy(batch_prior_state).chunk(2, -1)
+
+
+
         prior_pre_scales = inverse_softplus(prior_log_scales.exp())
         
         # distributions from policy state
         res_locs, res_pre_scales = self.mlp(batch_policy_state).chunk(2, dim=-1)
 
-
-
         # 혼합
-        dist = torch_dist.Normal(
-            prior_locs + res_locs,
-            self.min_scale + F.softplus(prior_pre_scales + res_pre_scales)
-        )
-        return torch_dist.Independent(dist, 1)
+        locs = prior_locs + res_locs
+        scale = self.min_scale + F.softplus(prior_pre_scales + res_pre_scales)
+        
+        if self.prior_policy.tanh:
+
+            dist = torch_dist.Normal(
+                prior_locs + res_locs,
+                self.min_scale + F.softplus(prior_pre_scales + res_pre_scales)
+            )
+            return torch_dist.Independent(dist, 1)
+        
+        else:
+            return get_dist(locs, scale= scale, tanh = True)
