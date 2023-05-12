@@ -49,7 +49,7 @@ class Batch_Hstep(Batch):
         return self.data['relabeled_goal']
 
 
-class Buffer_H(Buffer):
+class Buffer_modified(Buffer):
     """
     Override 
     H-step state를 다.. 얻어놔야 함. 
@@ -73,133 +73,133 @@ class Buffer_H(Buffer):
         else:
             super().__init__(state_dim, action_dim, max_size)
 
-        self.H = 10
-        self.H_ptr = 0
-        self.H_size = 0
+        # self.H = 10
+        # self.H_ptr = 0
+        # self.H_size = 0
 
-        self.H_episodes = deque()
-        self.H_episode_ptrs = deque()
-        self.H_transitions = torch.empty(max_size, 3*state_dim)
+        # self.H_episodes = deque()
+        # self.H_episode_ptrs = deque()
+        # self.H_transitions = torch.empty(max_size, 3*state_dim)
     
-        dims = OrderedDict([
-            ('state', state_dim),
-            ('next_H_state', state_dim),
-            ('relabeled_goal', state_dim),
-        ])
-        self.H_layout = dict()
-        prev_i = 0
-        for k, v in dims.items():
-            next_i = prev_i + v
-            self.H_layout[k] = slice(prev_i, next_i)
-            prev_i = next_i
+        # dims = OrderedDict([
+        #     ('state', state_dim),
+        #     ('next_H_state', state_dim),
+        #     ('relabeled_goal', state_dim),
+        # ])
+        # self.H_layout = dict()
+        # prev_i = 0
+        # for k, v in dims.items():
+        #     next_i = prev_i + v
+        #     self.H_layout[k] = slice(prev_i, next_i)
+        #     prev_i = next_i
 
                 
 
-    @property
-    def next_H_states(self):
-        return self.H_transitions[:, self.H_layout['next_H_state']]
+    # @property
+    # def next_H_states(self):
+    #     return self.H_transitions[:, self.H_layout['next_H_state']]
     
-    @property
-    def relabeled_goal(self):
-        return self.H_transitions[:, self.H_layout['relabeled_goal']]
+    # @property
+    # def relabeled_goal(self):
+    #     return self.H_transitions[:, self.H_layout['relabeled_goal']]
 
-    # override 
-    def enqueue(self, episode):
-        super().enqueue(episode)
-        """
-        # 지금 내가 원하는 것
-        현 시점 + 목표 => H-step 이후를 보고싶다.
-        지금 episode가 high-episode란말야?
-        그럼 transition이 (s_t, a_t, s_t+1)이 아니고
-        (s_t, z, s_t+H) 임
-        즉, next_states가 바로 H states
-        여기서 H번 더한거는 H^2 이후임. 당연히 당연히 당연히 ~ 안된다. 
-        state reconstruction이나, subgoal generation은 raw episode 상에서 수행해야 한다.
-        """
+    # # override 
+    # def enqueue(self, episode):
+    #     super().enqueue(episode)
+    #     """
+    #     # 지금 내가 원하는 것
+    #     현 시점 + 목표 => H-step 이후를 보고싶다.
+    #     지금 episode가 high-episode란말야?
+    #     그럼 transition이 (s_t, a_t, s_t+1)이 아니고
+    #     (s_t, z, s_t+H) 임
+    #     즉, next_states가 바로 H states
+    #     여기서 H번 더한거는 H^2 이후임. 당연히 당연히 당연히 ~ 안된다. 
+    #     state reconstruction이나, subgoal generation은 raw episode 상에서 수행해야 한다.
+    #     """
 
-        # raw_episode = episode.raw_episode
+    #     # raw_episode = episode.raw_episode
 
-        # # 모든 raw_episode의 goal을 체크 
-        # states = deepcopy(raw_episode.states)
+    #     # # 모든 raw_episode의 goal을 체크 
+    #     # states = deepcopy(raw_episode.states)
         
-        # # achieved goal을 return함
-        # # 이게 변하는 마지막 순간이 last rwd index 
-        # achieved = 0
-        # goal_index = 0
-        # for i, state in enumerate(states):
-        #     achieved_now = len(GOAL_CHECKERS[env_name](state))
-        #     if achieved_now > achieved:
-        #         achieved = achieved_now
-        #         goal_index = i
+    #     # # achieved goal을 return함
+    #     # # 이게 변하는 마지막 순간이 last rwd index 
+    #     # achieved = 0
+    #     # goal_index = 0
+    #     # for i, state in enumerate(states):
+    #     #     achieved_now = len(GOAL_CHECKERS[env_name](state))
+    #     #     if achieved_now > achieved:
+    #     #         achieved = achieved_now
+    #     #         goal_index = i
 
-        # if goal_index != 0:
-        #     self.enqueue_H(raw_episode, goal_index)
+    #     # if goal_index != 0:
+    #     #     self.enqueue_H(raw_episode, goal_index)
         
         
         
-    def enqueue_H(self, raw_episode, goal_index):
-        while len(self.H_episodes) > 0:
-            old_episode = self.H_episodes[0]
-            ptr = self.H_episode_ptrs[0]
-            dist = (ptr - self.H_ptr) % self.max_size
+    # def enqueue_H(self, raw_episode, goal_index):
+    #     while len(self.H_episodes) > 0:
+    #         old_episode = self.H_episodes[0]
+    #         ptr = self.H_episode_ptrs[0]
+    #         dist = (ptr - self.H_ptr) % self.max_size
 
-            if dist < len(raw_episode):
-                self.H_episodes.popleft()
-                self.H_episode_ptrs.popleft()
-            else:
-                break
-        self.H_episodes.append(raw_episode)
-        self.H_episode_ptrs.append(self.H_ptr)
+    #         if dist < len(raw_episode):
+    #             self.H_episodes.popleft()
+    #             self.H_episode_ptrs.popleft()
+    #         else:
+    #             break
+    #     self.H_episodes.append(raw_episode)
+    #     self.H_episode_ptrs.append(self.H_ptr)
         
 
 
-        states = deepcopy(raw_episode.states)[ : goal_index - self.H] # 
-        relabeled_goal = raw_episode.states[goal_index]
-        relabeled_goal[:9] = 0    
-        states = np.array(states)
+    #     states = deepcopy(raw_episode.states)[ : goal_index - self.H] # 
+    #     relabeled_goal = raw_episode.states[goal_index]
+    #     relabeled_goal[:9] = 0    
+    #     states = np.array(states)
 
-        # transition으로 만듬
-        transitions = torch.as_tensor(np.concatenate([
-            states[:-self.H], # states
-            states[self.H:], # next H states
-            relabeled_goal[np.newaxis, :].repeat(len(states) - self.H, axis = 0)              # Relabeled Goal임. 
-        ], axis=-1))
+    #     # transition으로 만듬
+    #     transitions = torch.as_tensor(np.concatenate([
+    #         states[:-self.H], # states
+    #         states[self.H:], # next H states
+    #         relabeled_goal[np.newaxis, :].repeat(len(states) - self.H, axis = 0)              # Relabeled Goal임. 
+    #     ], axis=-1))
 
         
-        if len(transitions):
-            if self.H_ptr + len(transitions) <= self.max_size:
-                self.H_transitions[self.H_ptr:self.H_ptr+len(transitions)] = transitions
-            elif self.H_ptr + len(transitions) < 2*self.max_size:
-                self.H_transitions[self.H_ptr:] = transitions[:self.max_size-self.H_ptr]
-                self.H_transitions[:len(transitions)-self.max_size+self.H_ptr] = transitions[self.max_size-self.H_ptr:]
-            else:
-                raise NotImplementedError
+    #     if len(transitions):
+    #         if self.H_ptr + len(transitions) <= self.max_size:
+    #             self.H_transitions[self.H_ptr:self.H_ptr+len(transitions)] = transitions
+    #         elif self.H_ptr + len(transitions) < 2*self.max_size:
+    #             self.H_transitions[self.H_ptr:] = transitions[:self.max_size-self.H_ptr]
+    #             self.H_transitions[:len(transitions)-self.max_size+self.H_ptr] = transitions[self.max_size-self.H_ptr:]
+    #         else:
+    #             raise NotImplementedError
 
-            # 즉, ptr은 현재 episode를 더하고 난 후의 위치임. 
-            self.H_ptr = (self.H_ptr + len(transitions)) % self.max_size
-            self.H_size = min(self.H_size + len(transitions), self.max_size)
+    #         # 즉, ptr은 현재 episode를 더하고 난 후의 위치임. 
+    #         self.H_ptr = (self.H_ptr + len(transitions)) % self.max_size
+    #         self.H_size = min(self.H_size + len(transitions), self.max_size)
 
 
 
-    def sample(self, n):
-        indices = torch.randint(self.size, size=[n], device=self.device)
-        transitions = self.transitions[indices]
-        return Batch(*[transitions[:, i] for i in self.layout.values()], transitions)
+    # def sample(self, n):
+    #     indices = torch.randint(self.size, size=[n], device=self.device)
+    #     transitions = self.transitions[indices]
+    #     return Batch(*[transitions[:, i] for i in self.layout.values()], transitions)
 
-    def sample_Hstep(self, n):
-        """
-        별로 필요 없을 것 같은데 ? 
-        for finetune subgoal generator 
-        """
+    # def sample_Hstep(self, n):
+    #     """
+    #     별로 필요 없을 것 같은데 ? 
+    #     for finetune subgoal generator 
+    #     """
 
-        if self.H_size > 0:
-            # indices = torch.randint(self.size - self.H, size=[n], device=self.device)
-            indices = torch.randint(self.H_size, size=[n], device=self.device)
-            transitions = self.H_transitions[indices]
-            return Batch_Hstep(*[transitions[:, i] for i in self.H_layout.values()], transitions)
+    #     if self.H_size > 0:
+    #         # indices = torch.randint(self.size - self.H, size=[n], device=self.device)
+    #         indices = torch.randint(self.H_size, size=[n], device=self.device)
+    #         transitions = self.H_transitions[indices]
+    #         return Batch_Hstep(*[transitions[:, i] for i in self.H_layout.values()], transitions)
 
-        else:
-            return None
+    #     else:
+    #         return None
 
 
 class Offline_Buffer:

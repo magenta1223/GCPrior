@@ -33,7 +33,7 @@ from LVD.contrib.simpl.torch_utils import itemize
 from LVD.rl.vis import *
 from LVD.utils import *
 from LVD.collector.gcid import LowFixedHierarchicalTimeLimitCollector
-from LVD.collector.storage import Buffer, Buffer_H
+from LVD.collector.storage import Buffer, Buffer_modified
 from LVD.rl.rl_utils import *
 
 from LVD.configs.env import ENV_CONFIGS
@@ -171,7 +171,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
         low_actor.set_visual_encoder(None)
 
     # ------------- Buffers & Collectors ------------- #
-    buffer = Buffer(state_dim, latent_dim, buffer_size, tanh = model.tanh)
+    buffer = Buffer_modified(state_dim, latent_dim, buffer_size, tanh = model.tanh)
     collector = LowFixedHierarchicalTimeLimitCollector(env, env_name, low_actor, horizon=10, time_limit=args.time_limit, tanh = model.tanh)
 
     
