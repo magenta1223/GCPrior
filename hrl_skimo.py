@@ -257,7 +257,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
         'qfs' : qfs,
         'discount' : 0.99,
         'tau' : 0.0005,
-        'policy_lr' : 1e-8, #args.policy_lr,
+        'policy_lr' : args.policy_lr,
         'qf_lr' : 3e-4,
         'alpha_lr' : 3e-4,
         'prior_policy_lr' : 1e-5,

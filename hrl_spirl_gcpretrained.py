@@ -238,7 +238,6 @@ def train_single_task(env, env_name, task, task_cls, args):
         "env" : env,
     }, f"{weights_path}/{task_name}.bin")   
 
-
     # ------------- Train RL ------------- #
     with env.set_task(task_obj):
         state = env.reset()
