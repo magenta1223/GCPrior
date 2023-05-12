@@ -55,7 +55,7 @@ def main(args):
         weights_path = f"./weights/{args.env_name}/{args.method}/sac/{task}.bin"
 
         if not os.path.exists(weights_path):
-            print(f"{str(task_name)} does not exist")
+            print(f"{task} does not exist")
             continue
 
         success_rates, rewards, task_name = process_task(weights_path, task)
