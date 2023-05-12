@@ -6,7 +6,7 @@ sys.path.append("/home/magenta1223/skill-based/SiMPL/proposed")
 from LVD.envs import *
 
 env = Maze_GC(**maze_config)
-train_tasks = [ MazeTask_Custom(task[0], task[1])  for task in MAZE_META_TASKS]
+train_tasks = [ MazeTask_Custom(task)  for task in MAZE_META_TASKS]
 
 config = dict(
     policy=dict(hidden_dim=256, n_hidden=3, prior_state_dim = 4),

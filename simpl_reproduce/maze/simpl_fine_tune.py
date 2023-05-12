@@ -3,10 +3,13 @@ import simpl.env.maze
 from simpl.env.maze import Size20Seed0Tasks
 
 from .maze_vis import draw_maze
+from LVD.envs import *
+
+env = Maze_GC(**maze_config)
+# tasks = Size20Seed0Tasks.flat_test_tasks
+train_tasks = [ MazeTask_Custom(task)  for task in MAZE_TASKS]
 
 
-env = gym.make('simpl-maze-size20-seed0-v0')
-tasks = Size20Seed0Tasks.flat_test_tasks
 config = dict(
     constrained_sac=dict(auto_alpha=True, kl_clip=5,
                          target_kl=1, increasing_alpha=True),
