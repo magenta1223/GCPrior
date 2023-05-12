@@ -31,6 +31,7 @@ from LVD.utils import *
 from LVD.collector.skimo import LowFixedHierarchicalTimeLimitCollector
 from LVD.collector.storage import Buffer_H
 from LVD.rl.rl_utils import *
+from LVD.configs.env import ENV_CONFIGS
 
 
 seed_everything()
@@ -289,12 +290,13 @@ def train_single_task(env, env_name, tasks, task_cls, args):
 
     weights_path = f"./weights/{args.env_name}/skimo/sac"
     os.makedirs(weights_path, exist_ok= True)
+    state_processor = StateProcessor(env_name= args.env_name)
 
 
     # ------------- Train RL ------------- #
     with env.set_task(task_obj):
         state = env.reset()
-        print("TASK : ",  GOAL_CHECKERS[args.env_name](   GOAL_TRANSFORM[args.env_name](state)  ))
+        print("TASK : ",  state_processor.state_goal_checker(state, env, mode = "goal") )
         # log에 success rate추가 .
         # ep = 0
         for episode_i in range(n_episode+1):
@@ -322,31 +324,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--env_name", default = "kitchen", type = str)
     parser.add_argument("--wandb", action = "store_true")    
+    parser.add_argument("--norm", action = "store_true", default= False)    
     parser.add_argument("-p", "--path", default = "")
-    parser.add_argument("-tl", "--time_limit", default = 280, type = int)
-    parser.add_argument("-nh", "--n_hidden", default = 5, type = int)
-    parser.add_argument("-hd", "--hidden_dim", default = 128, type =int)
-    parser.add_argument("-kls", "--target_kl_start", default = 20, type =float)
-    parser.add_argument("-kle", "--target_kl_end", default = 5, type =float)
-    parser.add_argument("-a", "--init_alpha", default = 0.1, type =float)
-    parser.add_argument("--only_increase", action = "store_true", default = False)    
-    parser.add_argument("--auto_alpha", action = "store_true", default = False)    
-    parser.add_argument("--gcprior", action = "store_true", default = False)    
-    parser.add_argument("--use_hidden", action = "store_true", default = False)    
-    parser.add_argument("--finetune", action = "store_true", default = False)    
     parser.add_argument("--wandb_project_name", default = "GCPolicy_Level")    
     parser.add_argument("-rp", "--render_period", default = 10, type = int)
-    parser.add_argument("-ne", "--n_episode", default = 300, type = int)
-    parser.add_argument("--reuse_rate", default = 256, type = int)
-
-    parser.add_argument("-plr", "--policy_lr", default = 3e-4, type =float)
-
-
-    parser.add_argument("--env", type = str, default = "simpl", choices= ['simpl', 'gc'])    
-
-
     parser.add_argument("-qwu", "--q_warmup", default = 5000, type =int)
-    # parser.add_argument("-qwu", "--q_warmup", default = 0, type =int)
     parser.add_argument("-qwe", "--q_weight", default = 1, type =int)
     parser.add_argument("-pc", "--precollect", default = 10, type = int)
 
@@ -354,6 +336,14 @@ def main():
     args = parser.parse_args()
 
     print(args)
+    env_config = ENV_CONFIGS[args.env_name]("gc_div_joint")
+    env_default_conf = {**env_config.attrs}
+
+    for k, v in env_default_conf.items():
+        setattr(args, k, v)
+
+
+
 
     env_cls = ENV_TASK[args.env_name]['env_cls']
     task_cls = ENV_TASK[args.env_name]['task_cls']

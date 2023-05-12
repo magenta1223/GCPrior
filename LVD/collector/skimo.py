@@ -1,12 +1,11 @@
 from ..contrib.simpl.collector.hierarchical import HierarchicalEpisode 
-from ..utils import GOAL_CHECKERS, STATE_PROCESSOR, GOAL_TRANSFORM
 
 # from ..contrib.simpl.collector.hierarchical import HierarchicalEpisode
 # from ..utils import GOAL_CHECKERS
 
 import numpy as np
 from copy import deepcopy
-import torch
+from ..utils import StateProcessor
 
 
 class HierarchicalTimeLimitCollector:
@@ -16,18 +15,21 @@ class HierarchicalTimeLimitCollector:
         self.horizon = horizon
         self.time_limit = time_limit if time_limit is not None else np.inf
         self.tanh = tanh
+        self.state_processor = StateProcessor(env_name= self.env_name)
+
 
     def collect_episode(self, low_actor, high_actor, qfs):
         state, done, t = self.env.reset(), False, 0
 
-        state = STATE_PROCESSOR[self.env_name](state)
+        G = self.state_processor.get_goals(state)
+        state = self.state_processor.state_process(state)
         episode = HierarchicalEpisode(state)
         low_actor.eval()
         high_actor.eval()
         
         while not done and t < self.time_limit:
             if t % self.horizon == 0:
-                high_action = high_actor.act(state, qfs)
+                high_action = high_actor.act(state, G, qfs)
                 data_high_action = high_action
             else:
                 data_high_action = None
@@ -36,7 +38,7 @@ class HierarchicalTimeLimitCollector:
                 low_action = low_actor.act(state)
 
             state, reward, done, info = self.env.step(low_action)
-            state = STATE_PROCESSOR[self.env_name](state)
+            state = self.state_processor.state_process(state)
 
 
             data_done = done
@@ -51,10 +53,10 @@ class HierarchicalTimeLimitCollector:
             episode.add_step(low_action, data_high_action, state, reward, data_done, info)
             t += 1
 
-        print(GOAL_CHECKERS[self.env_name](STATE_PROCESSOR[self.env_name] (state)))
+        print( self.state_processor.state_goal_checker(state, self.env)  )
 
 
-        return episode, None
+        return episode, G
 
     
 class LowFixedHierarchicalTimeLimitCollector(HierarchicalTimeLimitCollector):

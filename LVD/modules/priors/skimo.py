@@ -24,6 +24,7 @@ class Skimo_Prior(BaseModule):
         self.methods = {
             "train" : self.__train__,
             "eval" : self.__eval__,
+            "rollout" : self.__rollout__,
             "finetune" : self.__finetune__,
             "prior" : self.__prior__
         }
@@ -82,27 +83,13 @@ class Skimo_Prior(BaseModule):
 
 
         # -------------- High-level policy -------------- #
+        policy_skill =  self.highlevel_policy.dist(torch.cat((ht.clone().detach(), G), dim = -1))
 
-        if self.tanh:
-            prior_dist = prior._normal.base_dist
-        else:
-            prior_dist = prior.base_dist
-        prior_locs, prior_scales = prior_dist.loc.clone().detach(), prior_dist.scale.clone().detach()
-        prior_pre_scales = inverse_softplus(prior_scales)
-        res_locs, res_pre_scales = self.highlevel_policy(torch.cat((state_emb, G), dim = -1)).chunk(2, dim=-1)
-
-
-        locs = res_locs + prior_locs
-        scales = F.softplus(res_pre_scales + prior_pre_scales)
-        policy_skill = get_dist(locs, scale = scales, tanh = self.tanh)
 
         # -------------- Rollout for metric -------------- #
         # dense execution with loop (for metric)
         with torch.no_grad():
             subgoal_recon_D = self.state_decoder(D)
-
-
-
 
 
         result = {
@@ -144,69 +131,37 @@ class Skimo_Prior(BaseModule):
         evaluation + subgoal finetune
         """
 
-        state = inputs['states']
+        state, G = inputs['states'], inputs['G']
         with torch.no_grad():
             ht = self.state_encoder(state)
 
-        # 여기서는?
-        # 딱히.. 할게 없죠? 
-
-        result =  {}
+        policy_skill =  self.highlevel_policy.dist(torch.cat((ht.clone().detach(), G), dim = -1))
 
 
-        return result
+        return dict(
+            policy_skill = policy_skill
+        )
     
     @torch.no_grad()
     def __rollout__(self, inputs):
-        states, skill = inputs['states'], inputs['actions']
-        N, T, _ = states.shape
-        skill_length = T - 1
+        ht, G = inputs['states'], inputs['G']
+        planning_horizon = inputs['planning_horizon']
 
-        hts = self.state_encoder(states.view(N * T, -1)).view(N, T, -1)            
-        hts_rollout = []
-
-        # start ! 
-        c = random.sample(range(1, skill_length - 1), 1)[0]
-        _ht = hts[:, c].clone()
-        skill_sampled_orig = self.prior_policy.dist(_ht).sample()
-
-
-        skill_sampled = skill_sampled_orig.clone()
-        # 1 skill
-        for _ in range(c, skill_length):
-            # execute skill on latent space and append to the original sub-trajectory 
-            dynamics_input = torch.cat((_ht, skill_sampled), dim=-1)
-            diff = self.flat_dynamics(dynamics_input) 
-            _ht = _ht + diff
-            hts_rollout.append(_ht)
+        # skill sample from high-level policy 
+        # 근데 tanh에서 planning하면 numerical unstabilty 때문에 .. 
+        # ht = self.state_encoder(states)
+        skills = []
+        for i in range(planning_horizon):
+            policy_skill =  self.highlevel_policy.dist(torch.cat((ht.clone().detach(), G), dim = -1)).sample()
+            dynamics_input = torch.cat((ht, policy_skill), dim = -1)
+            ht = self.dynamics(dynamics_input)
+            skills.append(policy_skill)
         
-        invD_rollout, _ = self.inverse_dynamics.dist(state = hts[:, 0], subgoal = _ht,  tanh = self.tanh)
-        invD_GT, _ = self.inverse_dynamics.dist(state = hts[:, 0], subgoal = hts[:, -1],  tanh = self.tanh)
+        return dict(
+            policy_skills = torch.stack(skills, dim=1)
+        )
 
 
-        # for f learning, execute 4 skill more
-        # (plan_H - skill_length) // skill_length
-        for _ in range((self.plan_H - skill_length) // skill_length):
-        # for _ in range(9):
-            skill = self.prior_policy.dist(_ht).sample()
-            dynamics_input = torch.cat((_ht, skill), dim=-1)
-            diff = self.dynamics(dynamics_input) 
-            _ht = _ht + diff
-            hts_rollout.append(_ht)
-
-            
-        hts_rollout = torch.stack(hts_rollout, dim = 1)
-        N, T, _ = hts_rollout.shape
-        states_rollout = self.state_decoder( hts_rollout.view(N * T, -1) ).view(N, T, -1)
-
-        result =  {
-            "c" : c,
-            "states_rollout" : states_rollout,
-            "skill_sampled" : skill_sampled_orig,
-            "invD_rollout" : invD_rollout,
-            "invD_GT" : invD_GT
-        }
-        return result 
 
 
     def __rollout2__(self, inputs):

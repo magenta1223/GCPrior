@@ -314,32 +314,11 @@ def main():
     parser.add_argument("--env_name", default = "kitchen", type = str)
     parser.add_argument("--wandb", action = "store_true")    
     parser.add_argument("--norm", action = "store_true", default= False)    
-
     parser.add_argument("-p", "--path", default = "")
-    # parser.add_argument("-tl", "--time_limit", default = 280, type = int)
-    # parser.add_argument("-nh", "--n_hidden", default = 5, type = int)
-    # parser.add_argument("-hd", "--hidden_dim", default = 128, type =int)
-    # parser.add_argument("-kls", "--target_kl_start", default = 20, type =float)
-    # parser.add_argument("-kle", "--target_kl_end", default = 5, type =float)
-    # parser.add_argument("-a", "--init_alpha", default = 0.1, type =float)
-    # parser.add_argument("--only_increase", action = "store_true", default = False)    
-    # parser.add_argument("--auto_alpha", action = "store_true", default = False)    
-    # parser.add_argument("--gcprior", action = "store_true", default = False)    
-    # parser.add_argument("--use_hidden", action = "store_true", default = False)    
-    # parser.add_argument("--finetune", action = "store_true", default = False)    
     parser.add_argument("--wandb_project_name", default = "GCPolicy_Level")    
     parser.add_argument("-rp", "--render_period", default = 10, type = int)
-    # parser.add_argument("-ne", "--n_episode", default = 300, type = int)
-    # parser.add_argument("--reuse_rate", default = 256, type = int)
-
-    # parser.add_argument("-plr", "--policy_lr", default = 3e-4, type =float)
-
-
     parser.add_argument("--env", type = str, default = "simpl", choices= ['simpl', 'gc'])    
-
-
     parser.add_argument("-qwu", "--q_warmup", default = 5000, type =int)
-    # parser.add_argument("-qwu", "--q_warmup", default = 0, type =int)
     parser.add_argument("-qwe", "--q_weight", default = 1, type =int)
     parser.add_argument("-pc", "--precollect", default = 10, type = int)
 

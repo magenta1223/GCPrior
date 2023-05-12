@@ -136,9 +136,9 @@ class Skimo_Model(BaseModule):
             act_cls = act_cls, #nn.LeakyReLU,
             block_cls = LinearBlock,
             true = True,
-            tanh = False,
+            tanh = self.tanh,
             bias = bias,
-            dropout = dropout    
+            dropout = dropout    ,
         )
 
 
