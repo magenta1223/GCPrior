@@ -1,0 +1,5 @@
+env,method,task,mean,std,weight_path
+maze,gc_div_joint,start:[10. 24.] end:[24. 39.],100.0,0.0,./weights/maze/gc_div_joint/sac/start:[10. 24.] end:[24. 39.].bin
+maze,gc_div_joint,start:[10. 24.] end:[24. 34.],99.3548387096774,1.2903225806451588,./weights/maze/gc_div_joint/sac/start:[10. 24.] end:[24. 34.].bin
+maze,gc_div_joint,start:[10. 24.] end:[15. 40.],100.0,0.0,./weights/maze/gc_div_joint/sac/start:[10. 24.] end:[15. 40.].bin
+maze,gc_div_joint,start:[10. 24.] end:[ 2. 38.],9.67741935483871,2.885249003225535,./weights/maze/gc_div_joint/sac/start:[10. 24.] end:[ 2. 38.].bin

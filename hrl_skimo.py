@@ -29,7 +29,7 @@ from LVD.contrib.simpl.torch_utils import itemize
 from LVD.rl.vis import *
 from LVD.utils import *
 from LVD.collector.skimo import LowFixedHierarchicalTimeLimitCollector
-from LVD.collector.storage import Buffer_H
+from LVD.collector.storage import Buffer_modified
 from LVD.rl.rl_utils import *
 from LVD.configs.env import ENV_CONFIGS
 
@@ -48,7 +48,7 @@ def render_task(env, env_name, policy, low_actor, tanh, qfs):
     processor = StateProcessor(env_name = env_name)
 
 
-    G = processor.state2goal(state)
+    G = processor.get_goals(state)
     state = processor.state_process(state)
 
     low_actor.eval()
@@ -235,7 +235,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     low_actor = deepcopy(model.skill_decoder.eval())
 
     # ------------- Buffers & Collectors ------------- #
-    buffer = Buffer_H(state_dim, latent_dim, buffer_size, tanh = model.tanh, skimo = True)
+    buffer = Buffer_modified(state_dim, latent_dim, buffer_size, tanh = model.tanh, skimo = True)
     collector = LowFixedHierarchicalTimeLimitCollector(env, env_name, low_actor, horizon=10, time_limit=args.time_limit, tanh = model.tanh)
 
     
