@@ -6,7 +6,7 @@ from ..contrib.simpl.collector.hierarchical import HierarchicalEpisode
 import numpy as np
 from copy import deepcopy
 from ..utils import StateProcessor
-
+import torch
 
 class HierarchicalTimeLimitCollector:
     def __init__(self, env, env_name, horizon, time_limit=None, tanh = False):
@@ -56,7 +56,7 @@ class HierarchicalTimeLimitCollector:
         print( self.state_processor.state_goal_checker(state, self.env)  )
 
 
-        return episode, G
+        return episode, torch.tensor(G, dtype = torch.float32).unsqueeze(0)
 
     
 class LowFixedHierarchicalTimeLimitCollector(HierarchicalTimeLimitCollector):

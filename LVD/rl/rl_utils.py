@@ -14,8 +14,6 @@ seed_everything()
 # # Generating single task policy with SAC 
 
 
-
-
 def render_task(env, env_name, policy, low_actor, tanh = False):
     imgs = []
     state = env.reset()

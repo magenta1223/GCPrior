@@ -315,16 +315,18 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
     """
     Skimo
     """
-    def __init__(self, build_config, others_config):
+    def __init__(self, build_config, skimo_config):
 
         super().__init__(build_config)
         
-        for k, v in others_config.items():
+        for k, v in skimo_config.items():
             setattr(self, k, v)
 
         self.prior_policy = copy.deepcopy(self.prior_policy).requires_grad_(False)
 
         # self._step : episode 길이의 누적합. 
+        
+
 
     def forward(self, states):
         return super().forward(states)
@@ -336,17 +338,16 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
             G = prep_state(G, self.device),
             qfs = qfs,
         )
-        # dist = self.dist(dist_inputs, "eval")
 
-        skill = self.cem_planning(dist_inputs)
-        
-        # dist_inputs['states'] = self.prior_policy.state_encoder(dist_inputs['states'][:, :self.prior_state_dim])
+        if self._step < self.warmup_steps:
+            skill = self.dist(dist_inputs)['policy_skill'].sample()[0]
+        else:
+            skill = self.cem_planning(dist_inputs)
 
-        # skill = self.dist(dist_inputs).sample()
         
         self._step += 10 # skill length 
-        # 
-        return skill.detach().cpu().numpy()[0] 
+
+        return skill.detach().cpu().numpy() 
 
     def dist(self, inputs):
         return self.prior_policy(inputs, "eval")
@@ -433,7 +434,7 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
         # finetune state encoder and dynamics 
         outputs = self.prior_policy(inputs, "finetune")
 
-        outputs['rwd_pred'] = self.reward_function(torch.cat((inputs['states'], inputs['actions']), dim = -1)) 
+        outputs['rwd_pred'] = self.reward_function(torch.cat((inputs['q_states'], inputs['actions']), dim = -1)) 
 
         return outputs
 

@@ -40,10 +40,16 @@ seed_everything()
 # reward prediction 
 # CEM planning 
 
-def render_task(env, env_name, policy, low_actor, tanh = False, qfs = None):
+def render_task(env, env_name, policy, low_actor, tanh, qfs):
     imgs = []
     state = env.reset()
-    state = STATE_PROCESSOR[env_name](state)
+
+
+    processor = StateProcessor(env_name = env_name)
+
+
+    G = processor.state2goal(state)
+    state = processor.state_process(state)
 
     low_actor.eval()
     policy.eval()
@@ -56,22 +62,21 @@ def render_task(env, env_name, policy, low_actor, tanh = False, qfs = None):
 
     while not done and time_step < time_limit: 
         if time_step % 10 == 0:
-            high_action = policy.act(state, qfs)
-            data_high_action = high_action
-        else:
-            data_high_action = None
+            if tanh:
+                high_action = policy.act(state, G, qfs)
+            else:
+                high_action = policy.act(state, G)
 
         with low_actor.condition(high_action), low_actor.expl():
             low_action = low_actor.act(state)
         
         state, reward, done, info = env.step(low_action)
-        state = STATE_PROCESSOR[env_name](state)
+        state = processor.state_process(state)
         img = env.render(mode = "rgb_array")
         imgs.append(img)
         time_step += 1
     print("done!")
     return imgs
-
 
 
 
@@ -202,7 +207,8 @@ def train_single_task(env, env_name, tasks, task_cls, args):
 
 
     ## ------------- High Policy ------------- ##
-    others_config = dict(
+    # Skimo config
+    skimo_config = dict(
         reward_function = reward_function,
         prior_policy = prior_policy,
         min_scale = 0.001,
@@ -218,10 +224,11 @@ def train_single_task(env, env_name, tasks, task_cls, args):
         rl_discount = 0.99,
         step_interval = 25000,
         tanh = model.tanh,
-        _step = 0
+        _step = 0,
+        warmup_steps = 5000
     )
 
-    policy = HighPolicy_Skimo(Linear_Config(policy_config), others_config)        
+    policy = HighPolicy_Skimo(Linear_Config(policy_config), skimo_config)        
 
 
     ## ------------- Low Decoder ------------- ##

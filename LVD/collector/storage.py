@@ -2,8 +2,6 @@ from collections import deque, OrderedDict
 from copy import deepcopy
 
 from ..contrib.simpl.collector.storage import  Batch, Buffer
-# from ..contrib.simpl.collector.storage import Batch, Buffer
-
 import numpy as np
 import torch
 from torch.nn import functional as F
@@ -206,67 +204,35 @@ class Buffer_H(Buffer):
 
 class Offline_Buffer:
     def __init__(self, state_dim, action_dim, trajectory_length = 10, max_size = 1000) -> None:
-                
 
         self.state_dim = state_dim
         self.action_dim = action_dim
         self.trajectory_length = trajectory_length
         self.max_size = max_size
 
-        # assert max_size % 10 == 0, "for easy sampling"
-
-        self.size = 0 # 현재 buffer에 차 있는 subtrajectories의 전체 길이
-        self.pos = 0  # 다음에 어디에 추가할지. 
+        self.size = 0 
+        self.pos = 0  
 
         self.states = torch.empty(max_size, trajectory_length + 1, state_dim)
         self.actions = torch.empty(max_size, trajectory_length, action_dim)
 
-    
-        # # task-agnostic subtrajectories
-        # dims = OrderedDict([
-        #     ('state', state_dim),
-        #     ('action', action_dim),
-        # ])
-        # self.layout = dict()
-        # prev_i = 0
-        # for k, v in dims.items():
-        #     next_i = prev_i + v
-        #     self.layout[k] = slice(prev_i, next_i)
-        #     prev_i = next_i
-        
-        
     def enqueue(self, states, actions):
-        # batch 단위로 추가. N, T, D 형태로 추가됨. 
         N, T, _ = actions.shape
-
-        # print(N, T)
-
-        self.size = min(  self.size + N, self.max_size)
-        
-        # view
-        
+        self.size = min(  self.size + N, self.max_size)        
         # if exceed max size
         if self.max_size < self.pos + N:
-            # 별일 있음
             self.states[self.pos : self.max_size] = states[: self.max_size - self.pos]
             self.actions[self.pos : self.max_size] = actions[: self.max_size - self.pos]
-
-            # 더하고 남은 만큼. 
-            # N = N + (self.pos - self.max_size) // T
             self.pos = 0
             # remainder 
             states = states[self.max_size - self.pos : ]
             actions = actions[self.max_size - self.pos : ]
-
-
-        # print(self.size)
 
         N = states.shape[0]
         self.states[self.pos : self.pos + N] = states
         self.actions[self.pos : self.pos + N] = actions
 
         self.pos += N
-
 
 
     def sample(self):

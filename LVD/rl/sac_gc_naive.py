@@ -17,13 +17,6 @@ from ..contrib.dists import *
 import datetime
 
 
-
-# def clipped_kl(a, b, clip=20):
-#     kls = torch_dist.kl_divergence(a, b)
-#     scales =  kls.detach().clamp(0, clip) / kls.detach()
-#     return kls*scales
-
-
 class SAC(BaseModule):
     def __init__(self, config):
         super().__init__(config)

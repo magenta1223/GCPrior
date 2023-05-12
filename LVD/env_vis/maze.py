@@ -14,10 +14,6 @@ Hsteps = 10
 
 def maze_render_function(env, states, actions, mode):
     """
-    rollout을 통해 만들어낸 trajectory의
-    -state sequence를 강제로 세팅
-    -초기 state를 세팅하고, actino을 환경상에서 수행
-    두 개를 비교
     """
     env.reset()
     imgs = []
@@ -100,6 +96,5 @@ def maze_render(env, states):
     imgs_state = np.tile(imgs_state[:,:,:, None], (1,1,1,3))
     imgs_state[:, 15:17, 15:17] = [127, 127,127]
     imgs_state = imgs_state.astype(np.uint8)
-    
 
     return imgs_state

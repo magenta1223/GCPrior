@@ -30,7 +30,7 @@ class SAC(BaseModule):
 
         self.policy_optim = torch.optim.Adam(
             [
-                { "params" : self.policy.layers.parameters()}, # 보상최대화하는 subgoal 뽑기. 
+                { "params" : self.policy.prior_policy.highlevel_policy.parameters()}, # 보상최대화하는 subgoal 뽑기. 
             ],
             lr = self.policy_lr # 낮추면 잘 안됨. 왜? 
         )
@@ -80,8 +80,6 @@ class SAC(BaseModule):
     def entropy(self, inputs, kl_clip = False):
         inputs = {**inputs}
 
-        inputs['states'] = inputs['raw_states']
-
         with torch.no_grad():
             prior_dist = self.policy.prior_policy(inputs, "prior")['prior']
         if kl_clip:                
@@ -108,8 +106,12 @@ class SAC(BaseModule):
 
             # self.policy.prior_policy.state_encoder(states)
 
-            step_inputs['states'] = self.policy.prior_policy.state_encoder(states) 
-            step_inputs['next_states'] = self.policy.prior_policy.state_encoder(next_states)
+            step_inputs['states'] = states
+            step_inputs['next_states'] = next_states
+
+            step_inputs['q_states'] = self.policy.prior_policy.state_encoder(states) 
+            step_inputs['q_next_states'] = self.policy.prior_policy.state_encoder(next_states)
+            step_inputs['G'] = step_inputs['G'].repeat(step_inputs['batch_size'], 1).cuda()
 
             step_inputs['raw_states'] = states
             step_inputs['raw_next_states'] = next_states
@@ -157,15 +159,16 @@ class SAC(BaseModule):
     def compute_target_q(self, step_inputs):
         policy_inputs = dict(
             states = step_inputs['next_states'].clone(),
-            raw_states = step_inputs['raw_next_states']
+            G = step_inputs['G'],
+            # raw_states = step_inputs['raw_next_states']
         )
         
-        policy_inputs['dist'] = self.policy.dist(policy_inputs)
+        policy_inputs['dist'] = self.policy.dist(policy_inputs)['policy_skill']
         actions = policy_inputs['dist'].sample()
 
         # calculate entropy term
         entropy_term, prior_dist = self.entropy(policy_inputs, kl_clip= True) 
-        min_qs = torch.min(*[target_qf(step_inputs['next_states'], actions) for target_qf in self.target_qfs])
+        min_qs = torch.min(*[target_qf(step_inputs['q_next_states'], actions) for target_qf in self.target_qfs])
 
         if self.alpha < 1e-12:
             soft_qs = min_qs
@@ -186,7 +189,7 @@ class SAC(BaseModule):
 
         qf_losses = []  
         for qf, qf_optim in zip(self.qfs, self.qf_optims):
-            qs = qf(step_inputs['states'], step_inputs['actions'])
+            qs = qf(step_inputs['q_states'], step_inputs['actions'])
             qf_loss = (qs - target_qs).pow(2).mean() * 0.1
 
             if not self.optimal_Q:
@@ -210,11 +213,11 @@ class SAC(BaseModule):
 
     def update_policy(self, step_inputs):
         results = {}
-        step_inputs['dist'] = self.policy.dist(step_inputs) # prior policy mode.
+        step_inputs['dist'] = self.policy.dist(step_inputs)['policy_skill'] # prior policy mode.
         step_inputs['policy_actions'] = step_inputs['dist'].rsample() 
 
         entropy_term, prior_dist = self.entropy(step_inputs, kl_clip= False) # policy의 dist로는 gradient 전파함 .
-        min_qs = torch.min(*[qf(step_inputs['states'], step_inputs['policy_actions']) for qf in self.qfs])
+        min_qs = torch.min(*[qf(step_inputs['q_states'], step_inputs['policy_actions']) for qf in self.qfs])
 
 
         if self.alpha < 1e-12:
@@ -273,6 +276,8 @@ class SAC(BaseModule):
         loss.backward()
         self.others_optim.step()
 
+        self.policy.prior_policy.soft_update()
+
         
 
     def warmup_Q(self, step_inputs):
@@ -288,8 +293,16 @@ class SAC(BaseModule):
             # step_inputs['batch'] = batch
             step_inputs['rewards'] = batch.rewards
             step_inputs['dones'] = batch.dones
-            step_inputs['states'] = self.policy.prior_policy.state_encoder(states) 
-            step_inputs['next_states'] = self.policy.prior_policy.state_encoder(next_states)
+
+
+
+            step_inputs['states'] = states
+            step_inputs['next_states'] = next_states
+            step_inputs['G'] = step_inputs['G'].repeat(step_inputs['batch_size'], 1).cuda()
+
+
+            step_inputs['q_states'] = self.policy.prior_policy.state_encoder(states) 
+            step_inputs['q_next_states'] = self.policy.prior_policy.state_encoder(next_states)
 
             step_inputs['raw_states'] = states
             step_inputs['raw_next_states'] = next_states

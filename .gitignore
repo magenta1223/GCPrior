@@ -18,7 +18,7 @@ LVD/weights/
 LVD/rl/results/
 LVD/rl/wandb/
 
-
+calvin_eda.ipynb
 maze_eda.ipynb
 test.ipynb
 test.py

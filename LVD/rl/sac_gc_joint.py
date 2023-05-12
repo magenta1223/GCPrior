@@ -12,9 +12,9 @@ from ..contrib.simpl.math import clipped_kl, inverse_softplus
 from ..utils import prep_state, nll_dist, kl_annealing, get_dist, AverageMeter, Scheduler_Helper
 from ..contrib.momentum_encode import update_moving_average
 from ..contrib.dists import *
-
-
 import datetime
+
+
 
 class SAC(BaseModule):
     def __init__(self, config):
@@ -179,15 +179,6 @@ class SAC(BaseModule):
         
         # ------------------- SAC ------------------- # 
         # ------------------- Q-functions ------------------- #
-        # if step_inputs['episode'] < self.q_warmup: 
-        #     for _ in range(self.q_weight):
-        #         q_results = self.update_qs(step_inputs)
-        #         subgoal_results = self.update_subgoal_generator(step_inputs)
-
-        # else:
-        #     q_results = self.update_qs(step_inputs)
-        #     subgoal_results = self.update_subgoal_generator(steㅟp_inputs)
-            
         q_results = self.update_qs(step_inputs)
         subgoal_results = self.update_subgoal_generator(step_inputs)
 

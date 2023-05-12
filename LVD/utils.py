@@ -15,8 +15,7 @@ from d4rl.kitchen.kitchen_envs import OBS_ELEMENT_GOALS, OBS_ELEMENT_INDICES, BO
 
 from .contrib.dists import TanhNormal
 
-import cv2
-from .envs import ENV_TASK
+
 
 
 # --------------------------- Seed --------------------------- #
@@ -61,97 +60,32 @@ def goal_checker_kitchen(state):
             task += sub_task[0].upper() 
     return task
 
-def goal_checker_calvin(goal_state):
-    achieved_goal = []
-    for obj, indices in CALVIN_EL_INDICES.items():
-        g = CALVIN_EL_GOALS[obj]
-        distance = np.linalg.norm(goal_state[indices] -g)   
-        if distance < CALVIN_BONUS_THRESH:
-            achieved_goal.append(obj)
-
-    task = ""
-    
-    for subtask in ['open_drawer', 'turn_on_lightbulb', 'move_slider_left', 'turn_on_led']:
-        if subtask in achieved_goal:
-            if subtask == "open_drawer":
-                task += "OpenD_"
-            elif subtask == "turn_on_lightbulb":
-                task += "TurnB_"
-            elif subtask == "move_slider_left":
-                task += "MoveS_"
-            else:
-                task += "TurnL_"
-
-    return task[:-1]
-
 
 def goal_checker_maze(state, env):
-    # return state[4:]
-    # complete_threshold = 1.0
-    # goal_dist = np.linalg.norm(state[:2] - state[-2:])
-    # completed = (goal_dist <= complete_threshold)
-
-    # return "Success" if completed else "Fail"
-    # return (state[:2] * env.size).astype(np.uint8)
     return (state[:2] * 1).astype(int)
 
 
-    # if ((state[:2] - state[2:]) ** 2).sum() < 0.1:
-    #     return "Done"
-    # else:
-    #     return "NO"
-
 
 def get_goal_kitchen(state):
-    # state[:9] = 0
-    # return state[30:]
     return state[30:]
 
-def get_goal_calvin(state):
-    # state[:9] = 0
-    # return state[30:]
-    return state[39:]
-
 def get_goal_maze(state):
-    # state[:9] = 0
-    # return state[30:]
-    # return state[4:]
-    # return state[32 + 40:]
     return np.concatenate((state[-2:], [0,0]), axis = 0)
 
 
 def goal_transform_kitchen(state):
     state[:9] = 0
     return state[:30]
-    # return state[9:30]
 
-
-def goal_transform_calvin(state):
-    # return state[21:]
-    return state[15:21]
 
 def goal_transform_maze(state):
-    # return state[21:]
-    # return state[2:]
-    return state[32:34]
-
-
+    return state[:2]
 
 def state_process_kitchen(state):
     return state[:30]
 
-def state_process_calvin(state):
-    # return state[:21]
-    # return state[:39]
-
-    return state[:21]
-
 def state_process_maze(state):
-    # return state[:21]
-    # return state[:39]
-    # return state[32:36]
     return state[:-2]
-
 
 
 # --------------------------- Distribution --------------------------- #
@@ -161,12 +95,6 @@ def get_dist(model_output, log_scale = None, scale = None,  detached = False, ta
         model_output = model_output.clone().detach()
         model_output.requires_grad = False
 
-    # if log_scale is None:
-    #     mu, log_scale = model_output.chunk(2, -1)
-    # else:
-    #     mu = model_output
-
-
     if log_scale is None and scale is None:
         mu, log_scale = model_output.chunk(2, -1)
         scale = log_scale.clamp(-10, 2).exp()
@@ -174,13 +102,6 @@ def get_dist(model_output, log_scale = None, scale = None,  detached = False, ta
         mu = model_output
         if log_scale is not None:
             scale = log_scale.clamp(-10, 2).exp()
-
-
-
-
-    # log_scale = log_scale.clamp(-10, 2)
-    # if scale is None:
-        # scale = log_scale.exp()
 
     if tanh:
         return TanhNormal(mu, scale)
@@ -213,49 +134,23 @@ def inverse_softplus(x):
 def kl_annealing(epoch, start, end, rate=0.9):
     return end + (start - end)*(rate)**epoch
 
-def kl_branching_point(p, q, state_labels):
-    def ignore_non_branching(dist, indices):
-        if isinstance(dist, torch_dist.Independent):
-            loc = dist.base_dist.loc.clone()
-            scale = dist.base_dist.scale.clone()
-            new_loc = loc[indices]
-            new_scale = scale[indices]
-            return torch_dist.Independent(torch_dist.Normal(new_loc, new_scale), 1)
-        else:
-            loc = dist._normal.base_dist.loc.clone()
-            scale = dist._normal.base_dist.scale.clone()
-            new_loc = loc[indices]
-            new_scale = scale[indices]
-            return TanhNormal(new_loc, new_scale)
-
-    # N, T, 1임
-    branching_indices = state_labels[:, 0] == 0
-    p, q = ignore_non_branching(p, branching_indices), ignore_non_branching(q, branching_indices)
-    return torch_dist.kl_divergence(p, q)
-
-
 def compute_kernel(x, y):
     x_size = x.size(0)
     y_size = y.size(0)
     dim = x.size(1)
-    x = x.unsqueeze(1) # (x_size, 1, dim)
-    y = y.unsqueeze(0) # (1, y_size, dim)
+    x = x.unsqueeze(1) 
+    y = y.unsqueeze(0) 
     tiled_x = x.expand(x_size, y_size, dim)
     tiled_y = y.expand(x_size, y_size, dim)
     kernel_input = (tiled_x - tiled_y).pow(2).mean(2)/float(dim)
-    return torch.exp(-kernel_input) # (x_size, y_size) radius 
+    return torch.exp(-kernel_input) 
 
 def compute_mmd(x, y):
-    """
-    하나는 loc, 하나는 sample 넣어야 됨. 
-    """
     x_kernel = compute_kernel(x, x)
-    y_kernel = compute_kernel(y, y) # y, y는 의미가 없지 않나.. ? 어차피 gradient 없는디
+    y_kernel = compute_kernel(y, y) 
     xy_kernel = compute_kernel(x, y)
     mmd = x_kernel.mean() + y_kernel.mean() - 2*xy_kernel.mean()
     return mmd
-
-
 # --------------------- Helper Class --------------------- # 
 
 class AverageMeter(object):
@@ -284,24 +179,20 @@ class StateProcessor:
 
         self.__get_goals__ = {
             "kitchen" : get_goal_kitchen,
-            "calvin"  : get_goal_calvin,
             "maze"    : get_goal_maze
         }
 
         self.__goal_checkers__ = {
             "kitchen" : goal_checker_kitchen,
-            "calvin"  : goal_checker_calvin,
             "maze"  : goal_checker_maze
         }
 
         self.__state2goals__ = {
             "kitchen" : goal_transform_kitchen,
-            "calvin"  : goal_transform_calvin,
             "maze"  : goal_transform_maze
         }
         self.__state_processors__ = {
             "kitchen" : state_process_kitchen,
-            "calvin"  : state_process_calvin,
             "maze"  : state_process_maze         
         }
 
