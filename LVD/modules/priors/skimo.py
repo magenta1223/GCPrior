@@ -53,7 +53,7 @@ class Skimo_Prior(BaseModule):
         if self.training:
             self.step += 1
 
-        states, skill = inputs['states'], inputs['skill']
+        states, skill, G = inputs['states'], inputs['skill'], inputs['G']
         N, T, _ = states.shape
         skill_length = T - 1 
 
@@ -80,10 +80,29 @@ class Skimo_Prior(BaseModule):
         D = self.dynamics(dynamics_input)
 
 
+
+        # -------------- High-level policy -------------- #
+
+        if self.tanh:
+            prior_dist = prior._normal.base_dist
+        else:
+            prior_dist = prior.base_dist
+        prior_locs, prior_scales = prior_dist.loc.clone().detach(), prior_dist.scale.clone().detach()
+        prior_pre_scales = inverse_softplus(prior_scales)
+        res_locs, res_pre_scales = self.highlevel_policy(torch.cat((state_emb, G), dim = -1)).chunk(2, dim=-1)
+
+
+        locs = res_locs + prior_locs
+        scales = F.softplus(res_pre_scales + prior_pre_scales)
+        policy_skill = get_dist(locs, scale = scales, tanh = self.tanh)
+
         # -------------- Rollout for metric -------------- #
         # dense execution with loop (for metric)
         with torch.no_grad():
             subgoal_recon_D = self.state_decoder(D)
+
+
+
 
 
         result = {
@@ -100,6 +119,9 @@ class Skimo_Prior(BaseModule):
             # Ds
             "D" : D,
             "D_target" : htH, 
+
+            # highlevel policy
+            "policy_skill" : policy_skill,
 
             # for metric
             "z_invD" : skill,

@@ -28,19 +28,19 @@ class Skimo_Model(BaseModule):
         self.step = 0
         self.Hsteps = 10
         norm_cls = nn.LayerNorm
-        act_cls = nn.ELU
+        act_cls = nn.Mish
         bias = True
         dropout = 0
 
-        self.joint_learn = self.fe_path == ''
+        self.joint_learn = True
 
         state_encoder_config = edict(
             n_blocks = self.n_Layers,
             in_feature = self.state_dim, # state_dim + latent_dim 
             hidden_dim = self.hidden_dim, 
             # hidden_dim = self.hidden_dim, 
-            out_dim = 256, # when variational inference
-            norm_cls =  None,
+            out_dim = self.latent_state_dim, # when variational inference
+            norm_cls =  norm_cls,
             act_cls = act_cls, #nn.LeakyReLU,
             block_cls = LinearBlock,
             bias = bias,
@@ -50,11 +50,11 @@ class Skimo_Model(BaseModule):
         # state decoder
         state_decoder_config = edict(
             n_blocks = self.n_Layers,#self.n_processing_layers,
-            in_feature = 256, # state_dim + latent_dim 
+            in_feature = self.latent_state_dim, # state_dim + latent_dim 
             hidden_dim = self.hidden_dim, 
             # hidden_dim = self.hidden_dim, 
             out_dim = self.state_dim,
-            norm_cls = None,
+            norm_cls = norm_cls,
             act_cls = act_cls, #nn.LeakyReLU,
             block_cls = LinearBlock,
             bias = bias,
@@ -127,8 +127,23 @@ class Skimo_Model(BaseModule):
             dropout = dropout           
         )
 
+        highlevel_policy_config = edict(
+            n_blocks =  self.n_Layers,# 
+            in_feature = self.latent_state_dim + self.n_goal, # state_dim + latent_dim 
+            hidden_dim = self.hidden_dim, 
+            out_dim = self.latent_dim * 2,
+            norm_cls = norm_cls,
+            act_cls = act_cls, #nn.LeakyReLU,
+            block_cls = LinearBlock,
+            true = True,
+            tanh = False,
+            bias = bias,
+            dropout = dropout    
+        )
+
+
         prior = SequentialBuilder(Linear_Config(prior_config))
-        
+        highlevel_policy = SequentialBuilder(Linear_Config(highlevel_policy_config))
         state_encoder = SequentialBuilder(Linear_Config(state_encoder_config))
         state_decoder = SequentialBuilder(Linear_Config(state_decoder_config))
         dynamics = SequentialBuilder(Linear_Config(dynamics_config))
@@ -138,7 +153,9 @@ class Skimo_Model(BaseModule):
             prior_policy = prior,
             state_encoder = state_encoder,
             state_decoder = state_decoder,
-            dynamics = dynamics
+            dynamics = dynamics,
+            highlevel_policy = highlevel_policy,
+            tanh = self.tanh
         )
 
         ## skill encoder
@@ -220,12 +237,13 @@ class Skimo_Model(BaseModule):
         with torch.no_grad():
             # KL (post || state-conditioned prior)
             self.loss_dict['Prior_S']  = self.loss_fn('reg')(self.outputs['post_detach'], self.outputs['prior']).mean().item()
-            
+            self.loss_dict['Policy_loss']  = self.loss_fn('reg')(self.outputs['post_detach'], self.outputs['policy_skill']).mean().item()
+
             # dummy metric 
             self.loss_dict['metric'] = self.loss_dict['Prior_S']
             
 
-    def forward(self, states, actions):
+    def forward(self, states, actions, G):
 
         # skill Encoder 
         enc_inputs = torch.cat( (actions, states.clone()[:,:-1]), dim = -1)
@@ -255,6 +273,7 @@ class Skimo_Model(BaseModule):
 
         inputs = dict(
             states = states,
+            G = G,
             skill = z
         )
 
@@ -289,12 +308,26 @@ class Skimo_Model(BaseModule):
                 self.outputs['z_normal'],
                 tanh = self.tanh
             ).mean()
+            policy_loss = self.loss_fn('prior')(
+                self.outputs['z'],
+                self.outputs['policy_skill'], # distributions to optimize
+                self.outputs['z_normal'],
+                tanh = self.tanh
+            ).mean()
+
         else:
             prior = self.loss_fn('prior')(
                 self.outputs['z'],
                 self.outputs['prior'], 
                 tanh = self.tanh
             ).mean()
+
+            policy_loss = self.loss_fn('prior')(
+                self.outputs['z'],
+                self.outputs['policy_skill'], # distributions to optimize
+                tanh = self.tanh
+            ).mean()
+
 
         D_loss = self.loss_fn('recon')(
             self.outputs['D'],
@@ -305,7 +338,7 @@ class Skimo_Model(BaseModule):
         recon_state = self.loss_fn('recon')(self.outputs['states_hat'], self.outputs['states']) # ? 
 
         # ----------- Add -------------- # 
-        loss = recon + reg * self.reg_beta  + prior + D_loss + recon_state
+        loss = recon + reg * self.reg_beta  + prior + D_loss + recon_state + policy_loss
 
 
         self.loss_dict = {           
@@ -320,8 +353,8 @@ class Skimo_Model(BaseModule):
 
         return loss
     
-    def __main_network__(self, states, actions, validate = False):
-        self(states, actions)
+    def __main_network__(self, states, actions, G, validate = False):
+        self(states, actions, G)
         loss = self.compute_loss(actions)
 
         if not validate:
@@ -337,10 +370,10 @@ class Skimo_Model(BaseModule):
 
     def optimize(self, batch, e):
         # inputs & targets       
-        states, actions = batch.values()
-        states, actions = states.cuda(), actions.cuda()
+        states, actions, G = batch.values()
+        states, actions, G = states.cuda(), actions.cuda(), G.cuda()
 
-        self.__main_network__(states, actions)
+        self.__main_network__(states, actions, G)
 
         with torch.no_grad():
             self.get_metrics()
@@ -350,10 +383,10 @@ class Skimo_Model(BaseModule):
     
     def validate(self, batch, e):
         # inputs & targets       
-        states, actions = batch.values()
-        states, actions = states.cuda(), actions.cuda()
+        states, actions, G = batch.values()
+        states, actions, G = states.cuda(), actions.cuda(), G.cuda()
 
-        self.__main_network__(states, actions, validate= True)
+        self.__main_network__(states, actions, G, validate= True)
 
         with torch.no_grad():
             self.get_metrics()
