@@ -22,7 +22,7 @@ def render_task(env, env_name, policy, low_actor, tanh = False):
     processor = StateProcessor(env_name = env_name)
 
 
-    G = processor.state2goal(state)
+    G = processor.get_goals(state)
     state = processor.state_process(state)
 
     low_actor.eval()
