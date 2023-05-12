@@ -9,7 +9,7 @@ import numpy as np
 import itertools
 
 
-from ...contrib.spirl.data_loader import Dataset
+from .data_loader import Dataset
 from easydict import EasyDict as edict
 
 import random

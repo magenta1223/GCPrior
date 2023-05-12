@@ -3,7 +3,7 @@ import copy
 import torch
 import torch.nn as nn
 
-from simpl.rl import StochasticNNPolicy
+from ...rl import StochasticNNPolicy
 
 
 class ConditionedPolicy(StochasticNNPolicy):

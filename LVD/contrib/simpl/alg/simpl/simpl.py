@@ -8,9 +8,9 @@ import torch.distributions as torch_dist
 import torch.nn as nn
 import torch.nn.functional as F
 
-from simpl.collector import Batch
-from simpl.math import clipped_kl, inverse_softplus
-from simpl.nn import ToDeviceMixin, TensorBatch
+from ...collector import Batch
+from ...math import clipped_kl, inverse_softplus
+from ...nn import ToDeviceMixin, TensorBatch
 
 def inverse_softplus(x):
     return float(np.log(np.exp(x) - 1)) # 

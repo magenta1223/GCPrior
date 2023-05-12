@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 import torch
 import wandb
 
-from simpl.alg.spirl import ConstrainedSAC, PriorResidualNormalMLPPolicy
-from simpl.collector import Buffer, LowFixedHierarchicalTimeLimitCollector
-from simpl.nn import itemize
-from simpl.rl import MLPQF
+from LVD.contrib.simpl.alg.spirl import ConstrainedSAC, PriorResidualNormalMLPPolicy
+from LVD.contrib.simpl.collector import Buffer, LowFixedHierarchicalTimeLimitCollector
+from LVD.contrib.simpl.nn import itemize
+from LVD.contrib.simpl.rl import MLPQF
 
 
 import sys

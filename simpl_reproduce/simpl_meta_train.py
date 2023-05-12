@@ -16,11 +16,11 @@ import sys
 sys.path.append("./LVD/contrib/")
 
 
-from simpl.alg.simpl import ContextPriorResidualNormalMLPPolicy, LowFixedGPUWorker, Simpl
-from simpl.alg.pearl import SetTransformerEncoder
-from simpl.collector import Buffer, LowFixedHierarchicalTimeLimitCollector, ConcurrentCollector
-from simpl.nn import itemize
-from simpl.rl import MLPQF
+from LVD.contrib.simpl.alg.simpl import ContextPriorResidualNormalMLPPolicy, LowFixedGPUWorker, Simpl
+from LVD.contrib.simpl.alg.pearl import SetTransformerEncoder
+from LVD.contrib.simpl.collector import Buffer, LowFixedHierarchicalTimeLimitCollector, ConcurrentCollector
+from LVD.contrib.simpl.nn import itemize
+from LVD.contrib.simpl.rl import MLPQF
 
 from tqdm import tqdm
 

@@ -1,5 +1,5 @@
-from simpl.rl import ContextPolicyMixin
-from simpl.alg.spirl import PriorResidualNormalMLPPolicy
+from ...rl import ContextPolicyMixin
+from ...alg.spirl import PriorResidualNormalMLPPolicy
 
 
 class ContextPriorResidualNormalMLPPolicy(ContextPolicyMixin, PriorResidualNormalMLPPolicy):

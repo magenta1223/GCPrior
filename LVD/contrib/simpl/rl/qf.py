@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from simpl.nn import MLP, ToDeviceMixin
+from ..nn import MLP, ToDeviceMixin
 
 
 class MLPQF(ToDeviceMixin, nn.Module):

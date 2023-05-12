@@ -12,7 +12,7 @@ from torch.nn.modules import BatchNorm1d, BatchNorm2d, BatchNorm3d
 from torch.nn.functional import interpolate
 
 from .general_utils import batchwise_assign, map_dict, AttrDict, AverageMeter, map_recursive, remove_spatial
-from ..spirl import ndim
+from . import ndim
 
 
 class LossSpikeHook:

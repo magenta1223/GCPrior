@@ -4,11 +4,11 @@ import torch
 import torch.distributions as torch_dist
 import torch.nn.functional as F
 
-from simpl.nn import MLP
-from simpl.rl.policy import StochasticNNPolicy
+from ...nn import MLP
+from ...rl.policy import StochasticNNPolicy
 
 import sys
-from LVD.utils import get_dist
+from .....utils import get_dist
 
 def inverse_softplus(x):
     return torch.log(torch.exp(x) - 1)

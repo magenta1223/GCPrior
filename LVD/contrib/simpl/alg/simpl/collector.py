@@ -1,4 +1,4 @@
-from simpl.collector import GPUWorker
+from ...collector import GPUWorker
 
 
 class LowFixedGPUWorker(GPUWorker):

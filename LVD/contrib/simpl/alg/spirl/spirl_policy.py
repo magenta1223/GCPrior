@@ -2,7 +2,7 @@ import torch
 import torch.distributions as torch_dist
 import torch.nn as nn
 
-from simpl.rl import StochasticNNPolicy, ContextPolicyMixin
+from ...rl import StochasticNNPolicy, ContextPolicyMixin
 
 
 class SpirlMLP(nn.Module):

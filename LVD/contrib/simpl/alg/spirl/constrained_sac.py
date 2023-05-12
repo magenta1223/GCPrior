@@ -5,8 +5,8 @@ import torch.distributions as torch_dist
 import torch.nn as nn
 import torch.nn.functional as F
 
-from simpl.math import clipped_kl, inverse_softplus
-from simpl.nn import ToDeviceMixin
+from ...math import clipped_kl, inverse_softplus
+from ...nn import ToDeviceMixin
 
 
 class ConstrainedSAC(ToDeviceMixin, nn.Module):

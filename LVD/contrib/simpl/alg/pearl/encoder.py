@@ -4,8 +4,8 @@ import torch.distributions as torch_dist
 import torch.nn as nn
 import torch.nn.functional as F
 
-from simpl.math import inverse_softplus, inverse_sigmoid
-from simpl.nn import MLP, SetTransformer
+from ...math import inverse_softplus, inverse_sigmoid
+from ...nn import MLP, SetTransformer
 
 
 class StochasticEncoder(nn.Module):
