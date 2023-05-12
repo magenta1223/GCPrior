@@ -24,7 +24,7 @@ class HierarchicalTimeLimitCollector:
         self.state_processor = StateProcessor(env_name= self.env_name)
 
 
-    def collect_episode(self, low_actor, high_actor):
+    def collect_episode(self, low_actor, high_actor, verbose = True):
         state, done, t = self.env.reset(), False, 0
 
         # G = GOAL_TRANSFORM[self.env_name](state)
@@ -87,7 +87,8 @@ class HierarchicalTimeLimitCollector:
                 
     
         # print(GOAL_CHECKERS[self.env_name](STATE_PROCESSOR[self.env_name] (state)))
-        print( self.state_processor.state_goal_checker(state, self.env)  )
+        if verbose:
+            print( self.state_processor.state_goal_checker(state, self.env)  )
 
 
         return episode, torch.tensor(G, dtype = torch.float32).unsqueeze(0)

@@ -171,29 +171,4 @@ def extract_path(episode):
 
 
 
-class KitchenEnv_GC(KitchenEnv):
-    """
-    Goal Conditioned Environment
-    """
-    render_width = 400
-    render_height = 400
-    render_device = -1
-
-    def __init__(self, *args, **kwargs):
-        self.TASK_ELEMENTS = ['top burner']  # for initialization
-        super().__init__(*args, **kwargs)
-        
-
-        self.task = None
-        self.TASK_ELEMENTS = None
-    
-    def _get_task_goal(self, task=None):
-        if task is None:
-            task = self.TASK_ELEMENTS
-        new_goal = np.zeros_like(self.goal)
-        for element in task:
-            element_idx = OBS_ELEMENT_INDICES[element]
-            element_goal = OBS_ELEMENT_GOALS[element]
-            new_goal[element_idx] = element_goal
-        return new_goal
     

@@ -30,12 +30,13 @@ G2 = np.full((32, 32, 3), color_dict['ground_color2'])
 
 
 class MazeTask_Custom:
-    def __init__(self, init_loc, goal_loc):
+    def __init__(self, locs):
+        init_loc, goal_loc = locs
         self.init_loc = np.array(init_loc, dtype=np.float32)
         self.goal_loc = np.array(goal_loc, dtype=np.float32)
 
     def __repr__(self):
-        return f'MTMazeTask(start:{self.init_loc}+-{init_loc_noise}, end: {self.goal_loc})'
+        return f'start:{self.init_loc} end:{self.goal_loc}'
 
 class Maze_GC(MazeEnv):
 
@@ -53,7 +54,7 @@ class Maze_GC(MazeEnv):
         # self.maze_spec = rand_layout(size=size, seed=seed)
         
         # for initialization
-        self.task = MazeTask_Custom([0, 0], [0, 0])
+        self.task = MazeTask_Custom([[0, 0], [0, 0]])
         # self.done_on_completed = False
         # self.task = None
         # self.done_on_completed = done_on_completed

@@ -50,5 +50,5 @@ def render_task(env, env_name, policy, low_actor, tanh = False):
         imgs.append(img)
         time_step += 1
     print("done!")
-    return imgs
+    return imgs, reward
 

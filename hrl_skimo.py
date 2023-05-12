@@ -76,7 +76,7 @@ def render_task(env, env_name, policy, low_actor, tanh, qfs):
         imgs.append(img)
         time_step += 1
     print("done!")
-    return imgs
+    return imgs, reward
 
 
 
@@ -257,7 +257,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
         'qfs' : qfs,
         'discount' : 0.99,
         'tau' : 0.0005,
-        'policy_lr' : args.policy_lr,
+        'policy_lr' : 1e-8, #args.policy_lr,
         'qf_lr' : 3e-4,
         'alpha_lr' : 3e-4,
         'prior_policy_lr' : 1e-5,
@@ -297,6 +297,16 @@ def train_single_task(env, env_name, tasks, task_cls, args):
 
     weights_path = f"./weights/{args.env_name}/skimo/sac"
     os.makedirs(weights_path, exist_ok= True)
+
+
+    torch.save({
+        "model" : self,
+        "collector" : collector,
+        "task" : task_obj,
+        "env" : env,
+    }, f"{weights_path}/{task_name}.bin")
+
+    
     state_processor = StateProcessor(env_name= args.env_name)
 
 
@@ -312,15 +322,32 @@ def train_single_task(env, env_name, tasks, task_cls, args):
             log, updated = train_policy_iter(collector, self, episode_i, **config)
             log['episode_i'] = episode_i
             # log['task_name'] = task_name
-            log[f'{task_name}_return'] = log['tr_return']
+            log[f'return'] = log['tr_return']
             del log['tr_return']
 
             if (episode_i + 1) % args.render_period == 0:
-                imgs = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh, qfs= self.qfs)
+                imgs, reward = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh, qfs= self.qfs)
                 imgs = np.array(imgs).transpose(0, 3, 1, 2)
-                log[f'{task_name}_rollout'] = wandb.Video(np.array(imgs), fps=32)
+                log[f'rollout'] = wandb.Video(np.array(imgs), fps=32, caption= str(reward))
 
-            wandb.log(log)
+
+            new_log = {}
+            for k, v in log.items():
+                new_log[f"{task_name}/{k}"] = v
+
+
+            wandb.log(new_log)
+
+
+
+    torch.save({
+        "model" : self,
+        "collector" : collector,
+        "task" : task_obj,
+        "env" : env,
+    }, f"{weights_path}/{task_name}.bin")
+
+
 
     
     # weights_path = "/home/magenta1223/skill-based/SiMPL/proposed/weights/sac"
@@ -357,6 +384,8 @@ def main():
     ALL_TASKS = ENV_TASK[args.env_name]['tasks']
 
     env = env_cls()
+
+    print(env)
 
     run_name = f"p:{args.path}_plr:{args.policy_lr}_a:{args.init_alpha}_qw:{args.q_warmup}{args.q_weight}"
 

@@ -1,18 +1,10 @@
-# https://github.com/lucidrains/byol-pytorch/blob/master/byol_pytorch/byol_pytorch.py
-
-from typing import Dict, Iterable, List, Optional, Tuple, Union
+from typing import Iterable
 from itertools import zip_longest
 import torch
 
-class EMA():
-    def __init__(self, beta):
-        super().__init__()
-        self.beta = beta
 
-    def update_average(self, old, new):
-        if old is None:
-            return new
-        return old * self.beta + (1 - self.beta) * new
+# from stablebaseline3
+# https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/utils.py
 
 @torch.no_grad()
 def update_moving_average(ma_model, current_model, beta = 0.01):

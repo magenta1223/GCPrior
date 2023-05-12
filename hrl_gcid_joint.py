@@ -227,11 +227,13 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     # config = {'batch_size': 256, 'reuse_rate': 256, "G" : G, "project_name" : args.wandb_project_name}
     config = {'batch_size': 256, 'reuse_rate': args.reuse_rate, "project_name" : args.wandb_project_name, "precollect" : args.precollect}
 
-    if args.env_name != "maze":
-        task_name = "-".join([ t[0].upper() for t in tasks])
-    else:
-        # task_name = " to ".join([ f"[{t[0]},{t[1]}]" for t in tasks])
-        task_name = task_obj.__repr__()
+    # if args.env_name != "maze":
+    #     task_name = "-".join([ t[0].upper() for t in tasks])
+    # else:
+    #     # task_name = " to ".join([ f"[{t[0]},{t[1]}]" for t in tasks])
+    #     task_name = task_obj.__repr__()
+
+    task_name = str(task)
 
     # env 제한 
     state_processor = StateProcessor(env_name= args.env_name)
@@ -277,20 +279,14 @@ def train_single_task(env, env_name, tasks, task_cls, args):
                 if env_name == "maze":
                     log[f'policy_vis'] = draw_maze(plt.gca(), env, list(self.buffer.episodes)[-20:])
                 else:
-                    imgs = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
+                    imgs, reward = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
                     imgs = np.array(imgs).transpose(0, 3, 1, 2)
                     if args.env_name == "maze":
                         fps = 100
                     else:
                         fps = 50
-                    log[f'rollout'] = wandb.Video(np.array(imgs), fps=fps)
+                    log[f'rollout'] = wandb.Video(np.array(imgs), fps=fps, caption= str(reward))
 
-                # check success rate by 20 rollout 
-                with self.policy.expl(), collector.low_actor.expl() : #, collector.env.step_render():
-                    episode, G = collector.collect_episode(self.policy)
-
-                if np.array(episode.dones).sum() != 0: # success 
-                    print("success")
 
 
                 # imgs = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
@@ -330,31 +326,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--env_name", default = "kitchen", type = str)
     parser.add_argument("--wandb", action = "store_true")    
-    parser.add_argument("-p", "--path", default = "")
-    # parser.add_argument("-tl", "--time_limit", default = 280, type = int)
-    # parser.add_argument("-nh", "--n_hidden", default = 5, type = int)
-    # parser.add_argument("-hd", "--hidden_dim", default = 128, type =int)
-    # parser.add_argument("-kls", "--target_kl_start", default = 20, type =float)
-    # parser.add_argument("-kle", "--target_kl_end", default = 5, type =float)
-    # parser.add_argument("-a", "--init_alpha", default = 0.1, type =float)
-    # parser.add_argument("--only_increase", action = "store_true", default = False)    
-    # parser.add_argument("--auto_alpha", action = "store_true", default = False)    
-    # parser.add_argument("--gcprior", action = "store_true", default = False)    
-    # parser.add_argument("--use_hidden", action = "store_true", default = False)    
-    # parser.add_argument("--finetune", action = "store_true", default = False)    
+    parser.add_argument("-p", "--path", default = "")  
     parser.add_argument("--wandb_project_name", default = "GCPolicy_Level")    
     parser.add_argument("-rp", "--render_period", default = 10, type = int)
-    # parser.add_argument("-ne", "--n_episode", default = 300, type = int)
-    # parser.add_argument("--reuse_rate", default = 256, type = int)
-
-    # parser.add_argument("-plr", "--policy_lr", default = 3e-4, type =float)
-
-
     parser.add_argument("--env", type = str, default = "simpl", choices= ['simpl', 'gc'])    
-
-
     parser.add_argument("-qwu", "--q_warmup", default = 5000, type =int)
-    # parser.add_argument("-qwu", "--q_warmup", default = 0, type =int)
     parser.add_argument("-qwe", "--q_weight", default = 1, type =int)
     parser.add_argument("-pc", "--precollect", default = 10, type = int)
 

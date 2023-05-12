@@ -88,6 +88,16 @@ def state_process_maze(state):
     return state[:-2]
 
 
+def get_goal_calvin():
+    return 
+def state_process_calvin():
+    return 
+
+def goal_transform_calvin():
+    return 
+def goal_checker_calvin():
+    return 
+
 # --------------------------- Distribution --------------------------- #
 
 def get_dist(model_output, log_scale = None, scale = None,  detached = False, tanh = False):

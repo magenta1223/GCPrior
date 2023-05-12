@@ -7,7 +7,7 @@ from .maze import *
 ENV_TASK = {
     "kitchen" : {
         "env_cls" : KitchenEnv_GC,
-        "task_cls" : KitchenTask,
+        "task_cls" : KitchenTask_GC,
         "tasks" : KITCHEN_TASKS,
         "cfg" : None 
     },
