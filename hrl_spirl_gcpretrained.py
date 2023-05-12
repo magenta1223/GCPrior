@@ -90,13 +90,11 @@ def train_policy_iter(collector, trainer, episode_i, batch_size, reuse_rate, pro
 
 
 
-def train_single_task(env, env_name, tasks, task_cls, args):
+def train_single_task(env, env_name, task, task_cls, args):
 
     # ------------- Set Task ------------- #
-    if env_name == "maze":
-        task_obj = task_cls(tasks[0], tasks[1])
-    else:
-        task_obj = task_cls(tasks)
+
+    task_obj = task_cls(task)
 
 
     ## ------------- Spirl Modules ------------- ##
@@ -225,11 +223,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     # config = {'batch_size': 256, 'reuse_rate': 256, "G" : G, "project_name" : args.wandb_project_name}
     config = {'batch_size': 256, 'reuse_rate': args.reuse_rate, "project_name" : args.wandb_project_name, "precollect" : args.precollect}
 
-    if args.env_name != "maze":
-        task_name = "-".join([ t[0].upper() for t in tasks])
-    else:
-        # task_name = " to ".join([ f"[{t[0]},{t[1]}]" for t in tasks])
-        task_name = task_obj.__repr__()
+    task_name = str(task_obj)
 
     # env 제한 
     state_processor = StateProcessor(env_name= args.env_name)
