@@ -9,7 +9,7 @@ from LVD.contrib.simpl.alg.spirl import ConstrainedSAC, PriorResidualNormalMLPPo
 from LVD.contrib.simpl.collector import Buffer, LowFixedHierarchicalTimeLimitCollector
 from LVD.contrib.simpl.nn import itemize
 from LVD.contrib.simpl.alg.simpl import ConditionedPolicy, ConditionedQF
-
+import os
 import sys
 # from ....rl.vis import visualize
 sys.path.append("/home/magenta1223/skill-based/SiMPL/proposed")
@@ -167,14 +167,25 @@ if __name__ == '__main__':
 
             # df[task.subtasks[0]] = steps
 
+            save_filepath = f"./weights/{args.domain}/simpl/{str(task)}.bin"
+
 
             # torch.save({
             #     'high_policy': high_policy, # policy network
             #     'simpl_meta': torch.load(simpl_metatrained_path, map_location='cpu'), # q functions. SAC구현대로 2개 사용
             #     'spirl': torch.load(spirl_pretrained_path, map_location='cpu') # ? ,
             # },
-            # f"{wandb_project_name}_{wandb_run_name}.pt"
-            #  )
+            # save_filepath
+            # )
+
+            torch.save({
+                "model" : trainer,
+                "collector" : collector,
+                "task" : task,
+                "env" : env,
+            }, save_filepath)      
+
+            
     # import pickle as pkl
 
     # with open('data.pkl', 'wb') as f:

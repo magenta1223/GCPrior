@@ -16,7 +16,7 @@ from torch.nn import functional as F
 
 import d4rl
 
-from LVD.contrib.simpl.reproduce.maze.maze_vis import draw_maze
+from simpl_reproduce.maze.maze_vis import draw_maze
 
 
 from LVD.configs.model import MODEL_CONFIGS
@@ -32,12 +32,11 @@ from LVD.contrib.simpl.torch_utils import itemize
 from LVD.rl.vis import *
 from LVD.utils import *
 from LVD.collector.gcid import LowFixedHierarchicalTimeLimitCollector
-from LVD.collector.storage import Buffer_H
+from LVD.collector.storage import Buffer_modified
 from LVD.rl.rl_utils import *
 from LVD.envs import ENV_TASK
 
 from LVD.configs.env import ENV_CONFIGS
-from LVD.contrib.simpl.reproduce.maze.maze_vis import draw_maze
 seed_everything()
 
 
@@ -165,7 +164,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     low_actor = deepcopy(model.skill_decoder.eval())
 
     # ------------- Buffers & Collectors ------------- #
-    buffer = Buffer_H(state_dim, latent_dim, buffer_size, tanh = model.tanh)
+    buffer = Buffer_modified(state_dim, latent_dim, buffer_size, tanh = model.tanh)
     collector = LowFixedHierarchicalTimeLimitCollector(env, env_name, low_actor, horizon=10, time_limit=args.time_limit, tanh = model.tanh)
 
     
@@ -238,6 +237,13 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     weights_path = f"./weights/{args.env_name}/sc/sac"
     os.makedirs(weights_path, exist_ok= True)
 
+    torch.save({
+        "model" : self,
+        "collector" : collector,
+        "task" : task_obj,
+        "env" : env,
+    }, f"{weights_path}/{task_name}.bin")   
+
 
     # ------------- Train RL ------------- #
     with env.set_task(task_obj):
@@ -307,8 +313,14 @@ def train_single_task(env, env_name, tasks, task_cls, args):
                 break
 
     
-    torch.save(self, f"{weights_path}/{task_name}.bin")
-        
+    torch.save({
+        "model" : self,
+        "collector" : collector,
+        "task" : task_obj,
+        "env" : env,
+    }, f"{weights_path}/{task_name}.bin")      
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--env_name", default = "kitchen", type = str)

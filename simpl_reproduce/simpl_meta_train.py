@@ -140,8 +140,6 @@ if __name__ == '__main__':
         'maze_20t': 'maze.simpl_meta_train_20t',
         'kitchen': 'kitchen.simpl_meta_train',
         'kitchen_ot': 'kitchen.simpl_meta_train_ot',
-
-
     }
 
     # CLI
@@ -170,7 +168,12 @@ if __name__ == '__main__':
     policy_vis_period = args.policy_vis_period or 10
     wandb_project_name = args.wandb_project_name or 'SiMPL'
     wandb_run_name = args.wandb_run_name or args.domain + '.simpl_meta_train.' + wandb.util.generate_id()
-    save_filepath = args.save_file_path or f'./{wandb_run_name}.pt'
+    # save_filepath = args.save_file_path or f'./{wandb_run_name}.pt'
+
+    # save_filepath = args.domain
+    save_dir = f"./weights/{args.domain}/simpl"
+    os.makedirs(save_dir, exist_ok= True)
+    save_filepath = f"{save_dir}/metatrained.bin"
 
 
     state_dim = env.observation_space.shape[0]
