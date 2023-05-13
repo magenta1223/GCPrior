@@ -305,7 +305,7 @@ class Skimo_Model(BaseModule):
     def compute_loss(self, skill):
         # ----------- SPiRL -------------- # 
 
-        recon = self.loss_fn('recon')(self.outputs['skill_hat'], skill) * 2
+        recon = self.loss_fn('recon')(self.outputs['skill_hat'], skill)
         reg = self.loss_fn('reg')(self.outputs['post'], self.outputs['fixed']).mean()
         
         if self.tanh:
@@ -346,7 +346,7 @@ class Skimo_Model(BaseModule):
         D_loss = self.loss_fn('recon')(
             self.outputs['D'],
             self.outputs['D_target']
-        ) * 2         
+        )  
         
 
         recon_state = self.loss_fn('recon')(self.outputs['states_hat'], self.outputs['states']) # ? 
