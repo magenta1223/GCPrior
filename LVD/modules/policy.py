@@ -322,7 +322,12 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
         for k, v in skimo_config.items():
             setattr(self, k, v)
 
-        self.prior_policy = copy.deepcopy(self.prior_policy).requires_grad_(False)
+        self.prior_policy = copy.deepcopy(self.prior_policy) #.requires_grad_(False)
+
+        self.highlevel_policy = self.prior_policy.highlevel_policy
+        self.state_encoder = self.prior_policy.state_encoder
+        self.dynamics = self.prior_policy.dynamics
+
         self.gc = self.prior_policy.gc
         # self._step : episode 길이의 누적합. 
         
@@ -330,6 +335,14 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
 
     def forward(self, states):
         return super().forward(states)
+    
+    def get_prior(self, inputs):
+        with torch.no_grad():
+            prior = self.prior_policy.dist(inputs['states'])
+
+        return dict(
+            prior = prior
+        )
     
     @torch.no_grad()
     def act(self, states, G, qfs):
@@ -344,13 +357,32 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
         else:
             skill = self.cem_planning(dist_inputs)
 
-        
         self._step += 10 # skill length 
 
         return skill.detach().cpu().numpy() 
 
-    def dist(self, inputs):
-        return self.prior_policy(inputs, "eval")
+    def dist(self, inputs, latent = False):
+        """
+        TD-MPC 때문에 policy update할 때 hidden state를 입력받음
+        """
+
+        if latent:
+            ht, G = inputs['high_state'], inputs['G']
+        else:
+            state, G = inputs['states'], inputs['G']
+            with torch.no_grad():
+                ht = self.state_encoder(state)
+
+
+        if self.gc:
+            policy_skill =  self.highlevel_policy.dist(torch.cat((ht, G), dim = -1))
+        else:
+            policy_skill =  self.highlevel_policy.dist(ht)
+
+        return dict(
+            policy_skill = policy_skill
+        )
+
 
     @torch.no_grad()
     def estimate_value(self, state, skills, G, horizon, qfs):
@@ -359,22 +391,40 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
         for t in range(horizon):
             # step을 추가하자
             state_skill = torch.cat((state, skills[:, t]), dim  = -1)
-            state = self.prior_policy.dynamics(state_skill)
+            state = self.dynamics(state_skill)
             reward = self.reward_function(state_skill) 
             value += discount * reward
             discount *= self.rl_discount
-
-
         
         # policy_skill = self.prior_policy(policy_inputs, "eval")['policy_skill'].sample()
         if self.gc:
-            policy_skill =  self.prior_policy.highlevel_policy.dist(torch.cat((state, G), dim = -1)).sample()
+            policy_skill =  self.highlevel_policy.dist(torch.cat((state, G), dim = -1)).sample()
         else:
-            policy_skill =  self.prior_policy.highlevel_policy.dist(state).sample()
+            policy_skill =  self.highlevel_policy.dist(state).sample()
 
         q_values = [  qf( state, policy_skill).unsqueeze(-1)   for qf in qfs]
         value += discount * torch.min(*q_values) # 마지막엔 Q에 넣어서 value를 구함. 
         return value
+
+
+    @torch.no_grad()
+    def rollout(self, inputs):
+        ht, G = inputs['states'], inputs['G']
+        planning_horizon = inputs['planning_horizon']
+
+        skills = []
+        for i in range(planning_horizon):
+            if self.gc:
+                policy_skill =  self.highlevel_policy.dist(torch.cat((ht, G), dim = -1)).sample()
+            else:
+                policy_skill =  self.highlevel_policy.dist(ht).sample()
+            dynamics_input = torch.cat((ht, policy_skill), dim = -1)
+            ht = self.dynamics(dynamics_input)
+            skills.append(policy_skill)
+        
+        return dict(
+            policy_skills = torch.stack(skills, dim=1)
+        )
 
     @torch.no_grad()
     def cem_planning(self, inputs):
@@ -385,7 +435,7 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
         planning_horizon  = int(self._horizon_decay(self._step))
 
         states, qfs = inputs['states'], inputs['qfs']
-        states = self.prior_policy.state_encoder(states)
+        states = self.state_encoder(states)
 
         # Sample policy trajectories.
         states_policy = states.repeat(self.num_policy_traj, 1) 
@@ -396,7 +446,7 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
             planning_horizon = planning_horizon
         )
 
-        policy_skills =  self.prior_policy(rollout_inputs, "rollout")['policy_skills']
+        policy_skills =  self.rollout(rollout_inputs)['policy_skills']
 
         # CEM optimization.
         state_cem = states.repeat(self.num_policy_traj + self.num_sample_traj, 1)
@@ -446,10 +496,8 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
 
         dynamics_input = torch.cat((states, skills), dim = -1)
 
-        next_states = self.prior_policy.dynamics(dynamics_input)
+        next_states = self.dynamics(dynamics_input)
         rewards_pred = self.reward_function(dynamics_input) 
-
-    
 
         return dict(
             next_states = next_states,
@@ -458,7 +506,7 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
 
 
     def soft_update(self):
-        self.inverse_dynamics.soft_update()
+        self.state_encoder.soft_update()
 
     def _std_decay(self, step):
         # from rolf

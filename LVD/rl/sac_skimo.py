@@ -30,7 +30,7 @@ class SAC(BaseModule):
 
         self.policy_optim = torch.optim.Adam(
             [
-                { "params" : self.policy.prior_policy.highlevel_policy.parameters()},  
+                { "params" : self.policy.highlevel_policy.parameters()},  
             ],
             lr = self.policy_lr 
         )
@@ -39,8 +39,8 @@ class SAC(BaseModule):
         # finetune : state_encoder, dynamics, reward function 
         self.others_optim = torch.optim.Adam(
             [
-                { "params" : self.policy.prior_policy.state_encoder.parameters()}, # 보상최대화하는 subgoal 뽑기. 
-                { "params" : self.policy.prior_policy.dynamics.parameters()}, # 보상최대화하는 subgoal 뽑기. 
+                { "params" : self.policy.state_encoder.parameters()}, # 보상최대화하는 subgoal 뽑기. 
+                { "params" : self.policy.dynamics.parameters()}, # 보상최대화하는 subgoal 뽑기. 
                 { "params" : self.policy.reward_function.parameters()}, # 보상최대화하는 subgoal 뽑기. 
             ],
             lr = self.policy_lr # 낮추면 잘 안됨. 왜? 
@@ -106,14 +106,15 @@ class SAC(BaseModule):
             step_inputs['rewards'] = batch.rewards
             step_inputs['dones'] = batch.dones
 
-            # self.policy.prior_policy.state_encoder(states)
 
             step_inputs['states'] = states
             step_inputs['next_states'] = next_states
 
-            step_inputs['q_states'] = self.policy.prior_policy.state_encoder(states) 
-            step_inputs['q_next_states'] = self.policy.prior_policy.state_encoder(next_states)
+            step_inputs['q_states'] = self.policy.state_encoder(states) 
+            step_inputs['q_next_states'] = self.policy.state_encoder(next_states)
             step_inputs['G'] = step_inputs['G'].repeat(step_inputs['batch_size'], 1).cuda()
+
+
 
             step_inputs['raw_states'] = states
             step_inputs['raw_next_states'] = next_states
@@ -134,7 +135,11 @@ class SAC(BaseModule):
     def _step(self, step_inputs):
         stat = {}
 
-        results  = self.update_others(step_inputs)
+        step_inputs['rollout_high_states']  = self.update_Q_models(step_inputs)
+
+        results = self.update_policy(step_inputs)
+
+
 
         # ------------------- SAC ------------------- # 
         # ------------------- Q-functions ------------------- #
@@ -183,75 +188,6 @@ class SAC(BaseModule):
         return rwd_term, ent_term, entropy_term
 
 
-    def update_qs(self, step_inputs):
-        with torch.no_grad():
-            rwd_term, ent_term, entropy_term = self.compute_target_q(step_inputs)
-            target_qs = rwd_term + ent_term
-
-
-        qf_losses = []  
-        for qf, qf_optim in zip(self.qfs, self.qf_optims):
-            qs = qf(step_inputs['q_states'], step_inputs['actions'])
-            qf_loss = (qs - target_qs).pow(2).mean() * 0.1
-
-            if not self.optimal_Q:
-                qf_optim.zero_grad()
-                qf_loss.backward()
-                qf_optim.step()
-
-            qf_losses.append(qf_loss)
-        
-        if not self.optimal_Q:
-            update_moving_average(self.target_qfs, self.qfs, self.tau)
-
-        results = {}
-        results['qf_loss'] = torch.stack(qf_losses).mean()
-        results['target_Q'] = target_qs.mean()
-        results['rwd_term'] = rwd_term.mean()
-        results['entropy_term'] = ent_term.mean()
-
-        return results
-
-
-    def update_policy(self, step_inputs):
-        results = {}
-        step_inputs['dist'] = self.policy.dist(step_inputs)['policy_skill'] # prior policy mode.
-        step_inputs['policy_actions'] = step_inputs['dist'].rsample() 
-        entropy_term, prior_dist = self.entropy(step_inputs, kl_clip= False) # policy의 dist로는 gradient 전파함 .
-        min_qs = torch.min(*[qf(step_inputs['q_states'], step_inputs['policy_actions']) for qf in self.qfs])
-
-        policy_loss = (- min_qs + self.alpha * entropy_term).mean()
-
-
-        # TD-MPC
-        # for 
-        # step_inputs['dist'] = self.policy.dist(step_inputs)['policy_skill'] # prior policy mode.
-        # step_inputs['policy_actions'] = step_inputs['dist'].rsample() 
-        # entropy_term, prior_dist = self.entropy(step_inputs, kl_clip= False) # policy의 dist로는 gradient 전파함 .
-        # min_qs = torch.min(*[qf(step_inputs['q_states'], step_inputs['policy_actions']) for qf in self.qfs])
-
-        # policy_loss = (- min_qs + self.alpha * entropy_term).mean()
-
-
-
-        self.policy_optim.zero_grad()
-        policy_loss.backward()
-        self.grad_clip(self.policy_optim)
-        self.policy_optim.step()
-
-        results['policy_loss'] = policy_loss.item()
-        results['kl'] = entropy_term.mean().item() # if self.prior_policy is not None else - entropy_term.mean()
-        if self.tanh:
-            results['mean_policy_scale'] = step_inputs['dist']._normal.base_dist.scale.abs().mean().item() 
-            results['mean_prior_scale'] = prior_dist._normal.base_dist.scale.abs().mean().item()
-        else:
-            results['mean_policy_scale'] = step_inputs['dist'].base_dist.scale.abs().mean().item() 
-            results['mean_prior_scale'] = prior_dist.base_dist.scale.abs().mean().item()
-
-        results['Q-value'] = min_qs.mean(0).item()
-
-        return results
-
     def update_alpha(self, kl):
         results = {}
         if self.auto_alpha is True:
@@ -271,11 +207,11 @@ class SAC(BaseModule):
         return results
     
     def update_Q_models(self, step_inputs):
-        
         states = step_inputs['states']
-        next_states = step_inputs['nexst_states']
+        next_states = step_inputs['next_states']
         rewards = step_inputs['rewards']
         dones = step_inputs['dones']
+        G = step_inputs['G']
 
         N, T = states.shape[:2]
 
@@ -284,7 +220,7 @@ class SAC(BaseModule):
         skills = step_inputs['actions']
         
         high_state = high_states[:, 0]
-        consistency_loss, reward_loss, value_loss = 0, 0, 0, 0
+        consistency_loss, reward_loss, value_loss = 0, 0, 0
         rollout_high_states = []
 
         for t in range(T):
@@ -293,7 +229,7 @@ class SAC(BaseModule):
             q1, q2 = [qf(high_state, step_inputs['actions'][:, t]) for qf in self.qfs]
             q_inputs = dict(
                 next_states = next_states[:, t],
-                G = step_inputs[:, t],
+                G = G,
                 q_next_states = high_next_states[:, t],
                 rewards = rewards[:, t],
                 dones = dones[:, t]
@@ -314,8 +250,9 @@ class SAC(BaseModule):
             high_next_state, rewards_pred = outputs['next_states'], outputs['rewards_pred']
         
             # discounted 
+            print(high_next_state.shape, high_next_states.shape)
             rho = (self.rho ** t)
-            consistency_loss += rho * torch.mean(F.mse_loss(high_next_state, high_next_states[:, t]), dim=1, keepdim=True)
+            consistency_loss += rho * F.mse_loss(high_next_state, high_next_states[:, t])
             reward_loss += rho * F.mse_loss(rewards_pred, rewards[:, t])
             value_loss += rho * (F.mse_loss(q1, target_qs) + F.mse_loss(q2, target_qs))
 
@@ -351,18 +288,20 @@ class SAC(BaseModule):
         q_values = 0
         entropy_terms = 0
     
+        states = step_inputs['states']
 
         for t, high_state in enumerate(rollout_high_states):
             policy_inputs = dict(
                 # states, G
-                states = high_state,
-                G = step_inputs['G'][:, t]
+                states = states[:, t],
+                high_state = high_state,
+                G = step_inputs['G']
             )
         
-            step_inputs['dist'] = self.policy.dist(policy_inputs)['policy_skill'] # prior policy mode.
-            step_inputs['policy_actions'] = step_inputs['dist'].rsample() 
+            policy_inputs['dist'] = self.policy.dist(policy_inputs, latent = True)['policy_skill'] # prior policy mode.
+            policy_inputs['policy_actions'] = policy_inputs['dist'].rsample() 
             entropy_term, prior_dist = self.entropy(policy_inputs, kl_clip= False) # policy의 dist로는 gradient 전파함 .
-            min_qs = torch.min(*[qf(high_state, step_inputs['policy_actions']) for qf in self.qfs])
+            min_qs = torch.min(*[qf(high_state, policy_inputs['policy_actions']) for qf in self.qfs])
 
             q_values += min_qs.clone().detach().mean(0).item()
             entropy_terms += entropy_term.clone().detach().mean().item() 
@@ -380,7 +319,7 @@ class SAC(BaseModule):
     
 
         results['policy_loss'] = policy_loss.item()
-        results['kl'] = entropy_terms.mean().item() # if self.prior_policy is not None else - entropy_term.mean()
+        results['kl'] = entropy_terms # if self.prior_policy is not None else - entropy_term.mean()
         results['Q-value'] = q_values
 
         update_moving_average(self.target_qfs, self.qfs, self.tau)
@@ -407,7 +346,11 @@ class SAC(BaseModule):
 
             step_inputs['states'] = states
             step_inputs['next_states'] = next_states
-            step_inputs['G'] = step_inputs['G'].unsqueeze(-1).repeat(*states.shape[:2], 1).cuda()
+            # step_inputs['G'] = step_inputs['G'].unsqueeze(-1).repeat(*states.shape[:2], 1).cuda()
+            step_inputs['G'] = step_inputs['G'].repeat(step_inputs['batch_size'], 1).cuda()
+
+
+            print(step_inputs['G'].shape)
 
 
             # step_inputs['q_states'] = self.policy.prior_policy.state_encoder(states) 
@@ -427,7 +370,7 @@ class SAC(BaseModule):
         stat = {}
 
         for _ in range(self.q_warmup_steps):
-            q_results = self.update_qs(step_inputs)
+            q_results = self.update_Q_models(step_inputs)
                         
         for k, v in q_results.items():
             stat[k] = v 
