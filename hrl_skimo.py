@@ -99,8 +99,10 @@ def train_policy_iter(collector, trainer, episode_i, batch_size, reuse_rate, pro
     # train
     n_step = int(reuse_rate * len(episode) / batch_size)
 
-    if trainer.buffer.size < batch_size or episode_i < precollect or "zeroshot" in project_name:
-        return log, False
+
+    
+    # if trainer.buffer.size < batch_size or episode_i < precollect or "zeroshot" in project_name:
+    #     return log, False
     
     
     if episode_i == precollect:
