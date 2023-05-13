@@ -39,7 +39,7 @@ class SAC(BaseModule):
                 { "params" : self.policy.dynamics.parameters()}, # 보상최대화하는 subgoal 뽑기. 
                 { "params" : self.policy.reward_function.parameters()}, # 보상최대화하는 subgoal 뽑기. 
             ],
-            lr = self.policy_lr # 낮추면 잘 안됨. 왜? 
+            lr = 1e-3
         )
 
 
