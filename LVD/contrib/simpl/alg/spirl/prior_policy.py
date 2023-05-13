@@ -60,11 +60,12 @@ class PriorResidualNormalMLPPolicy(StochasticNNPolicy):
         
         if self.prior_policy.tanh:
 
+            return get_dist(locs, scale= scale, tanh = True)
+
+        
+        else:
             dist = torch_dist.Normal(
                 prior_locs + res_locs,
                 self.min_scale + F.softplus(prior_pre_scales + res_pre_scales)
             )
             return torch_dist.Independent(dist, 1)
-        
-        else:
-            return get_dist(locs, scale= scale, tanh = True)

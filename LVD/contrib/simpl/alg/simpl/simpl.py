@@ -63,7 +63,7 @@ class Simpl(ToDeviceMixin, nn.Module):
                  init_enc_prior_reg, init_enc_post_reg, init_policy_prior_reg, init_policy_post_reg,
                  target_enc_prior_kl, target_enc_post_kl, target_policy_prior_kl, target_policy_post_kl,
                  kl_clip=20, policy_lr=3e-4, qf_lr=3e-4, enc_reg_lr=3e-4, policy_reg_lr=3e-4,
-                 gamma=0.99, tau=0.005):
+                 gamma=0.99, tau=0.005, prior_state_dim = None):
         super().__init__()
         
         self.policy = policy
@@ -106,6 +106,7 @@ class Simpl(ToDeviceMixin, nn.Module):
         )
         
         self.kl_clip = kl_clip
+        self.prior_state_dim = prior_state_dim
 
     def to(self, device):
         self.encoder = self.encoder.to(device)
@@ -243,7 +244,11 @@ class Simpl(ToDeviceMixin, nn.Module):
         rl_loss = - qs.mean(0)
         
         with torch.no_grad():
-            prior_dists = self.prior_policy.dist(meta_batch.states)
+            if self.prior_state_dim is not None:
+                states = meta_batch.states[:, :self.prior_state_dim]
+            else:
+                states = meta_batch.states
+            prior_dists = self.prior_policy.dist(states)
         kls = torch_dist.kl_divergence(dists, prior_dists)
         policy_reg_loss = (meta_batch.policy_regs.detach() * kls).mean(0)
         
@@ -274,10 +279,13 @@ class Simpl(ToDeviceMixin, nn.Module):
         # 여기도
         dists = self.policy.dist(batch.next_states)
         sampled_actions = dists.sample()
-        log_probs = dists.log_prob(sampled_actions)
+        # log_probs = dists.log_prob(sampled_actions)
         min_qs = torch.min(*[target_qf(batch.next_states, sampled_actions) for target_qf in self.target_qfs])
         
-        prior_dists = self.prior_policy.dist(batch.next_states)
+        if self.prior_state_dim is not None:
+            prior_dists = self.prior_policy.dist(batch.next_states[:, :self.prior_state_dim])
+        else:
+            prior_dists = self.prior_policy.dist(batch.next_states)
         kls = clipped_kl(dists, prior_dists, clip=self.kl_clip)
         soft_qs = min_qs - batch.policy_regs*kls
         return batch.rewards + (1 - batch.dones)*self.gamma*soft_qs

@@ -13,7 +13,7 @@ import sys
 # sys.path.append("/home/magenta1223/skill-based/SiMPL/proposed")
 # sys.path.append("/home/magenta1223/skill-based/SiMPL")
 
-sys.path.append("./LVD/contrib/")
+sys.path.append("/home/magenta1223/skill-based/SiMPL/proposed")
 
 
 from LVD.contrib.simpl.alg.simpl import ContextPriorResidualNormalMLPPolicy, LowFixedGPUWorker, Simpl

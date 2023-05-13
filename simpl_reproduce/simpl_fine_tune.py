@@ -5,12 +5,15 @@ import matplotlib.pyplot as plt
 import torch
 import wandb
 
+import sys
+sys.path.append("/home/magenta1223/skill-based/SiMPL/proposed")
+
+
 from LVD.contrib.simpl.alg.spirl import ConstrainedSAC, PriorResidualNormalMLPPolicy
 from LVD.contrib.simpl.collector import Buffer, LowFixedHierarchicalTimeLimitCollector
 from LVD.contrib.simpl.nn import itemize
 from LVD.contrib.simpl.alg.simpl import ConditionedPolicy, ConditionedQF
 import os
-import sys
 # from ....rl.vis import visualize
 sys.path.append("/home/magenta1223/skill-based/SiMPL/proposed")
 sys.path.append("/home/magenta1223/skill-based/SiMPL")

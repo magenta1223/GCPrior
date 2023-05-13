@@ -1,16 +1,16 @@
 import d4rl
 import gym
-from simpl.env.kitchen import KitchenTasks, KitchenEnv_GC
+# from simpl.env.kitchen import KitchenTasks, KitchenEnv_GC
 from .kitchen_vis import draw_kitchen
 
 
-from LVD.envs.kitchen import KitchenEnv_GC, KITCHEN_META_TASKS
+from LVD.envs.kitchen import KitchenEnv_GC, KITCHEN_META_TASKS, KitchenTask_GC
 
 # from LVD.envs.kitchen import KitchenEnv_GC
 
 # env = gym.make('simpl-kitchen-v0')
 env = KitchenEnv_GC() # goal conditioned kitchen
-train_tasks = KITCHEN_META_TASKS
+train_tasks = [KitchenTask_GC(t) for t in KITCHEN_META_TASKS[:2]]
 config = dict(
     policy=dict(hidden_dim=128, n_hidden=5, prior_state_dim = 30,),
     qf=dict(hidden_dim=128, n_hidden=5),
