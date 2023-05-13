@@ -158,6 +158,7 @@ class SAC(BaseModule):
     
     @torch.no_grad()
     def compute_target_q(self, step_inputs):
+        
         policy_inputs = dict(
             states = step_inputs['next_states'].clone(),
             G = step_inputs['G'],
@@ -269,25 +270,21 @@ class SAC(BaseModule):
 
         return results
     
-    def update_others(self, step_inputs):
+    def update_Q_models(self, step_inputs):
         
         states = step_inputs['states']
         next_states = step_inputs['nexst_states']
-
         rewards = step_inputs['rewards']
         dones = step_inputs['dones']
 
         N, T = states.shape[:2]
 
-
         high_states = self.policy.prior_policy.state_encoder(states.view(N * T, -1)).view(N, T, -1)
         high_next_states = self.policy.prior_policy.state_encoder(next_states.view(N * T, -1)).view(N, T, -1)
         skills = step_inputs['actions']
-
         
         high_state = high_states[:, 0]
         consistency_loss, reward_loss, value_loss = 0, 0, 0, 0
-
         rollout_high_states = []
 
         for t in range(T):
@@ -342,8 +339,13 @@ class SAC(BaseModule):
 
         
         
-        # policy loss 
+        return rollout_high_states
 
+
+    def update_policy(self, step_inputs):
+
+        # policy loss 
+        rollout_high_states = step_inputs['rollout_high_states']
 		# Loss is a weighted sum of Q-values
         policy_loss = 0
         q_values = 0
@@ -359,8 +361,8 @@ class SAC(BaseModule):
         
             step_inputs['dist'] = self.policy.dist(policy_inputs)['policy_skill'] # prior policy mode.
             step_inputs['policy_actions'] = step_inputs['dist'].rsample() 
-            entropy_term, prior_dist = self.entropy(step_inputs, kl_clip= False) # policy의 dist로는 gradient 전파함 .
-            min_qs = torch.min(*[qf(step_inputs['q_states'], step_inputs['policy_actions']) for qf in self.qfs])
+            entropy_term, prior_dist = self.entropy(policy_inputs, kl_clip= False) # policy의 dist로는 gradient 전파함 .
+            min_qs = torch.min(*[qf(high_state, step_inputs['policy_actions']) for qf in self.qfs])
 
             q_values += min_qs.clone().detach().mean(0).item()
             entropy_terms += entropy_term.clone().detach().mean().item() 
