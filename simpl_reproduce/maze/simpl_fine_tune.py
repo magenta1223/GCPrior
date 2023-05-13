@@ -1,6 +1,6 @@
 import gym
-import simpl.env.maze
-from simpl.env.maze import Size20Seed0Tasks
+# import simpl.env.maze
+# from simpl.env.maze import Size20Seed0Tasks
 
 from .maze_vis import draw_maze
 from LVD.envs import *
