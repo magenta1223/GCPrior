@@ -121,6 +121,8 @@ if __name__ == '__main__':
     collector = LowFixedHierarchicalTimeLimitCollector(env, spirl_low_policy, horizon=horizon, time_limit=config['time_limit'])
 
 
+    config['constrained_sac']['tanh'] = spirl_prior_policy.tanh
+
     df =  {}
     # train on all tasks
     for task_idx, task in enumerate(tasks):
