@@ -29,7 +29,7 @@ from LVD.contrib.simpl.torch_utils import itemize
 from LVD.rl.vis import *
 from LVD.utils import *
 from LVD.collector.skimo import LowFixedHierarchicalTimeLimitCollector
-from LVD.collector.storage import Buffer_modified
+from LVD.collector.storage import Buffer_TT
 from LVD.rl.rl_utils import *
 from LVD.configs.env import ENV_CONFIGS
 
@@ -205,6 +205,14 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     qfs = [ MLPQF(Linear_Config(qf_config))  for _ in range(2)]
     reward_function = SequentialBuilder(Linear_Config(reward_config))
 
+    
+    planning_horizons = {
+        "maze" : 10,
+        "kitchen" : 3
+    }
+
+    planning_horizon = planning_horizons[args.env_name]
+
 
     ## ------------- High Policy ------------- ##
     # Skimo config
@@ -213,7 +221,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
         prior_policy = prior_policy,
         min_scale = 0.001,
         prior_state_dim = state_dim,
-        planning_horizon = 3, # TODO env별로 다름
+        planning_horizon = planning_horizon, # TODO env별로 다름
         skill_dim = latent_dim,
         num_elites = 64,
         cem_momentum = 0.1,
@@ -235,7 +243,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     low_actor = deepcopy(model.skill_decoder.eval())
 
     # ------------- Buffers & Collectors ------------- #
-    buffer = Buffer_modified(state_dim, latent_dim, buffer_size, tanh = model.tanh, skimo = True)
+    buffer = Buffer_TT(state_dim, latent_dim, 10, buffer_size)
     collector = LowFixedHierarchicalTimeLimitCollector(env, env_name, low_actor, horizon=10, time_limit=args.time_limit, tanh = model.tanh)
 
     

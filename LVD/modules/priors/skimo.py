@@ -176,7 +176,7 @@ class Skimo_Prior(BaseModule):
         Finetune state encoder, dynamics
         """
 
-        states, next_states, skill = inputs['raw_states'], inputs['raw_next_states'], inputs['actions']
+        states, next_states, skill = inputs['states'], inputs['next_states'], inputs['actions']
 
         ht = self.state_encoder(states)
         htH = self.target_state_encoder(next_states)

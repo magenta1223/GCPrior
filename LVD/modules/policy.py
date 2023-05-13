@@ -437,6 +437,23 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
         outputs['rwd_pred'] = self.reward_function(torch.cat((inputs['q_states'], inputs['actions']), dim = -1)) 
 
         return outputs
+    
+    def rollout_latent(self, inputs):
+
+        states, skills = inputs['states'], inputs['actions']
+
+        dynamics_input = torch.cat((states, skills), dim = -1)
+
+        next_states = self.prior_policy.dynamics(dynamics_input)
+        rewards_pred = self.reward_function(dynamics_input) 
+
+    
+
+        return dict(
+            next_states = next_states,
+            rewards_pred = rewards_pred
+        )
+
 
     def soft_update(self):
         self.inverse_dynamics.soft_update()
