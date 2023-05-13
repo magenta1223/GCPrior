@@ -7,12 +7,13 @@ from .gc_div_joint import GoalConditioned_Diversity_Joint_Model
 from .gc_div_joint_gp import GoalConditioned_GoalPrompt_Model
 from .skimo import Skimo_Model
 from .WAE import WAE
+from .simpl import SiMPL_Model
 
 
 MODELS = {
     "sc" : StateConditioned_Model,
     "sc_dreamer" : StateConditioned_Model,
-    "simpl" : StateConditioned_Model,
+    "simpl" : SiMPL_Model,
     "gc" : GoalConditioned_Model,
     "sc_div" : StateConditioned_Diversity_Model,
     "gc_div" : GoalConditioned_Diversity_Model,

@@ -265,12 +265,26 @@ if __name__ == '__main__':
         #         with env.set_task(task):
         #             visualize_env(axes[task_idx//10][task_idx%10], env, list(buffer.episodes)[-20:])
         #     log['policy_vis'] = fig
-        wandb.log(log)
+        # wandb.log(log)
+        if epoch_i % policy_vis_period == 0:
+            plt.close('all')
+            n_row = int(np.ceil(len(train_tasks)/10))
+            fig, axes = plt.subplots(n_row, 10, figsize=(20, 2*n_row))
+            for task_idx, (task, buffer) in enumerate(zip(train_tasks, buffers)):
+                with env.set_task(task):
+                    visualize_env(axes[task_idx//10][task_idx%10], env, list(buffer.episodes)[-20:])
+            log['policy_vis'] = fig
 
-    torch.save({
-        'encoder': encoder, # task encoder
-        'high_policy': high_policy, # policy network
-        'qfs': qfs, # q functions. SAC구현대로 2개 사용
-        'policy_post_reg': trainer.policy_post_reg().item() # ? 
-    }, save_filepath)
+            save_filepath = f"{save_dir}/metatrained_{epoch_i}.bin"
+    
+            torch.save({
+                'encoder': encoder, # task encoder
+                'high_policy': high_policy, # policy network
+                'qfs': qfs, # q functions. SAC구현대로 2개 사용
+                'policy_post_reg': trainer.policy_post_reg().item() # ? 
+            }, save_filepath)
+
+        wandb.log(log)
     conc_collector.close()
+
+
