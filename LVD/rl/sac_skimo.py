@@ -358,7 +358,7 @@ class SAC(BaseModule):
         for _ in range(self.q_warmup_steps):
             q_results = self.update_Q_models(step_inputs)
                         
-        for k, v in q_results.items():
-            stat[k] = v 
+        # for k, v in q_results.items():
+        #     stat[k] = v 
 
         return stat
