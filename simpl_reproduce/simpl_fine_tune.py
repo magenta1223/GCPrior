@@ -127,7 +127,7 @@ if __name__ == '__main__':
     # train on all tasks
     for task_idx, task in enumerate(tasks):
         wandb.init(
-            project=wandb_project_name, name=wandb_run_name,
+            project=wandb_project_name, name=str(task),
             config={
                 **config, 'task_idx': task_idx,
                 'spirl_pretrained_path': args.spirl_pretrained_path,
