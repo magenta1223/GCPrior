@@ -13,7 +13,7 @@ class ConstrainedSAC(ToDeviceMixin, nn.Module):
     def __init__(self, policy, prior_policy, qfs, buffer,
                  discount=0.99, tau=0.005, policy_lr=3e-4, qf_lr=3e-4,
                  auto_alpha=True, init_alpha=0.1, alpha_lr=3e-4, target_kl=1,
-                 kl_clip=20, increasing_alpha=False, prior_state_dim = None):
+                 kl_clip=20, increasing_alpha=False, prior_state_dim = None, tanh = False):
         super().__init__()
         
         self.policy = policy
@@ -40,6 +40,7 @@ class ConstrainedSAC(ToDeviceMixin, nn.Module):
         self.kl_clip = kl_clip
         self.increasing_alpha = increasing_alpha
         self.prior_state_dim= prior_state_dim
+        self.tanh=  tanh
         
     @property
     def alpha(self):
@@ -95,7 +96,10 @@ class ConstrainedSAC(ToDeviceMixin, nn.Module):
         
         stat['policy_loss'] = policy_loss
         stat['kl'] = kl
-        stat['mean_policy_scale'] = dists.base_dist.scale.abs().mean()
+        if self.tanh:
+            stat['mean_policy_scale'] = dists._normal.base_dist.scale.abs().mean()
+        else:
+            stat['mean_policy_scale'] = dists.base_dist.scale.abs().mean()
 
         # alpha
         if self.auto_alpha is True:
@@ -121,7 +125,7 @@ class ConstrainedSAC(ToDeviceMixin, nn.Module):
                 states = batch.states[:, :self.prior_state_dim]
             else:
                 states = batch.states
-                
+
             prior_dists = self.prior_policy.dist(states)
         kls = clipped_kl(dists, prior_dists, clip=self.kl_clip)
         min_qs = torch.min(*[target_qf(batch.next_states, actions) for target_qf in self.target_qfs])
