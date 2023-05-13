@@ -86,7 +86,7 @@ class Skimo_Prior(BaseModule):
         if self.gc:
             policy_skill =  self.highlevel_policy.dist(torch.cat((ht.clone().detach(), G), dim = -1))
         else:
-            policy_skill = None
+            policy_skill = self.highlevel_policy.dist(torch.cat(ht.clone().detach(), dim = -1))
 
 
         # -------------- Rollout for metric -------------- #

@@ -23,10 +23,6 @@ class SAC(BaseModule):
         self.target_qfs = nn.ModuleList([copy.deepcopy(qf) for qf in self.qfs])
         self.qf_optims = [torch.optim.Adam(qf.parameters(), lr=self.qf_lr) for qf in self.qfs]
 
-        if self.qf_lr < 1e-12:
-            self.optimal_Q = True
-        else:
-            self.optimal_Q = False
 
         self.policy_optim = torch.optim.Adam(
             [
@@ -293,22 +289,24 @@ class SAC(BaseModule):
         for t, high_state in enumerate(rollout_high_states):
             policy_inputs = dict(
                 # states, G
-                states = states[:, t],
-                high_state = high_state,
+                states = states[:, t], # skill prior는 GT state로 구하고
+                high_state = high_state, # actor loss는 rollout state로 구한다. 
                 G = step_inputs['G']
             )
         
             policy_inputs['dist'] = self.policy.dist(policy_inputs, latent = True)['policy_skill'] # prior policy mode.
             policy_inputs['policy_actions'] = policy_inputs['dist'].rsample() 
             entropy_term, prior_dist = self.entropy(policy_inputs, kl_clip= False) # policy의 dist로는 gradient 전파함 .
-            min_qs = torch.min(*[qf(high_state, policy_inputs['policy_actions']) for qf in self.qfs])
+            min_qs = torch.min(*[qf(high_state, policy_inputs['policy_actions']) for qf in self.qfs]) * (self.rho ** t)
+            ent_loss = self.alpha * entropy_term * (self.rho ** t)
 
             q_values += min_qs.clone().detach().mean(0).item()
             entropy_terms += entropy_term.clone().detach().mean().item() 
 
 
-            policy_loss += (- min_qs + self.alpha * entropy_term).mean() * (self.rho ** t)
+            policy_loss += (- min_qs + ent_loss).mean() 
             
+        policy_loss /= len(rollout_high_states)
             
 
         policy_loss.backward()

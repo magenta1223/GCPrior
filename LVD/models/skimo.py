@@ -316,15 +316,13 @@ class Skimo_Model(BaseModule):
                 tanh = self.tanh
             ).mean()
 
-            if self.gc:
-                policy_loss = self.loss_fn('prior')(
-                    self.outputs['z'],
-                    self.outputs['policy_skill'], # distributions to optimize
-                    self.outputs['z_normal'],
-                    tanh = self.tanh
-                ).mean()
-            else:
-                policy_loss = torch.tensor([0]).cuda()
+            policy_loss = self.loss_fn('prior')(
+                self.outputs['z'],
+                self.outputs['policy_skill'], # distributions to optimize
+                self.outputs['z_normal'],
+                tanh = self.tanh
+            ).mean()
+
 
         else:
             prior = self.loss_fn('prior')(
@@ -333,15 +331,11 @@ class Skimo_Model(BaseModule):
                 tanh = self.tanh
             ).mean()
 
-            if self.gc:
-                policy_loss = self.loss_fn('prior')(
-                    self.outputs['z'],
-                    self.outputs['policy_skill'], # distributions to optimize
-                    tanh = self.tanh
-                ).mean()
-            else:
-                policy_loss = torch.tensor([0]).cuda()
-
+            policy_loss = self.loss_fn('prior')(
+                self.outputs['z'],
+                self.outputs['policy_skill'], # distributions to optimize
+                tanh = self.tanh
+            ).mean()
 
         D_loss = self.loss_fn('recon')(
             self.outputs['D'],

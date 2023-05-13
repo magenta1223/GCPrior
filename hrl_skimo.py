@@ -245,7 +245,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     low_actor = deepcopy(model.skill_decoder.eval())
 
     # ------------- Buffers & Collectors ------------- #
-    buffer = Buffer_TT(state_dim, latent_dim, 10, buffer_size)
+    buffer = Buffer_TT(state_dim, latent_dim, planning_horizon, buffer_size)
     collector = LowFixedHierarchicalTimeLimitCollector(env, env_name, low_actor, horizon=10, time_limit=args.time_limit, tanh = model.tanh)
 
     
