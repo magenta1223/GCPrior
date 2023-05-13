@@ -7,7 +7,7 @@ from LVD.envs import *
 
 env = Maze_GC(**maze_config)
 # tasks = Size20Seed0Tasks.flat_test_tasks
-train_tasks = [ MazeTask_Custom(task)  for task in MAZE_TASKS]
+tasks = [ MazeTask_Custom(task)  for task in MAZE_TASKS]
 
 
 config = dict(
