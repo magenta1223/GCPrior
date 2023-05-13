@@ -323,7 +323,7 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
             setattr(self, k, v)
 
         self.prior_policy = copy.deepcopy(self.prior_policy).requires_grad_(False)
-
+        self.gc = self.prior_policy.gc
         # self._step : episode 길이의 누적합. 
         
 
@@ -367,8 +367,10 @@ class HighPolicy_Skimo(ContextPolicyMixin, SequentialBuilder):
 
         
         # policy_skill = self.prior_policy(policy_inputs, "eval")['policy_skill'].sample()
-
-        policy_skill =  self.prior_policy.highlevel_policy.dist(torch.cat((state.clone().detach(), G), dim = -1)).sample()
+        if self.gc:
+            policy_skill =  self.prior_policy.highlevel_policy.dist(torch.cat((state, G), dim = -1)).sample()
+        else:
+            policy_skill =  self.prior_policy.highlevel_policy.dist(state).sample()
 
         q_values = [  qf( state, policy_skill).unsqueeze(-1)   for qf in qfs]
         value += discount * torch.min(*q_values) # 마지막엔 Q에 넣어서 value를 구함. 
