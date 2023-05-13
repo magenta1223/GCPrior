@@ -75,7 +75,7 @@ class SiMPL_Prior(BaseModule):
 
 
         # -------------- State Enc / Dec -------------- #
-        policy_skill = self.highlevel_policy.dist(torch.cat((states[:,0], G), dim = -1))
+        policy_skill = self.highlevel_policy.dist(torch.cat((states, G), dim = -1))
 
 
         return dict(

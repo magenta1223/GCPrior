@@ -58,15 +58,8 @@ class PriorResidualNormalMLPPolicy(StochasticNNPolicy):
         )
 
         prior_skill = self.prior_policy(inputs, "eval")['policy_skill']
-
-        if self.prior_policy.prior_policy.tanh:
-            prior_locs = prior_skill._normal.base_dist.loc
-            prior_pre_scales = prior_skill._normal.base_dist.scale
-        else:
-            prior_locs = prior_skill.base_dist.loc
-            prior_pre_scales = prior_skill.base_dist.scale
-
-
+        prior_locs = prior_skill.base_dist.loc
+        prior_pre_scales = prior_skill.base_dist.scale
         # distributions from prior state
 
         # distributions from policy state
@@ -76,12 +69,9 @@ class PriorResidualNormalMLPPolicy(StochasticNNPolicy):
         locs = prior_locs + res_locs
         scale = self.min_scale + F.softplus(prior_pre_scales + res_pre_scales)
         
-        if self.prior_policy.prior_policy.tanh:
-            return get_dist(locs, scale= scale, tanh = True)
-        
-        else:
-            dist = torch_dist.Normal(
-                prior_locs + res_locs,
-                self.min_scale + F.softplus(prior_pre_scales + res_pre_scales)
-            )
-            return torch_dist.Independent(dist, 1)
+
+        dist = torch_dist.Normal(
+            locs,
+            scale
+        )
+        return torch_dist.Independent(dist, 1)
