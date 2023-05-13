@@ -9,7 +9,7 @@ env = Maze_GC(**maze_config)
 train_tasks = [ MazeTask_Custom(task)  for task in MAZE_META_TASKS]
 
 config = dict(
-    policy=dict(hidden_dim=256, n_hidden=3, prior_state_dim = 4),
+    policy=dict(hidden_dim=256, n_hidden=3, prior_state_dim = 4, policy_exclude_dim = 6),
     qf=dict(hidden_dim=256, n_hidden=3),
     n_qf=2,
     encoder=dict(hidden_dim=128, n_hidden=2, init_scale=1, prior_scale=1),

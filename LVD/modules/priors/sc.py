@@ -101,9 +101,6 @@ class StateConditioned_Prior(BaseModule):
         scales = F.softplus(res_pre_scales + prior_pre_scales)
         policy_skill = get_dist(locs, scale = scales, tanh = self.tanh)
 
-
-
-
         return dict(
             prior = prior,
             policy_skill = policy_skill,

@@ -42,7 +42,7 @@ class MazeEnvConfig(BaseDataConfig):
             # state_dim=36, # env_embedding dim 32 + pos_embed_dim 4
             n_obj = 4,
             n_env = 0,
-            n_goal = 4,
+            n_goal = 2,
             env_name="maze",
             subseq_len = 11, 
             only_proprioceptive = False,

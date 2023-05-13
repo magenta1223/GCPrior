@@ -12,7 +12,7 @@ from LVD.envs.kitchen import KitchenEnv_GC, KITCHEN_META_TASKS, KitchenTask_GC
 env = KitchenEnv_GC() # goal conditioned kitchen
 train_tasks = [KitchenTask_GC(t) for t in KITCHEN_META_TASKS]
 config = dict(
-    policy=dict(hidden_dim=128, n_hidden=5, prior_state_dim = 30,),
+    policy=dict(hidden_dim=128, n_hidden=5, prior_state_dim = 30, policy_exclude_dim = 60),
     qf=dict(hidden_dim=128, n_hidden=5),
     n_qf=2,
     encoder=dict(hidden_dim=128, n_hidden=2, init_scale=1, prior_scale=1), 

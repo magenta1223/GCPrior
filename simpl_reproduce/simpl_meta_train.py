@@ -198,6 +198,9 @@ if __name__ == '__main__':
     spirl_low_policy = load['model'].skill_decoder.eval().requires_grad_(False) # skill decoder
     spirl_prior_policy = load['model'].skill_prior.prior_policy.eval().requires_grad_(False) # skill prior
 
+    GC_prior_policy = load['model'].skill_prior # skill prior
+
+
     config['simpl']['tanh'] = spirl_prior_policy.tanh
 
 
@@ -219,7 +222,7 @@ if __name__ == '__main__':
     encoder = SetTransformerEncoder(state_dim, high_action_dim, config['e_dim'], **config['encoder'])
     # high-level policy w/ skill-prior & skill 
     high_policy = ContextPriorResidualNormalMLPPolicy(
-        spirl_prior_policy, state_dim, high_action_dim, config['e_dim'],
+        GC_prior_policy, state_dim, high_action_dim, config['e_dim'],
         **config['policy']
     )
     qfs = [MLPQF(state_dim+config['e_dim'], high_action_dim, **config['qf']) for _ in range(config['n_qf'])]

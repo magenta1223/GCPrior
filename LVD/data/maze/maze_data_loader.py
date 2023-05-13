@@ -311,8 +311,7 @@ class Maze_AgentCentric_StateConditioned(Dataset):
         start_idx, goal_idx = self.sample_indices(states)
         assert start_idx < goal_idx, "Invalid"
 
-        G = states[goal_idx]
-        G[2:] = 0
+        G = states[goal_idx][:2]
 
         states = states[start_idx : start_idx + self.subseq_len]
         actions = actions[start_idx : start_idx + self.subseq_len -1]
@@ -433,8 +432,7 @@ class Maze_AgentCentric_GoalConditioned_Diversity(Maze_AgentCentric_StateConditi
         
 
 
-        G = states[goal_idx]
-        G[2:] = 0
+        G = states[goal_idx][:2]
         states = states[start_idx : start_idx + self.subseq_len]
         actions = actions[start_idx : start_idx + self.subseq_len -1]
 

@@ -31,9 +31,6 @@ class StochasticNNPolicy(ToDeviceMixin, nn.Module):
         raise NotImplementedError 
 
     def act(self, state):
-        """
-        여기도 살짝 바꿔서 action도 받아야 함. 
-        """
         if self.explore is None:
             raise RuntimeError('explore is not set')
 
