@@ -16,7 +16,7 @@ config = dict(
     simpl=dict(init_enc_prior_reg=1e-5, target_enc_prior_kl=1,
                init_enc_post_reg=3e-6, target_enc_post_kl=10,
                init_policy_prior_reg=3e-3, target_policy_prior_kl=0.5,
-               init_policy_post_reg=1e-3, target_policy_post_kl=5, kl_clip=5, prior_state_dim = 4),
+               init_policy_post_reg=1e-3, target_policy_post_kl=5, kl_clip=5, prior_state_dim = 4, policy_lr = 3e-6),
 
     # simpl=dict(init_enc_prior_reg=1e-3, target_enc_prior_kl=1,
     #            init_enc_post_reg=3e-4, target_enc_post_kl=10,

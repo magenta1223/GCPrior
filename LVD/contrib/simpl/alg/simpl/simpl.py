@@ -81,7 +81,7 @@ class Simpl(ToDeviceMixin, nn.Module):
         self.policy_optim = torch.optim.Adam(
             # policy.parameters(), 
             policy.prior_policy.highlevel_policy.parameters(),
-            lr=3e-6)
+            lr=policy_lr)
         self.qf_optims = [torch.optim.Adam(qf.parameters(), lr=qf_lr) for qf in qfs]
         self.encoder_optim = torch.optim.Adam(self.encoder.parameters(), lr=qf_lr)
         
