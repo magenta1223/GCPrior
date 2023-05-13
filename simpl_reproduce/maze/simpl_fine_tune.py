@@ -12,7 +12,7 @@ tasks = [ MazeTask_Custom(task)  for task in MAZE_TASKS]
 
 config = dict(
     constrained_sac=dict(auto_alpha=True, kl_clip=5,
-                         target_kl=1, increasing_alpha=True),
+                         target_kl=1, increasing_alpha=True, prior_state_dim = 4),
     buffer_size=20000,
     n_prior_episode=20,
     time_limit=2000,
