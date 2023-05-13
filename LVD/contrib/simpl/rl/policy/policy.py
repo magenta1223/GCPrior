@@ -8,7 +8,7 @@ import torch.distributions as torch_dist
 import torch.nn as nn
 import torch.nn.functional as F
 # from torch_truncnorm import TruncatedNormal
-from torch_truncnorm import TruncatedNormal
+from ....torch_truncnorm import TruncatedNormal
 
 from ...nn import MLP, ToDeviceMixin
 from ...math import inverse_softplus, inverse_sigmoid
