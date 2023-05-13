@@ -227,7 +227,7 @@ class SAC(BaseModule):
             # ---------- value prediction ---------- #
             # Q-value
             q1, q2 = [qf(high_state, step_inputs['actions'][:, t]) for qf in self.qfs]
-            q_inputs = dict(
+            target_q_inputs = dict(
                 next_states = next_states[:, t],
                 G = G,
                 q_next_states = high_next_states[:, t],
@@ -236,7 +236,7 @@ class SAC(BaseModule):
             )
             # target Q
             with torch.no_grad():
-                rwd_term, ent_term, entropy_term = self.compute_target_q(q_inputs)
+                rwd_term, ent_term, entropy_term = self.compute_target_q(target_q_inputs)
                 target_qs = rwd_term + ent_term
 
 
@@ -250,14 +250,14 @@ class SAC(BaseModule):
             high_next_state, rewards_pred = outputs['next_states'], outputs['rewards_pred']
         
             # discounted 
-            print(high_next_state.shape, high_next_states.shape)
             rho = (self.rho ** t)
             consistency_loss += rho * F.mse_loss(high_next_state, high_next_states[:, t])
             reward_loss += rho * F.mse_loss(rewards_pred, rewards[:, t])
             value_loss += rho * (F.mse_loss(q1, target_qs) + F.mse_loss(q2, target_qs))
 
+
+            rollout_high_states.append(high_state.clone().detach())
             high_state = high_next_state
-            rollout_high_states.append(high_next_state.clone().detach())
 
 
         total_loss = (consistency_loss * 2 + reward_loss * 0.5 + value_loss * 0.1) / T
@@ -341,21 +341,9 @@ class SAC(BaseModule):
             # step_inputs['batch'] = batch
             step_inputs['rewards'] = batch.rewards
             step_inputs['dones'] = batch.dones
-
-
-
             step_inputs['states'] = states
             step_inputs['next_states'] = next_states
-            # step_inputs['G'] = step_inputs['G'].unsqueeze(-1).repeat(*states.shape[:2], 1).cuda()
             step_inputs['G'] = step_inputs['G'].repeat(step_inputs['batch_size'], 1).cuda()
-
-
-            print(step_inputs['G'].shape)
-
-
-            # step_inputs['q_states'] = self.policy.prior_policy.state_encoder(states) 
-            # step_inputs['q_next_states'] = self.policy.prior_policy.state_encoder(next_states)
-
             step_inputs['raw_states'] = states
             step_inputs['raw_next_states'] = next_states
 
@@ -363,8 +351,6 @@ class SAC(BaseModule):
 
    
             step_inputs['actions'] = prep_state(batch.actions, self.device) # high-actions
-
-
 
 
         stat = {}
