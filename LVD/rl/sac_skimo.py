@@ -30,9 +30,9 @@ class SAC(BaseModule):
 
         self.policy_optim = torch.optim.Adam(
             [
-                { "params" : self.policy.prior_policy.highlevel_policy.parameters()}, # 보상최대화하는 subgoal 뽑기. 
+                { "params" : self.policy.prior_policy.highlevel_policy.parameters()},  
             ],
-            lr = self.policy_lr # 낮추면 잘 안됨. 왜? 
+            lr = self.policy_lr 
         )
 
 
@@ -220,10 +220,10 @@ class SAC(BaseModule):
         min_qs = torch.min(*[qf(step_inputs['q_states'], step_inputs['policy_actions']) for qf in self.qfs])
 
 
-        if self.alpha < 1e-12:
-            policy_loss = - min_qs.mean()
-        else:
-            policy_loss = (- min_qs + self.alpha * entropy_term).mean()
+        # if self.alpha < 1e-12:
+        #     policy_loss = - min_qs.mean()
+        # else:
+        policy_loss = (- min_qs + self.alpha * entropy_term).mean()
 
         self.policy_optim.zero_grad()
         policy_loss.backward()
@@ -271,7 +271,7 @@ class SAC(BaseModule):
         latent_state_consistency = F.mse_loss( outputs['subgoal_target'], outputs['subgoal'])
         reward_prediction = F.mse_loss( outputs['rwd_pred'], step_inputs['rewards'])
         
-        loss = latent_state_consistency + reward_prediction * 0.5
+        loss = latent_state_consistency  * 2 + reward_prediction * 0.5
         self.others_optim.zero_grad()
         loss.backward()
         self.others_optim.step()
