@@ -27,7 +27,7 @@ config = dict(
     buffer_size=20000,
     e_dim = 5,
     time_limit=4000,
-    n_epoch=1000,
+    n_epoch=500,
     train=dict(batch_size=1024, reuse_rate=256,
                n_prior_batch=4, n_post_batch=26,
                prior_enc_size=4, post_enc_size=8192)

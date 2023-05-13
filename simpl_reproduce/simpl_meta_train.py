@@ -153,6 +153,8 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--wandb-project-name')
     parser.add_argument('-r', '--wandb-run-name')
     parser.add_argument('-a', '--save_file_path')
+    parser.add_argument('--resume_weights', default= "")
+
     args = parser.parse_args()
 
     module = importlib.import_module(import_pathes[args.domain])
