@@ -332,7 +332,7 @@ class Skimo_Model(BaseModule):
         D_loss = self.loss_fn('recon')(
             self.outputs['D'],
             self.outputs['D_target']
-        )         
+        ) * 2         
         
 
         recon_state = self.loss_fn('recon')(self.outputs['states_hat'], self.outputs['states']) # ? 

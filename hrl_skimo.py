@@ -386,6 +386,9 @@ def main():
     env = env_cls()
 
     print(env)
+    
+    if args.env_name == "kitchen":
+        args.init_alpha = 0.05
 
     run_name = f"p:{args.path}_plr:{args.policy_lr}_a:{args.init_alpha}_qw:{args.q_warmup}{args.q_weight}"
 
