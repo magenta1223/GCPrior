@@ -1,6 +1,6 @@
 import argparse
 import os
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 import numpy as np
 import pandas as pd
 import torch
@@ -30,7 +30,7 @@ def process_task(weights_path, task_name):
         rwds = 0
         with env.set_task(task_obj), agent.policy.expl(), collector.low_actor.expl():
             for i in range(x):
-                episode, G = collector.collect_episode(agent.policy, verbose = False)
+                episode, G = collector.collect_episode(agent.policy)
                 # rewards.append(sum(episode.rewards))
                 rwds += sum(episode.rewards)
 

@@ -196,6 +196,8 @@ if __name__ == '__main__':
     spirl_low_policy = load['model'].skill_decoder.eval().requires_grad_(False) # skill decoder
     spirl_prior_policy = load['model'].skill_prior.prior_policy.eval().requires_grad_(False) # skill prior
 
+    config['simpl']['tanh'] = spirl_prior_policy.tanh
+
 
     print("Collecting.. \n")
     # collector

@@ -10,7 +10,7 @@ from LVD.envs.kitchen import KitchenEnv_GC, KITCHEN_META_TASKS, KitchenTask_GC
 
 # env = gym.make('simpl-kitchen-v0')
 env = KitchenEnv_GC() # goal conditioned kitchen
-train_tasks = [KitchenTask_GC(t) for t in KITCHEN_META_TASKS[:2]]
+train_tasks = [KitchenTask_GC(t) for t in KITCHEN_META_TASKS]
 config = dict(
     policy=dict(hidden_dim=128, n_hidden=5, prior_state_dim = 30,),
     qf=dict(hidden_dim=128, n_hidden=5),
@@ -24,7 +24,7 @@ config = dict(
     buffer_size=3000, # 3000
     e_dim = 6,
     time_limit=280,
-    n_epoch=300,
+    n_epoch=500,
     
     train=dict(batch_size=1024, reuse_rate=256,
                n_prior_batch=3, n_post_batch=27,

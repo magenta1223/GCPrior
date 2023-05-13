@@ -63,7 +63,7 @@ class Simpl(ToDeviceMixin, nn.Module):
                  init_enc_prior_reg, init_enc_post_reg, init_policy_prior_reg, init_policy_post_reg,
                  target_enc_prior_kl, target_enc_post_kl, target_policy_prior_kl, target_policy_post_kl,
                  kl_clip=20, policy_lr=3e-4, qf_lr=3e-4, enc_reg_lr=3e-4, policy_reg_lr=3e-4,
-                 gamma=0.99, tau=0.005, prior_state_dim = None):
+                 gamma=0.99, tau=0.005, prior_state_dim = None, tanh = False):
         super().__init__()
         
         self.policy = policy
@@ -107,6 +107,7 @@ class Simpl(ToDeviceMixin, nn.Module):
         
         self.kl_clip = kl_clip
         self.prior_state_dim = prior_state_dim
+        self.tanh = tanh
 
     def to(self, device):
         self.encoder = self.encoder.to(device)
@@ -261,7 +262,11 @@ class Simpl(ToDeviceMixin, nn.Module):
         stat['policy_loss'] = policy_loss 
         stat['rl_loss'] = rl_loss 
         stat['policy_reg_loss'] = policy_reg_loss 
-        stat['mean_policy_scale'] = dists.base_dist.scale.mean() 
+
+        if self.tanh:
+            stat['mean_policy_scale'] = dists._normal.base_dist.scale.mean() 
+        else:
+            stat['mean_policy_scale'] = dists.base_dist.scale.mean() 
         
         # update policy regularizer
         prior_kls = kls[:n_prior_batch*batch_size]
