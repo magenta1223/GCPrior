@@ -6,6 +6,7 @@ from ...data.kitchen.kitchen_data_loader import *
 MODE_DICT = {
     "ae" : Kitchen_AEDataset,
     "sc" : D4RL_StateConditionedDataset,
+    "sc_dreamer" : D4RL_StateConditionedDataset,
     "simpl" : D4RL_StateConditionedDataset,
     "sc_div" : D4RL_StateConditioned_Diversity_Dataset,
     "gc" : D4RL_GoalConditionedDataset,

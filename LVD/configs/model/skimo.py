@@ -10,5 +10,5 @@ skimo_config = edict(
     last = False,
     dynamics = True,
     dropout = 0,
-    latent_state_dim = 32,
+    latent_state_dim = 256,
 )

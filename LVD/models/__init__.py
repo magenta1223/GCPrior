@@ -11,6 +11,7 @@ from .WAE import WAE
 
 MODELS = {
     "sc" : StateConditioned_Model,
+    "sc_dreamer" : StateConditioned_Model,
     "simpl" : StateConditioned_Model,
     "gc" : GoalConditioned_Model,
     "sc_div" : StateConditioned_Diversity_Model,

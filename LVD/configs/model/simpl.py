@@ -2,7 +2,10 @@ from easydict import EasyDict as edict
 
 
 simpl_config = edict(
+    # for numerical stability of metatrain. (PEARL)
+    # ------------------- #
     tanh = False,
+    # ------------------- #
     skill_concat = False,
     subgoal_loss = "prior",
     rollout_method = "rollout",

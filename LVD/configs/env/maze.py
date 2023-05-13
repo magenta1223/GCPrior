@@ -4,11 +4,15 @@ from ...data.maze.maze_data_loader import *
 
 
 MODE_DICT = {
-    # "sc" : Maze_StateConditioned,
     "sc" : Maze_AgentCentric_StateConditioned,
+    "sc_dreamer" : Maze_AgentCentric_StateConditioned,
+    "simpl" : Maze_AgentCentric_StateConditioned,
+    "skimo" : Maze_AgentCentric_StateConditioned,
     "gc_div_joint" : Maze_AgentCentric_GoalConditioned_Diversity,
     "wae" : Maze_AEDataset
 }
+
+
 
 
 class MazeEnvConfig(BaseDataConfig):
