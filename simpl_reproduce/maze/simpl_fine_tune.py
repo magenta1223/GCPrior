@@ -16,7 +16,7 @@ config = dict(
     buffer_size=20000,
     n_prior_episode=20,
     time_limit=2000,
-    n_episode=1000,
+    n_episode=300,
     train=dict(batch_size=256, reuse_rate=256)
 )
 visualize_env = draw_maze
