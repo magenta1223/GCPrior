@@ -33,6 +33,7 @@ class Skimo_Model(BaseModule):
         dropout = 0
 
         self.joint_learn = True
+        self.gc = "gc" in self.structure
 
         state_encoder_config = edict(
             n_blocks = self.n_Layers,
@@ -129,7 +130,7 @@ class Skimo_Model(BaseModule):
 
         highlevel_policy_config = edict(
             n_blocks =  self.n_Layers,# 
-            in_feature = self.latent_state_dim + self.n_goal, # state_dim + latent_dim 
+            in_feature = self.latent_state_dim + self.n_goal if self.gc else self.latent_state_dim, # state_dim + latent_dim 
             hidden_dim = self.hidden_dim, 
             out_dim = self.latent_dim * 2,
             norm_cls = norm_cls,
@@ -138,7 +139,8 @@ class Skimo_Model(BaseModule):
             true = True,
             tanh = self.tanh,
             bias = bias,
-            dropout = dropout    ,
+            dropout = dropout,
+            gc = self.gc
         )
 
 
@@ -308,12 +310,16 @@ class Skimo_Model(BaseModule):
                 self.outputs['z_normal'],
                 tanh = self.tanh
             ).mean()
-            policy_loss = self.loss_fn('prior')(
-                self.outputs['z'],
-                self.outputs['policy_skill'], # distributions to optimize
-                self.outputs['z_normal'],
-                tanh = self.tanh
-            ).mean()
+
+            if self.gc:
+                policy_loss = self.loss_fn('prior')(
+                    self.outputs['z'],
+                    self.outputs['policy_skill'], # distributions to optimize
+                    self.outputs['z_normal'],
+                    tanh = self.tanh
+                ).mean()
+            else:
+                policy_loss = torch.tensor([0])
 
         else:
             prior = self.loss_fn('prior')(
@@ -322,11 +328,14 @@ class Skimo_Model(BaseModule):
                 tanh = self.tanh
             ).mean()
 
-            policy_loss = self.loss_fn('prior')(
-                self.outputs['z'],
-                self.outputs['policy_skill'], # distributions to optimize
-                tanh = self.tanh
-            ).mean()
+            if self.gc:
+                policy_loss = self.loss_fn('prior')(
+                    self.outputs['z'],
+                    self.outputs['policy_skill'], # distributions to optimize
+                    tanh = self.tanh
+                ).mean()
+            else:
+                policy_loss = torch.tensor([0])
 
 
         D_loss = self.loss_fn('recon')(

@@ -19,5 +19,6 @@ MODELS = {
     "gc_div_joint" : GoalConditioned_Diversity_Joint_Model,
     "gc_div_joint_gp" : GoalConditioned_GoalPrompt_Model,
     "skimo" : Skimo_Model,
+    "skimo_gc" : Skimo_Model,
     "WAE": WAE,
 }

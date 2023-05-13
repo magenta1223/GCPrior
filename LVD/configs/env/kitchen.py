@@ -14,6 +14,8 @@ MODE_DICT = {
     "gc_div_joint" : D4RL_GoalConditioned_Diversity_Dataset,
     "gc_div_joint_gp" : D4RL_GoalConditioned_Diversity_Dataset,
     "skimo" : D4RL_StateConditionedDataset,
+    "gc_skimo" : D4RL_StateConditionedDataset,
+
 }
 
 

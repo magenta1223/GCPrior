@@ -12,5 +12,6 @@ MODEL_CONFIGS = dict(
     sc_dreamer = sc_config,
     gc_div_joint = gc_div_joint_config,
     skimo = skimo_config,
+    skimo_gc = skimo_config,
     wae = wae_config
 )

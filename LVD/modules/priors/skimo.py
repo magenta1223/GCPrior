@@ -83,7 +83,10 @@ class Skimo_Prior(BaseModule):
 
 
         # -------------- High-level policy -------------- #
-        policy_skill =  self.highlevel_policy.dist(torch.cat((ht.clone().detach(), G), dim = -1))
+        if self.gc:
+            policy_skill =  self.highlevel_policy.dist(torch.cat((ht.clone().detach(), G), dim = -1))
+        else:
+            policy_skill = None
 
 
         # -------------- Rollout for metric -------------- #
@@ -134,8 +137,11 @@ class Skimo_Prior(BaseModule):
         state, G = inputs['states'], inputs['G']
         with torch.no_grad():
             ht = self.state_encoder(state)
-
-        policy_skill =  self.highlevel_policy.dist(torch.cat((ht.clone().detach(), G), dim = -1))
+        
+        if self.gc:
+            policy_skill =  self.highlevel_policy.dist(torch.cat((ht, G), dim = -1))
+        else:
+            policy_skill =  self.highlevel_policy.dist(ht)
 
 
         return dict(
@@ -152,7 +158,10 @@ class Skimo_Prior(BaseModule):
         # ht = self.state_encoder(states)
         skills = []
         for i in range(planning_horizon):
-            policy_skill =  self.highlevel_policy.dist(torch.cat((ht.clone().detach(), G), dim = -1)).sample()
+            if self.gc:
+                policy_skill =  self.highlevel_policy.dist(torch.cat((ht, G), dim = -1)).sample()
+            else:
+                policy_skill =  self.highlevel_policy.dist(ht).sample()
             dynamics_input = torch.cat((ht, policy_skill), dim = -1)
             ht = self.dynamics(dynamics_input)
             skills.append(policy_skill)
@@ -160,82 +169,6 @@ class Skimo_Prior(BaseModule):
         return dict(
             policy_skills = torch.stack(skills, dim=1)
         )
-
-
-
-
-    def __rollout2__(self, inputs):
-
-        self.state_encoder.eval()
-        self.state_decoder.eval()
-        self.prior_policy.eval()
-        self.inverse_dynamics.eval()
-        self.flat_dynamics.eval()
-        self.dynamics.eval()
-
-        states = inputs['states']
-        skill_length = states.shape[1] - 1
-        
-        N, T, _ = states.shape
-        hts = self.state_encoder(states.view(N * T, -1)).view(N, T, -1)
-        start, end = hts[:, 0], hts[:, -1]
-    
-        # get primitive skill 
-        invD_GT, _ = self.inverse_dynamics.dist(state = start, subgoal = end,  tanh = self.tanh)
-        skill = invD_GT.sample()
-        rollout_lengnth = skill_length * 5
-
-        hts_rollout, zs_rollout = [], []
-        
-        # start ! 
-        _ht = start.clone().detach()
-
-        # flat dynamics for stitching
-        for i in range(skill_length * 2):
-            # state, skill 추가 
-            hts_rollout.append(_ht)
-            zs_rollout.append(skill)
-            
-            # execute skill on latent space 
-            dynamics_input = torch.cat((_ht, skill), dim=-1)
-            diff = self.flat_dynamics(dynamics_input) 
-            _ht = _ht + diff
-
-            # sample next skill
-            if (i + 1) % self.sample_interval == 0:
-                skill = self.prior_policy.dist(_ht).sample()
-
-        # skill dynamcis for long horizon planning with reduced error accumulation 
-        for _ in range((self.plan_H - 2 * skill_length) // skill_length):
-        # for i in range(8):
-            hts_rollout.append(_ht)
-            zs_rollout.append(skill)
-            
-            # execute skill on latent space 
-            dynamics_input = torch.cat((_ht, skill), dim=-1)
-            diff = self.dynamics(dynamics_input) 
-            _ht = _ht + diff
-            skill = self.prior_policy.dist(_ht).sample()
-
-        hts_rollout.append(_ht)
-
-        hts_rollout = torch.stack(hts_rollout, dim = 1)
-        zs_rollout = torch.stack(zs_rollout, dim = 1)
-
-        N, T, _ = hts_rollout.shape
-        states_rollout = self.state_decoder( hts_rollout.view(N * T, -1) ).view(N, T, -1)
-
-
-        # 이게.. subgoal 에러누적이 거의 없어서 다른것만 필터링해서 넣어도 될 것 같거든?? 
-
-        result =  {
-            "states_rollout" : states_rollout,
-            "skills" : zs_rollout,
-            "invD_GT" : invD_GT
-        }
-
-
-        return result
 
 
     def __finetune__(self, inputs):
