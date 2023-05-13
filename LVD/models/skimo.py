@@ -140,7 +140,6 @@ class Skimo_Model(BaseModule):
             tanh = self.tanh,
             bias = bias,
             dropout = dropout,
-            gc = self.gc
         )
 
 
@@ -157,7 +156,9 @@ class Skimo_Model(BaseModule):
             state_decoder = state_decoder,
             dynamics = dynamics,
             highlevel_policy = highlevel_policy,
-            tanh = self.tanh
+            tanh = self.tanh,
+            gc = self.gc
+
         )
 
         ## skill encoder
@@ -239,7 +240,11 @@ class Skimo_Model(BaseModule):
         with torch.no_grad():
             # KL (post || state-conditioned prior)
             self.loss_dict['Prior_S']  = self.loss_fn('reg')(self.outputs['post_detach'], self.outputs['prior']).mean().item()
-            self.loss_dict['Policy_loss']  = self.loss_fn('reg')(self.outputs['post_detach'], self.outputs['policy_skill']).mean().item()
+            if self.gc:
+                self.loss_dict['Policy_loss']  = self.loss_fn('reg')(self.outputs['post_detach'], self.outputs['policy_skill']).mean().item()
+            else:
+                self.loss_dict['Policy_loss']  = 0
+                
 
             # dummy metric 
             self.loss_dict['metric'] = self.loss_dict['Prior_S']
@@ -319,7 +324,7 @@ class Skimo_Model(BaseModule):
                     tanh = self.tanh
                 ).mean()
             else:
-                policy_loss = torch.tensor([0])
+                policy_loss = torch.tensor([0]).cuda()
 
         else:
             prior = self.loss_fn('prior')(
@@ -335,7 +340,7 @@ class Skimo_Model(BaseModule):
                     tanh = self.tanh
                 ).mean()
             else:
-                policy_loss = torch.tensor([0])
+                policy_loss = torch.tensor([0]).cuda()
 
 
         D_loss = self.loss_fn('recon')(
