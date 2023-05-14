@@ -1,6 +1,6 @@
 from .kitchen import *
 from .maze import *
-
+from .carla import *
 
 RENDER_FUNCS = {
     "kitchen" : {
@@ -10,5 +10,9 @@ RENDER_FUNCS = {
     "maze" : {
         "scene" : maze_render,
         "imaginary_trajectory" : maze_imaginary_trajectory
+    },
+    "carla" : {
+        "scene" : carla_render,
+        "imaginary_trajectory" : carla_imaginary_trajectory
     }
 }

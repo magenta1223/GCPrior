@@ -211,7 +211,6 @@ if __name__ == '__main__':
         "maze_20t" : "maze",
         "kitchen" : "kitchen",
         "kitchen_ot" : "kitchen",
-
     }
 
 

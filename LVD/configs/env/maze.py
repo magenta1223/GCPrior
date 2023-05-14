@@ -1,6 +1,7 @@
 from ..base_config import BaseDataConfig
 from easydict import EasyDict as edict
-from ...data.maze.maze_data_loader import *
+# from ...data.maze.maze_data_loader import *
+from ...data import *
 
 
 MODE_DICT = {

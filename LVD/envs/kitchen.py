@@ -2,17 +2,15 @@ import numpy as np
 from d4rl.kitchen.kitchen_envs import OBS_ELEMENT_INDICES, OBS_ELEMENT_GOALS, BONUS_THRESH
 from d4rl.kitchen.adept_envs import mujoco_env
 from contextlib import contextmanager
+from ..contrib.simpl.env.kitchen import KitchenTask, KitchenEnv
 
 mujoco_env.USE_DM_CONTROL = False
 all_tasks = ['bottom burner', 'top burner', 'light switch', 'slide cabinet', 'hinge cabinet', 'microwave', 'kettle']
 
-from ..contrib.simpl.env.kitchen import KitchenTask, KitchenEnv
 
 class KitchenTask_GC(KitchenTask):
     def __repr__(self):
         return "-".join([ t[0].upper() for t in self.subtasks])
-
-
 
 class KitchenEnv_GC(KitchenEnv):
     """
@@ -54,35 +52,6 @@ class KitchenEnv_GC(KitchenEnv):
         yield
         self.task = prev_task
         self.TASK_ELEMENTS = prev_task_elements
-
-    
-
-# simpl meta train task
-# tasks = np.array(
-#     [[5,6,0,3],
-#     [5,0,1,3],
-#     [5,1,2,4],
-#     [6,0,2,4],
-#     [5,0,4,1],
-#     [6,1,2,3],
-#     [5,6,3,0],
-#     [6,2,3,0],
-#     [5,6,0,1],
-#     [5,6,3,4],
-#     [5,0,3,1],
-#     [6,0,2,1],
-#     [5,6,1,2],
-#     [5,6,2,4],
-#     [5,0,2,3],
-#     [6,0,1,2],
-#     [5,2,3,4],
-#     [5,0,1,4],
-#     [6,0,3,4],
-#     [0,1,3,2],
-#     [5,6,2,3],
-#     [6,0,1,4],
-#     [0,1,2,3]]
-# )
 
 
 # for simpl

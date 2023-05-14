@@ -1,7 +1,7 @@
 from ..base_config import BaseDataConfig
 from easydict import EasyDict as edict
-# from ...data.kitchen.kitchen_data_loader import *
-from ...data.calvin.calvin_data_loader import *
+# from ...data.calvin.calvin_data_loader import *
+from ...data import *
 
 
 MODE_DICT = {
