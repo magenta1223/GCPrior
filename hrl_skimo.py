@@ -392,9 +392,16 @@ def main():
     env_cls = ENV_TASK[args.env_name]['env_cls']
     task_cls = ENV_TASK[args.env_name]['task_cls']
     ALL_TASKS = ENV_TASK[args.env_name]['tasks']
+    configure = ENV_TASK[args.env_name]['cfg']
 
-    env = env_cls()
+    if hasattr(args, "relative") and configure is not None:
+        configure['relative'] = args.relative
 
+
+    if configure is not None:
+        env = env_cls(**configure)
+    else:
+        env = env_cls()
     print(env)
     
     if args.env_name == "kitchen":
