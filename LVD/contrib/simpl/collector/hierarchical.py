@@ -1,4 +1,5 @@
 from .storage import Episode
+from ....utils import StateProcessor
 
 
 class HierarchicalEpisode(Episode):
@@ -40,15 +41,21 @@ class HierarchicalEpisode(Episode):
 
 
 class HierarchicalTimeLimitCollector:
-    def __init__(self, env, horizon, time_limit=None, use_posterior = False):
+    def __init__(self, env, horizon, env_name, time_limit=None):
         self.env = env
         self.horizon = horizon
         self.time_limit = time_limit if time_limit is not None else np.inf
-        self.use_posterior = use_posterior
+        self.state_processor = StateProcessor(env_name)
+
+        
 
     def collect_episode(self, low_actor, high_actor):
         state, done, t = self.env.reset(), False, 0
         episode = HierarchicalEpisode(state)
+
+        G = self.state_processor.get_goals(state)
+        # state = self.state_processor.state_process(state)
+        print(f"G : {self.state_processor.goal_checker(G)}")
 
         while not done and t < self.time_limit:
             if t % self.horizon == 0:
@@ -76,10 +83,9 @@ class HierarchicalTimeLimitCollector:
 
     
 class LowFixedHierarchicalTimeLimitCollector(HierarchicalTimeLimitCollector):
-    def __init__(self, env, low_actor, horizon, time_limit=None, use_posterior = False):
-        super().__init__(env, horizon, time_limit, use_posterior)
+    def __init__(self, env, low_actor, horizon, env_name, time_limit=None):
+        super().__init__(env, horizon, env_name, time_limit)
         self.low_actor = low_actor
-        self.use_posterior = use_posterior
         
     def collect_episode(self, high_actor):
         return super().collect_episode(self.low_actor, high_actor)

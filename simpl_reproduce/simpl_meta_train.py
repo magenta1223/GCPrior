@@ -203,13 +203,24 @@ if __name__ == '__main__':
 
     config['simpl']['tanh'] = spirl_prior_policy.tanh
 
+    # env_name = args.domain if in "maze"
+
+    env_name_dict = {
+        "maze_size40" : "maze",
+        "maze_40t" : "maze",
+        "maze_20t" : "maze",
+        "kitchen" : "kitchen",
+        "kitchen_ot" : "kitchen",
+
+    }
+
 
     print("Collecting.. \n")
     # collector
     spirl_low_policy.explore = False
     print("TIME LIMIT : ", config['time_limit'] )
     collector = LowFixedHierarchicalTimeLimitCollector(
-        env, spirl_low_policy, horizon=horizon, time_limit=config['time_limit']
+        env, spirl_low_policy, horizon=horizon, env_name = env_name_dict[args.domain] ,time_limit=config['time_limit']
     )
     conc_collector = ConcurrentCollector([
         LowFixedGPUWorker(collector, gpu)
