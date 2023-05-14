@@ -188,7 +188,7 @@ class SAC(BaseModule):
         results = {}
         if self.auto_alpha is True:
             # dual gradient decent 
-            alpha_loss = (self.alpha * (self.target_kl - kl.clone().detach())).mean()
+            alpha_loss = (self.alpha * (self.target_kl - kl)).mean()
 
             if self.increasing_alpha is True:
                 alpha_loss = alpha_loss.clamp(-np.inf, 0)
