@@ -61,7 +61,7 @@ def goal_checker_kitchen(state):
     return task
 
 
-def goal_checker_maze(state, env):
+def goal_checker_maze(state):
     return (state[:2] * 1).astype(int)
 
 
@@ -224,9 +224,9 @@ class StateProcessor:
         """
         if self.env_name == "maze":
             if mode =="state":
-                return self.__goal_checkers__[self.env_name](state, env) 
+                return self.__goal_checkers__[self.env_name](state) 
             else:
-                return self.__goal_checkers__[self.env_name](state[-2:], env)
+                return self.__goal_checkers__[self.env_name](state[-2:])
 
         if mode =="state":
             return self.__goal_checkers__[self.env_name](self.__state2goals__[self.env_name](state)) 
