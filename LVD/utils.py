@@ -70,7 +70,7 @@ def get_goal_kitchen(state):
     return state[30:]
 
 def get_goal_maze(state):
-    return np.concatenate((state[-2:], [0,0]), axis = 0)
+    return state[-2:]
 
 
 def goal_transform_kitchen(state):
