@@ -151,7 +151,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
         state_dim = 30
     else:
         # state_dim =  env.observation_space.shape[0]
-        state_dim = 6
+        state_dim = 4
 
     latent_dim = 10
     
