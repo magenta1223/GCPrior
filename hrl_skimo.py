@@ -32,6 +32,7 @@ from LVD.collector.skimo import LowFixedHierarchicalTimeLimitCollector
 from LVD.collector.storage import Buffer_TT
 from LVD.rl.rl_utils import *
 from LVD.configs.env import ENV_CONFIGS
+from simpl_reproduce.maze.maze_vis import draw_maze
 
 
 seed_everything()
@@ -336,9 +337,22 @@ def train_single_task(env, env_name, tasks, task_cls, args):
             del log['tr_return']
 
             if (episode_i + 1) % args.render_period == 0:
-                imgs, reward = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh, qfs= self.qfs)
-                imgs = np.array(imgs).transpose(0, 3, 1, 2)
-                log[f'rollout'] = wandb.Video(np.array(imgs), fps=32, caption= str(reward))
+                # imgs, reward = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh, qfs= self.qfs)
+                # imgs = np.array(imgs).transpose(0, 3, 1, 2)
+                if env_name == "maze":
+                    log[f'policy_vis'] = draw_maze(plt.gca(), env, list(self.buffer.episodes)[-20:])
+                else:
+                    imgs, reward = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
+                    imgs = np.array(imgs).transpose(0, 3, 1, 2)
+                    if args.env_name == "maze":
+                        fps = 100
+                    else:
+                        fps = 50
+                    log[f'rollout'] = wandb.Video(np.array(imgs), fps=fps, caption= str(reward))
+
+                # log[f'rollout'] = wandb.Video(np.array(imgs), fps=32, caption= str(reward))
+
+
 
 
             new_log = {}
