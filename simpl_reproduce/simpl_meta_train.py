@@ -14,7 +14,7 @@ import sys
 # sys.path.append("/home/magenta1223/skill-based/SiMPL")
 
 sys.path.append("/home/magenta1223/skill-based/SiMPL/proposed")
-
+sys.path.append("/home/DH/SiMPL/GCPrior")
 
 from LVD.contrib.simpl.alg.simpl import ContextPriorResidualNormalMLPPolicy, LowFixedGPUWorker, Simpl
 from LVD.contrib.simpl.alg.pearl import SetTransformerEncoder
