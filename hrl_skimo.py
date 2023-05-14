@@ -300,7 +300,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
     # config = {'batch_size': 256, 'reuse_rate': 256, "G" : G, "project_name" : args.wandb_project_name}
     config = {'batch_size': 256, 'reuse_rate': args.reuse_rate, "project_name" : args.wandb_project_name, "precollect" : args.precollect}
 
-    task_name = "-".join([ t[0].upper() for t in tasks])
+    task_name = str(task_obj)
 
 
     # env 제한 
