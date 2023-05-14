@@ -221,10 +221,15 @@ if __name__ == '__main__':
     # task-encoder 
     encoder = SetTransformerEncoder(state_dim, high_action_dim, config['e_dim'], **config['encoder'])
     # high-level policy w/ skill-prior & skill 
+    # high_policy = ContextPriorResidualNormalMLPPolicy(
+    #     GC_prior_policy, state_dim, high_action_dim, config['e_dim'],
+    #     **config['policy']
+    # )
     high_policy = ContextPriorResidualNormalMLPPolicy(
-        GC_prior_policy, state_dim, high_action_dim, config['e_dim'],
+        spirl_prior_policy, state_dim, high_action_dim, config['e_dim'],
         **config['policy']
     )
+
     qfs = [MLPQF(state_dim+config['e_dim'], high_action_dim, **config['qf']) for _ in range(config['n_qf'])]
     print("Networks ready!\n")      
 

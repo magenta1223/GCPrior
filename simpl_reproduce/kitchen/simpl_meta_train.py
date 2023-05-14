@@ -12,19 +12,19 @@ from LVD.envs.kitchen import KitchenEnv_GC, KITCHEN_META_TASKS, KitchenTask_GC
 env = KitchenEnv_GC() # goal conditioned kitchen
 train_tasks = [KitchenTask_GC(t) for t in KITCHEN_META_TASKS[:1]]
 config = dict(
-    policy=dict(hidden_dim=128, n_hidden=5, prior_state_dim = 30, policy_exclude_dim = 60),
+    policy=dict(hidden_dim=128, n_hidden=5, prior_state_dim = 30),
     qf=dict(hidden_dim=128, n_hidden=5),
     n_qf=2,
     encoder=dict(hidden_dim=128, n_hidden=2, init_scale=1, prior_scale=1), 
-    # simpl=dict(init_enc_prior_reg=1e-3, target_enc_prior_kl=2, # task encoder와 prior간의 kl : ok
-    #            init_enc_post_reg=1e-4, target_enc_post_kl=10, # task encoder와 posterior간의 kl
-    #            init_policy_prior_reg=0.05, target_policy_prior_kl=0.1, # policy와 prior간의 kl : ok
-    #            init_policy_post_reg=0.03, target_policy_post_kl=4, kl_clip=6, prior_state_dim = 30, policy_lr = 1e-8), # policy와 posterior간의 kl 
+    simpl=dict(init_enc_prior_reg=1e-3, target_enc_prior_kl=2, # task encoder와 prior간의 kl : ok
+               init_enc_post_reg=1e-4, target_enc_post_kl=10, # task encoder와 posterior간의 kl
+               init_policy_prior_reg=0.05, target_policy_prior_kl=0.1, # policy와 prior간의 kl : ok
+               init_policy_post_reg=0.03, target_policy_post_kl=4, kl_clip=6, prior_state_dim = 30), # policy와 posterior간의 kl 
     
-    simpl=dict(init_enc_prior_reg=1e-4, target_enc_prior_kl=2, # task encoder와 prior간의 kl : ok
-            init_enc_post_reg=1e-5, target_enc_post_kl=10, # task encoder와 posterior간의 kl
-            init_policy_prior_reg=0.005, target_policy_prior_kl=0.1, # policy와 prior간의 kl : ok
-            init_policy_post_reg=0.003, target_policy_post_kl=4, kl_clip=6, prior_state_dim = 30, policy_lr = 1e-8), # policy와 posterior간의 kl 
+    # simpl=dict(init_enc_prior_reg=1e-4, target_enc_prior_kl=2, # task encoder와 prior간의 kl : ok
+    #         init_enc_post_reg=1e-5, target_enc_post_kl=10, # task encoder와 posterior간의 kl
+    #         init_policy_prior_reg=0.005, target_policy_prior_kl=0.1, # policy와 prior간의 kl : ok
+    #         init_policy_post_reg=0.003, target_policy_post_kl=4, kl_clip=6, prior_state_dim = 30, policy_lr = 1e-8), # policy와 posterior간의 kl 
     
     enc_buffer_size=3000, # 3000
     buffer_size=3000, # 3000
