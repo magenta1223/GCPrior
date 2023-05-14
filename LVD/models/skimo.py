@@ -172,7 +172,10 @@ class Skimo_Model(BaseModule):
 
         self.optimizers = {
             "skill_prior" : {
-                "optimizer" : RAdam( self.prior_policy.prior_policy.parameters(), lr = self.lr ),
+                "optimizer" : RAdam( [
+                    {"params" : self.prior_policy.prior_policy.parameters()},
+                    {"params" : self.prior_policy.highlevel_policy.parameters()}
+                ], lr = self.lr ),
                 "metric" : "Prior_S"
             }, 
             "D" : {
