@@ -8,6 +8,7 @@ MODE_DICT = {
     "sc_dreamer" : Maze_AgentCentric_StateConditioned,
     "simpl" : Maze_AgentCentric_StateConditioned,
     "skimo" : Maze_AgentCentric_StateConditioned,
+    "gc_skimo" : Maze_AgentCentric_StateConditioned,
     "gc_div_joint" : Maze_AgentCentric_GoalConditioned_Diversity,
     "wae" : Maze_AEDataset
 }
