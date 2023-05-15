@@ -334,6 +334,7 @@ def main():
     parser.add_argument("-qwu", "--q_warmup", default = 5000, type =int)
     parser.add_argument("-qwe", "--q_weight", default = 1, type =int)
     parser.add_argument("-pc", "--precollect", default = 10, type = int)
+    parser.add_argument("--ablation", action = "store_true")    
 
 
     args = parser.parse_args()
