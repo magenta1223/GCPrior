@@ -22,11 +22,11 @@ class CARLAEnvConfig(BaseDataConfig):
         config = edict(
             # DATA 
             dataset_class= MODE_DICT[structure],   
-            action_dim=9, # 3
-            state_dim=24, # 24
-            n_obj = 24, # ?
+            action_dim=2, # 3
+            state_dim=15, # 24
+            n_obj = 15, # ?
             n_env = 0, # ? 
-            n_goal = 3, # ? 
+            n_goal = 2, # ? 
             env_name="carla", 
             env_name_offline="", # 
             subseq_len = 11, 

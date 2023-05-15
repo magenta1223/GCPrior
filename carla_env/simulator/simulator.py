@@ -269,7 +269,7 @@ def calculate_reward(
             return -1, True
         return 0, False
 
-    def get_dist_reward_done():
+    def get_dist_reward_done(): # sprase reward
         dist = simulator.ego_vehicle.distance(simulator.target_location)
         return -dist, dist < 5
 

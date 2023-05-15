@@ -44,7 +44,7 @@ routes: [
 random_route: false
 carla_ip: localhost
 data_path: null
-fps: 20
+fps: 20 # 센서 데이터를 불러올 때 사용하는 fps. 
 lidar:
   upper_fov: 5.0
   lower_fov: -30.0

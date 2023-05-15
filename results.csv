@@ -3,3 +3,11 @@ maze,gc_div_joint,start:[10. 24.] end:[24. 39.],100.0 +- 0.0,100.0 +- 0.0,./weig
 maze,gc_div_joint,start:[10. 24.] end:[24. 34.],99.35 +- 1.29,99.35 +- 1.29,./weights/maze/gc_div_joint/sac/start:[10. 24.] end:[24. 34.].bin
 maze,gc_div_joint,start:[10. 24.] end:[15. 40.],100.0 +- 0.0,100.0 +- 0.0,./weights/maze/gc_div_joint/sac/start:[10. 24.] end:[15. 40.].bin
 maze,gc_div_joint,start:[10. 24.] end:[ 2. 38.],9.68 +- 2.89,9.68 +- 2.89,./weights/maze/gc_div_joint/sac/start:[10. 24.] end:[ 2. 38.].bin
+kitchen,simpl,M-K-B-S,96.77 +- 3.53,3.93 +- 0.08,./weights/kitchen/simpl/sac/M-K-B-S.bin
+kitchen,simpl,M-B-T-S,77.42 +- 4.08,3.59 +- 0.11,./weights/kitchen/simpl/sac/M-B-T-S.bin
+kitchen,simpl,K-B-L-H,43.23 +- 5.24,3.02 +- 0.16,./weights/kitchen/simpl/sac/K-B-L-H.bin
+kitchen,simpl,M-T-L-H,49.68 +- 14.51,3.04 +- 0.38,./weights/kitchen/simpl/sac/M-T-L-H.bin
+kitchen,simpl,M-K-B-T,0.0 +- 0.0,2.9 +- 0.12,./weights/kitchen/simpl/sac/M-K-B-T.bin
+kitchen,simpl,M-K-B-L,0.0 +- 0.0,2.88 +- 0.07,./weights/kitchen/simpl/sac/M-K-B-L.bin
+kitchen,simpl,K-T-L-H,1.29 +- 1.58,1.86 +- 0.07,./weights/kitchen/simpl/sac/K-T-L-H.bin
+kitchen,simpl,M-T-S-H,0.0 +- 0.0,1.74 +- 0.11,./weights/kitchen/simpl/sac/M-T-S-H.bin

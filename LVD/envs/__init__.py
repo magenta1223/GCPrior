@@ -12,10 +12,10 @@ ENV_TASK = {
         "cfg" : None 
     },
     "carla" : {
-        "env_cls" : KitchenEnv_GC,
-        "task_cls" : KitchenTask,
+        "env_cls" : CARLA_GC,
+        "task_cls" : CARLA_Task,
         "tasks"  : None,
-        "cfg" : None 
+        "cfg" : carla_config 
     },
     "maze" : {
         "env_cls" : Maze_GC,

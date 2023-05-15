@@ -25,10 +25,22 @@ if __name__ == "__main__":
 
         obs = traj['observations']['sensor']
         actions = traj['actions']
+
+
+
+        obs_z_removed = obs[:, :3]
+        for i in range(1, 7):
+            obs_z_removed = np.concatenate((obs_z_removed, obs[:, 3*i : 3*i + 2]), axis = -1).astype(np.float32)
+
+        throttle_or_brake  = actions[:,0] + actions[:,1]
+        steer = actions[:, 2]
+        actions = np.stack((throttle_or_brake, steer), axis = -1)
+
+
         dataset.append(
             dict(
-                obs = obs,
-                actions = actions
+                obs = obs_z_removed.astype(np.float32),
+                actions = actions.astype(np.float32)
             )
         )
 

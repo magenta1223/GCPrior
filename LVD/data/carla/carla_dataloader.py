@@ -82,7 +82,7 @@ class CARLA_Dataset(Dataset):
         start_idx, goal_idx = self.sample_indices(states)
         assert start_idx < goal_idx, "Invalid"
 
-        G = states[goal_idx][:2] # ? position이 어딘지 모름 
+        G = states[goal_idx][7:9] # ? position이 어딘지 모름 
 
         states = states[start_idx : start_idx + self.subseq_len]
         actions = actions[start_idx : start_idx + self.subseq_len -1]
@@ -179,7 +179,7 @@ class CARLA_Dataset_Diversity(CARLA_Dataset):
         start_idx, goal_idx = self.sample_indices(states)
         assert start_idx < goal_idx, "Invalid"
 
-        G = states[goal_idx][:2] # ? 
+        G = states[goal_idx][7:9] # ? position이 어딘지 모름 
         states = states[start_idx : start_idx + self.subseq_len]
         actions = actions[start_idx : start_idx + self.subseq_len -1]
 

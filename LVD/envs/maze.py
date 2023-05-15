@@ -98,9 +98,12 @@ class Maze_GC(MazeEnv):
             raise TypeError(f'task should be MazeTask but {type(task)} is given')
 
         prev_task = self.task
+        prev_target = self._target
+
         self.task = task
         self.set_target(task.goal_loc)
         yield
+        self._target = prev_target
         self.task = prev_task
 
     def reset_model(self):

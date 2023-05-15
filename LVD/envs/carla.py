@@ -1,15 +1,33 @@
 import numpy as np
 from contextlib import contextmanager
-from carla_env.base import BaseCarlaEnvironment
+from carla_env.simulator.simulator import *
+import carla
+from carla_env.simulator.vehicles.ego_vehicle import EgoVehicle
+from carla_env.utils.config import parse_config
+from carla_env.utils.config import ExperimentConfigs
+
+
+
+class EgoVehicle_XY(EgoVehicle):
+    def get_observation(self):
+        return {
+            "acceleration": to_array(self.acceleration),
+            "angular_velocity": to_array(self.angular_velocity)[:2],
+            "location": to_array(self.location)[:2],
+            "rotation": to_array(self.rotation)[:2],
+            "forward_vector": to_array(self.rotation.get_forward_vector())[:2],
+            "velocity": to_array(self.velocity)[:2],
+        }
+
 
 
 
 class CARLA_Task:
-    def __repr__(self):
-        return "-".join([ t[0].upper() for t in self.subtasks])
+    def __init__(self, coordinates) -> None:
+        self.target_location = carla.Location(*coordinates, 0)
 
 
-class CARLA_GC(BaseCarlaEnvironment):
+class CARLA_GC(Simulator):
     """
     Goal Conditioned Environment
     """
@@ -17,71 +35,144 @@ class CARLA_GC(BaseCarlaEnvironment):
     render_height = 400
     render_device = -1
 
-    def __init__(self, *args, **kwargs):
-        # self.TASK_ELEMENTS = ['top burner']  # for initialization
-        super().__init__(*args, **kwargs)
-        
+    def __init__(self, config: ExperimentConfigs):
+        super().__init__(config)
+        self.task = CARLA_Task([0,0])
 
-        self.task = None
-        self.TASK_ELEMENTS = None
-    
-    # def _get_task_goal(self, task=None):
-    #     if task is None:
-    #         task = self.TASK_ELEMENTS
-    #     new_goal = np.zeros_like(self.goal)
-    #     for element in task:
-    #         element_idx = OBS_ELEMENT_INDICES[element]
-    #         element_goal = OBS_ELEMENT_GOALS[element]
-    #         new_goal[element_idx] = element_goal
+    @override
+    def reset(self):
+        from carla_env.simulator.vehicles.auto_vehicle import AutoVehicle
+        from carla_env.utils.carla_sync_mode import CarlaSyncMode
 
-    #     return new_goal
+        # Destroy the auto vehicles.
+        if self.__auto_vehicles is not None:
+            for auto_vehicle in self.__auto_vehicles:
+                auto_vehicle.destroy()
+
+        # Spawn the ego vehicle.
+        if self.__ego_vehicle is None:
+            self.__ego_vehicle = None
+            while self.__ego_vehicle is None:
+                self.route_manager.select_route()
+                # observes only x and y
+                self.__ego_vehicle = EgoVehicle_XY.spawn(
+                    simulator=self,
+                    config=self.__config,
+                    initial_transform=self.route_manager.initial_transform,
+                )
+            self.__sync_mode = CarlaSyncMode(
+                self.world, self.ego_vehicle.lidar_sensor, fps=self.__fps
+            )
+        else:
+            self.route_manager.select_route()
+            self.ego_vehicle.reset()
+            self.ego_vehicle.transform = self.route_manager.initial_transform
+
+        logger.info("Vehicle starts at: %s", to_array(self.ego_vehicle.location))
+
+        # Spawn the auto vehicles.
+        if self.is_multi_agent:
+            self.__auto_vehicles = [
+                AutoVehicle.spawn(simulator=self)
+                for _ in range(self.__num_auto_vehicles)
+            ]
+
+        self.__steps = 0
+        self.__prev_reward = None
+
+        return self.step()[0]
     
     @contextmanager
     def set_task(self, task):
-        if type(task) != CARLA_GC:
-            raise TypeError(f'task should be KitchenTask but {type(task)} is given')
+        if type(task) != CARLA_Task:
+            raise TypeError(f'task should be CARLA_Task but {type(task)} is given')
 
         prev_task = self.task
-        prev_task_elements = self.TASK_ELEMENTS
+
         self.task = task
-        self.TASK_ELEMENTS = task.subtasks
-        
         yield
         self.task = prev_task
-        self.TASK_ELEMENTS = prev_task_elements
 
 
     def reset(self):
         return super().reset()
 
 
-    def step(self, action = None, traffic_light_color = ""):
-        
-        rewards = []
+    @override
+    def step(self, action: Optional[np.ndarray] = None):
+        self.__steps += 1
 
-        next_obs, done, info = None, None, None
-        for _ in range(self.config.frame_skip):  # default 1
-            next_obs, reward, done, info = self._simulator_step(
-                action, traffic_light_color
+        if action is not None:
+            acc = float(action[0])
+            throttle = max(acc, 0)
+            brake = -min(acc, 0)
+            steer = float(action[1])
+            brake = brake if brake > 0.01 else 0
+        else:
+            throttle = 0
+            brake = 0
+            steer = 0
+
+        self.ego_vehicle.apply_control(
+            carla.VehicleControl(
+                throttle=throttle,
+                brake=brake,
+                steer=steer,
+                hand_brake=False,
+                reverse=False,
+                manual_gear_shift=False,
+                gear=0,
             )
-            rewards.append(reward)
+        )
 
-            if done:
-                break
-
-        if next_obs is None or done is None or info is None:
-            raise ValueError("frame_skip >= 1")
-        return next_obs, np.mean(rewards), done, info
-
-    def _simulator_step(self, action = None, traffic_light_color = None):
-        # goal 과 얼마나 가까운지?
-        next_obs = self.sim.step(action)
-        reward = self.goal_reaching_reward()
-        done = info = None
-        return  next_obs, reward, done, info
+        _, lidar_sensor = self.__sync_mode.tick(timeout=10)
 
 
-    
+        reward, reward_dict, done_dict = calculate_reward(self, self.__prev_reward)
+        self.__prev_reward = reward_dict
+        next_observation = {
+            "control": np.array([throttle, brake, steer]),
+            **self.ego_vehicle.get_observation(),
+            # "target_location": to_array(self.route_manager.target_transform.location),
+            "target_location": to_array(self.target_location),
+
+        }
+        info = {
+            "reward": reward_dict,
+            "total_reward": reward,
+            "done": done_dict,
+            "control_repeat": self.config.frame_skip,
+            "weather": self.config.weather,
+            "settings_map": self.world.map.name,
+            "settings_multiagent": self.config.multiagent,
+            "traffic_lights_color": "UNLABELED",
+        }
+        done = any(done_dict.values())
+
+        if self.steps % 50 == 0 or done:
+            logger.info("Step: %s", self.steps)
+            logger.info("Vehicle: %s", next_observation["location"])
+            logger.info("Target: %s", next_observation["target_location"])
+            logger.info("Reward: %s (%s)", reward, reward_dict)
+            logger.info(
+                "Done: %s",
+                next(filter(lambda x: x[1], done_dict.items()))[0] if done else False,
+            )
+
+        if done_dict["reached_max_steps"]:
+            logger.warning("Episode reached max steps. Terminating episode.")
+
+        return np.hstack(list(next_observation.values())), reward, done, info
+
+
+    @property
+    def target_location(self):
+        return self.task.target_location
+
+
+carla_config = parse_config("./configs/data_collecting.yaml")
+
+
 
 # for simpl
 meta_train_tasks = np.array([

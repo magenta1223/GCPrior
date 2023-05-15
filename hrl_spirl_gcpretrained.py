@@ -344,14 +344,17 @@ def main():
     ALL_TASKS = ENV_TASK[args.env_name]['tasks']
     configure = ENV_TASK[args.env_name]['cfg']
 
-    if hasattr(args, "relative") and configure is not None:
-        configure['relative'] = args.relative
+    # if hasattr(args, "relative") and configure is not None:
+    #     configure['relative'] = args.relative
 
 
-    if configure is not None:
-        env = env_cls(**configure)
+    if args.env_name == "carla":
+        env = env_cls(configure)
     else:
-        env = env_cls()
+        if configure is not None:
+            env = env_cls(**configure)
+        else:
+            env = env_cls()
 
     run_name = f"p:{args.path}_plr:{args.policy_lr}_a:{args.init_alpha}_qw:{args.q_warmup}{args.q_weight}"
 
