@@ -18,7 +18,8 @@ import os
 # sys.path.append("/home/magenta1223/skill-based/SiMPL/proposed")
 # sys.path.append("/home/magenta1223/skill-based/SiMPL")
 
-from .maze.maze_vis import draw_maze
+# from .maze.maze_vis import draw_maze
+from simpl_reproduce.maze.maze_vis import draw_maze
 
 def render_task(env, policy, low_actor):
     imgs = []
