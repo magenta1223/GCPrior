@@ -23,8 +23,8 @@ class CARLAEnvConfig(BaseDataConfig):
             # DATA 
             dataset_class= MODE_DICT[structure],   
             action_dim=2, # 3
-            state_dim=15, # 24
-            n_obj = 15, # ?
+            state_dim=17, # 24
+            n_obj = 17, # ?
             n_env = 0, # ? 
             n_goal = 2, # ? 
             env_name="carla", 
@@ -58,13 +58,13 @@ class CARLAEnvConfig(BaseDataConfig):
             target_kl_start  = 50, # orig 1 
             target_kl_end = 15, # orig 1 
             init_alpha = 0.005,
-            only_increase = True,
-            auto_alpha = False,
+            only_increase = False,
+            auto_alpha = True,
             reuse_rate = 512,
             q_warmup = 5000,
             q_weight = 1, 
             precollect = 20,
-            early_stop_threshold = 0.8,
+            early_stop_threshold = 80,
             use_hidden= True,
             finetune = True,
             n_episode = 300,
@@ -75,11 +75,18 @@ class CARLAEnvConfig(BaseDataConfig):
             relative = False,
             robotics = True,
 
+            mode = "",
+
+            max_reward = 100,
+
 
             # etc.
             res=128,
 
         )
+
+        if config['mode'] is not None:
+            config['action_dim'] = 3
             
         self.set_attrs(config)
         self.name = "CARLA Environment Configuration"

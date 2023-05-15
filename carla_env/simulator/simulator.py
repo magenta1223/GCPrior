@@ -60,7 +60,6 @@ class Simulator(gym.Env[dict, np.ndarray]):
             }
         )
 
-    @override
     def reset(self):
         from carla_env.simulator.vehicles.auto_vehicle import AutoVehicle
         from carla_env.simulator.vehicles.ego_vehicle import EgoVehicle
@@ -105,7 +104,6 @@ class Simulator(gym.Env[dict, np.ndarray]):
 
         return self.step()[0]
 
-    @override
     def step(self, action: Optional[np.ndarray] = None):
         self.__steps += 1
 
@@ -141,12 +139,20 @@ class Simulator(gym.Env[dict, np.ndarray]):
 
         reward, reward_dict, done_dict = calculate_reward(self, self.__prev_reward)
         self.__prev_reward = reward_dict
+
+    
         next_observation = {
             "lidar": np.array(lidar_bin),
             "control": np.array([throttle, brake, steer]),
             **self.ego_vehicle.get_observation(),
             "target_location": to_array(self.route_manager.target_transform.location),
         }
+    
+        for k, v in next_observation.items():
+            print(k, v.shape)
+        assert 1==0, "DOPne!"
+
+        
         info = {
             "reward": reward_dict,
             "total_reward": reward,

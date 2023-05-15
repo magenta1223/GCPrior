@@ -105,6 +105,7 @@ class MazeEnvConfig(BaseDataConfig):
 
             # etc.
             res=128,
+            max_reward = 100,
 
 
         )

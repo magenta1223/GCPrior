@@ -14,7 +14,7 @@ ENV_TASK = {
     "carla" : {
         "env_cls" : CARLA_GC,
         "task_cls" : CARLA_Task,
-        "tasks"  : None,
+        "tasks"  : CARLA_TASKS,
         "cfg" : carla_config 
     },
     "maze" : {

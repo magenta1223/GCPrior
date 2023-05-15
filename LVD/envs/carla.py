@@ -8,39 +8,48 @@ from carla_env.utils.config import ExperimentConfigs
 
 
 
-class Location(carla.Location):
-    def __init__(self, transform : carla.Transform, name = None, *args, **kwargs):
-        self.__init_data__ = np.array([transform.location.x, transform.location.y, transform.location.z])
-        self.name = name
-        super().__init__( *self.__init_data__  )
+# class Location(carla.Location):
+#     def __init__(self, position = None, transform = None, name = None, *args, **kwargs):
         
-    def __array__(self):
-        loc = np.array([self.x, self.y, self.z])    
-        # if np.array_equal(loc, self.__init_data__):
-            # print("SMAE !! ")
-        return loc
-    def __repr__(self):
+#         assert position is not None or transform is not None, "No input"
+#         assert position is None or transform is None, "Input duplicated"
+        
+#         if position is not None:
+#             self.__init_data__ = position
+#             self.name = name
+#         else:
+#             # here?
+#             self.__init_data__ = np.array([transform.location.x, transform.location.y, transform.location.z])
+#             self.name = name
+#         super().__init__( *self.__init_data__  )
+        
+#     def __array__(self):
+#         loc = np.array([self.x, self.y, self.z])    
+#         # if np.array_equal(loc, self.__init_data__):
+#             # print("SMAE !! ")
+#         return loc
+#     def __repr__(self):
 
-        if self.name is not None:
-            return f"{self.name} {np.array(self).round(2)}"
-        else:
-            return f"CARLA LOCS {np.array(self).round(2)}"
+#         if self.name is not None:
+#             return f"{self.name} {np.array(self).round(2)}"
+#         else:
+#             return f"CARLA LOCS {np.array(self).round(2)}"
 
-class EgoVehicle_XY(EgoVehicle):
-    def get_observation(self):
-        return {
-            "acceleration": to_array(self.acceleration)[:2],
-            "angular_velocity": to_array(self.angular_velocity)[2],
-            "location": to_array(self.location)[:2],
-            "rotation": to_array(self.rotation)[2],
-            # "forward_vector": to_array(self.rotation.get_forward_vector())[:2],
-            "velocity": to_array(self.velocity)[:2],
-        }
+# class EgoVehicle_XY(EgoVehicle):
+#     def get_observation(self):
+#         return {
+#             "acceleration": to_array(self.acceleration)[:2],
+#             "angular_velocity": to_array(self.angular_velocity)[2],
+#             "location": to_array(self.location)[:2],
+#             "rotation": to_array(self.rotation)[2],
+#             # "forward_vector": to_array(self.rotation.get_forward_vector())[:2],
+#             "velocity": to_array(self.velocity)[:2],
+#         }
 
 
 class CARLA_Task:
-    def __init__(self, coordinates) -> None:
-        self.target_location = Location(*coordinates, 0)
+    def __init__(self, transform):
+        self.target_location = transform.location
 
 
 class CARLA_GC(Simulator):
@@ -51,39 +60,115 @@ class CARLA_GC(Simulator):
     render_height = 400
     render_device = -1
 
-    def __init__(self, config: ExperimentConfigs):
-        super().__init__(config)
-        self.task = CARLA_Task([0,0])
+    def __str__(self):
+        return ""
 
-    @override
+    def __repr__(self):
+        return ""
+
+    def __init__(self, config: ExperimentConfigs):
+        from carla_env.simulator.client import Client
+        from carla_env.simulator.route_manager import RouteManager
+        from carla_env.simulator.vehicles.auto_vehicle import AutoVehicle
+        from carla_env.simulator.vehicles.ego_vehicle import EgoVehicle
+
+        # super().__init__(config)
+
+        self.__config = config
+
+        self.__client = Client(self, config.carla_ip, 2000 - config.num_routes * 5)
+
+        self.__world = self.__client.world
+        self.__world.weather = getattr(carla.WeatherParameters, config.weather)
+        self.__fps = config.fps
+
+        self.__route_manager = RouteManager(world=self.__world, config=config)
+
+        self.__is_multi_agent = config.multiagent
+        self.__num_auto_vehicles = config.num_vehicles
+
+        self.__auto_vehicles: Optional[List[AutoVehicle]] = None
+        self.__ego_vehicle: Optional[EgoVehicle] = None
+
+        self.__visualizer = None
+
+        self.action_space = gym.spaces.Box(shape=(2,), low=-1, high=1)
+        self.observation_space = gym.spaces.Dict(
+            {
+                "sensor": gym.spaces.Box(
+                    shape=(config.lidar.num_theta_bin + 24,), low=-1, high=1
+                ),
+                "image": gym.spaces.Box(
+                    shape=(224, 224, 3), low=0, high=255, dtype=np.uint8
+                ),
+            }
+        )
+
+
+
+        self.task = CARLA_Task(to_carla_transform([0. ,0. ,0. ,0. ,0. ,0. ]))
+        # self.initial_loc = carla.Location(*[0,0,0])
+
+        # init_point = np.array([  32.04544449,   13.27302933,    0.59999996, 0.0, -179.84078979,    0.0 ])
+        # self.init_transform = to_carla_transform(init_point)
+
+    @contextmanager
+    def set_task(self, task):
+        if type(task) != CARLA_Task:
+            raise TypeError(f'task should be CARLA_Task but {type(task)} is given')
+
+        prev_task = self.task
+        # prev_init_loc = self.init_transform
+
+        self.task = task
+        # self.initial_loc =  carla.Transform()
+
+        yield
+
+        # self.initial_loc = prev_init_loc
+        self.task = prev_task
+
+
     def reset(self):
         from carla_env.simulator.vehicles.auto_vehicle import AutoVehicle
+        from carla_env.simulator.vehicles.ego_vehicle import EgoVehicle
         from carla_env.utils.carla_sync_mode import CarlaSyncMode
+        from carla_env.simulator.visualizer import Visualizer
 
         # Destroy the auto vehicles.
         if self.__auto_vehicles is not None:
             for auto_vehicle in self.__auto_vehicles:
                 auto_vehicle.destroy()
 
+
         # Spawn the ego vehicle.
         if self.__ego_vehicle is None:
             self.__ego_vehicle = None
             while self.__ego_vehicle is None:
                 self.route_manager.select_route()
-                # observes only x and y
-                self.__ego_vehicle = EgoVehicle_XY.spawn(
+                self.__ego_vehicle = EgoVehicle.spawn(
                     simulator=self,
                     config=self.__config,
                     initial_transform=self.route_manager.initial_transform,
+                    # initial_transform=self.init_transform,
+
                 )
             self.__sync_mode = CarlaSyncMode(
                 self.world, self.ego_vehicle.lidar_sensor, fps=self.__fps
             )
+            self.__visualizer = Visualizer(self, self.config)
         else:
+            # print(self.route_manager.initial_transform)
             self.route_manager.select_route()
             self.ego_vehicle.reset()
             self.ego_vehicle.transform = self.route_manager.initial_transform
+            # self.ego_vehicle.transform = self.init_transform
+            # self.ego_vehicle.location = self.initial_loc.location
 
+            # self.ego_vehicle.set_transform(self.initial_loc)
+
+        
+        print("Vehicle starts at: %s", to_array(self.ego_vehicle.location))
         logger.info("Vehicle starts at: %s", to_array(self.ego_vehicle.location))
 
         # Spawn the auto vehicles.
@@ -97,25 +182,9 @@ class CARLA_GC(Simulator):
         self.__prev_reward = None
 
         return self.step()[0]
-    
-    @contextmanager
-    def set_task(self, task):
-        if type(task) != CARLA_Task:
-            raise TypeError(f'task should be CARLA_Task but {type(task)} is given')
 
-        prev_task = self.task
-
-        self.task = task
-        yield
-        self.task = prev_task
-
-
-    def reset(self):
-        return super().reset()
-
-
-    @override
     def step(self, action: Optional[np.ndarray] = None):
+        # print(self.target_location)
         self.__steps += 1
 
         if action is not None:
@@ -144,11 +213,13 @@ class CARLA_GC(Simulator):
         _, lidar_sensor = self.__sync_mode.tick(timeout=10)
 
 
+        vehicle_obs = self.ego_vehicle.get_observation()
+
         reward, reward_dict, done_dict = calculate_reward(self, self.__prev_reward)
         self.__prev_reward = reward_dict
         next_observation = {
             "control": np.array([throttle, brake, steer]),
-            **self.ego_vehicle.get_observation(),
+            **vehicle_obs,
             # "target_location": to_array(self.route_manager.target_transform.location),
             "target_location": to_array(self.target_location),
 
@@ -163,6 +234,10 @@ class CARLA_GC(Simulator):
             "settings_multiagent": self.config.multiagent,
             "traffic_lights_color": "UNLABELED",
         }
+        # done = any(done_dict.values())
+
+        del done_dict['lane_collided_done']
+
         done = any(done_dict.values())
 
         if self.steps % 50 == 0 or done:
@@ -178,15 +253,103 @@ class CARLA_GC(Simulator):
         if done_dict["reached_max_steps"]:
             logger.warning("Episode reached max steps. Terminating episode.")
 
+        
+        if done_dict['dist_done']:
+            reward = 100
+        else:
+            reward = 0
+
+        # dist = self.ego_vehicle.distance(self.target_location)
+
+
+        # print(to_array(self.ego_vehicle.location).round(2), to_array(self.ego_vehicle.location).round(2))
+    
+        
+        # vehicle_loc = to_array(self.ego_vehicle.location).round(2)
+        # target_loc = to_array(self.target_location).round(2)
+        
+        info['vehicle_loc'] = to_array(self.ego_vehicle.location).round(2)
+        info['target_loc'] = to_array(self.target_location).round(2)
+        info['vel'] = np.linalg.norm(vehicle_obs['velocity'])
+
+
+
         return np.hstack(list(next_observation.values())), reward, done, info
 
 
     @property
     def target_location(self):
-        return self.task.target_location
+        # return self.task.target_location
+        return self.route_manager.target_transform
+
+    @property
+    def client(self):
+        """The client of the simulator."""
+        return self.__client
+
+    @property
+    def world(self):
+        """The world of the simulator."""
+        return self.__world
+
+    @property
+    def route_manager(self):
+        """The route manager of the simulator."""
+        return self.__route_manager
+
+    @property
+    def ego_vehicle(self):
+        """The ego vehicle of the simulator."""
+        if not self.__ego_vehicle:
+            raise ValueError("Ego vehicle is not initialized. Call reset() first.")
+        return self.__ego_vehicle
+
+    @property
+    def vehicle_location(self):
+        """The location of the ego vehicle."""
+        return self.ego_vehicle.location
+
+    @property
+    def target_location(self):
+        """The target location of the ego vehicle."""
+        return self.route_manager.target_transform.location
+
+    @property
+    def is_multi_agent(self):
+        """Whether the simulator is multi-agent."""
+        return self.__is_multi_agent
+
+    @property
+    def num_auto_vehicles(self):
+        """The number of vehicles. If the simulator is not multi-agent, this value is
+        0."""
+        return self.__num_auto_vehicles if self.is_multi_agent else 0
+
+    @property
+    def auto_vehicles(self):
+        """The auto vehicles of the simulator."""
+        if self.is_multi_agent and not self.__auto_vehicles:
+            raise ValueError("Auto vehicles are not initialized. Call reset() first.")
+        return self.__auto_vehicles
+
+    @property
+    def fps(self):
+        """The fps of the simulator."""
+        return self.__fps
+
+    @property
+    def steps(self):
+        """The number of steps."""
+        return self.__steps
+
+    @property
+    def config(self):
+        """The config of the simulator."""
+        return self.__config
 
 
-carla_config = parse_config("./configs/data_collecting.yaml")
+
+carla_config = parse_config("./configs/learning.yaml")
 
 
 
@@ -218,11 +381,26 @@ meta_train_tasks = np.array([
 ])
 
 
-tasks = np.array([115, 144, 105, 76, 32, 30, 28, 137, 108, 106, 120])
+# tasks = np.array([115, 144, 105, 76, 32, 30, 28, 137, 108, 106, 120])
 
+
+tasks = np.array([86, 79, 2, 120, 4])
+
+# tasks = [99]
+
+
+spawn_points = np.load("./LVD/data/carla/spawn_points.npy")
 
 # kitchen_subtasks = np.array(['bottom burner', 'top burner', 'light switch', 'slide cabinet', 'hinge cabinet', 'microwave', 'kettle'])
 # KITCHEN_TASKS = kitchen_subtasks[tasks]
 # KITCHEN_META_TASKS = kitchen_subtasks[meta_train_tasks]
 
-CARLA_TASKS = None
+
+
+def to_carla_transform(p):
+    loc, rot = carla.Location(*p[:3]), carla.Rotation(*p[3:])
+    return carla.Transform(loc, rot)
+
+
+# CARLA_TASKS = [  CARLA_Task( Location(position = t))   for t in spawn_points[tasks]]
+CARLA_META_TASKS = CARLA_TASKS = [  to_carla_transform(p)  for p in spawn_points[tasks]]

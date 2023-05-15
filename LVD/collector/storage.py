@@ -134,7 +134,7 @@ class Buffer_TT(Buffer):
         elif self.ptr + len(transitions) -1 < 2*self.max_size:
             # 잘라서 앞에넣고 뒤에넣고
             self.transitions[self.ptr:] = transitions[:self.max_size-self.ptr]
-            self.transitions[:len(transitions)-1-self.max_size+self.ptr] = transitions[self.max_size-self.ptr:]
+            self.transitions[:len(transitions)-self.max_size+self.ptr] = transitions[self.max_size-self.ptr:]
         else:
             raise NotImplementedError
 

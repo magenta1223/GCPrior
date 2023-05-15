@@ -1,6 +1,6 @@
 from .storage import Episode
 from ....utils import StateProcessor
-
+import numpy as np
 
 class HierarchicalEpisode(Episode):
     def __init__(self, init_state):

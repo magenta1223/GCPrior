@@ -25,8 +25,14 @@ def parse_pkl(file_path):
 class CARLA_Dataset(Dataset):
     SPLIT = edict(train=0.99, val=0.01, test=0.0)
     def __init__(self, data_dir, data_conf, phase, resolution=None, shuffle=True, dataset_size=-1, *args, **kwargs):
-        with open("./LVD/data/carla/carla_dataset.pkl", mode ="rb") as f:
+        
+        
+        mode = kwargs.get("mode", "_action_integrated")
+        
+        with open(f"./LVD/data/carla/carla_dataset{mode}.pkl", mode ="rb") as f:
             self.seqs = pickle.load(f)
+
+        
 
         self.n_seqs = len(self.seqs)
         self.phase = phase
@@ -82,7 +88,7 @@ class CARLA_Dataset(Dataset):
         start_idx, goal_idx = self.sample_indices(states)
         assert start_idx < goal_idx, "Invalid"
 
-        G = states[goal_idx][7:9] # ? position이 어딘지 모름 
+        G = states[goal_idx][12:14] # ? position이 어딘지 모름 
 
         states = states[start_idx : start_idx + self.subseq_len]
         actions = actions[start_idx : start_idx + self.subseq_len -1]
@@ -179,7 +185,7 @@ class CARLA_Dataset_Diversity(CARLA_Dataset):
         start_idx, goal_idx = self.sample_indices(states)
         assert start_idx < goal_idx, "Invalid"
 
-        G = states[goal_idx][7:9] # ? position이 어딘지 모름 
+        G = states[goal_idx][12:14] # ? position이 어딘지 모름 
         states = states[start_idx : start_idx + self.subseq_len]
         actions = actions[start_idx : start_idx + self.subseq_len -1]
 

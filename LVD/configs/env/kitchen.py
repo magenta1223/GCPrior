@@ -81,6 +81,8 @@ class KitchenEnvConfig(BaseDataConfig):
             relative = False,
             robotics = True,
 
+            max_reward = 4,
+
 
             # etc.
             res=128,

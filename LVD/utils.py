@@ -32,7 +32,8 @@ def seed_everything(seed: int = 42):
     # torch.use_deterministic_algorithms(True)
 
 
-# --------------------------- Env-Model IO --------------------------- #
+
+# --------------------------- Env, Model Utils --------------------------- #
 
 def prep_state(states, device):
     if isinstance(states, np.ndarray):
@@ -45,6 +46,7 @@ def prep_state(states, device):
     return states
     
 
+## ------- goal checker ------- ## 
 
 def goal_checker_kitchen(state):
     achieved_goal = []
@@ -64,6 +66,10 @@ def goal_checker_kitchen(state):
 def goal_checker_maze(state):
     return (state[:2] * 1).astype(int)
 
+def goal_checker_calvin():
+    return 
+
+## ------- get goal state from state ------- ## 
 
 
 def get_goal_kitchen(state):
@@ -71,6 +77,15 @@ def get_goal_kitchen(state):
 
 def get_goal_maze(state):
     return state[-2:]
+
+def get_goal_calvin():
+    return 
+
+
+def get_goal_carla(state):
+    return state[-3 :-1] # only x, y
+
+## ------- s ------- ## 
 
 
 def goal_transform_kitchen(state):
@@ -81,6 +96,15 @@ def goal_transform_kitchen(state):
 def goal_transform_maze(state):
     return state[:2]
 
+def goal_transform_calvin():
+    return 
+
+def goal_transform_carla(state):
+    return state[12 :14]
+
+## ------- env state -> obs ------- ## 
+
+
 def state_process_kitchen(state):
     return state[:30]
 
@@ -88,15 +112,14 @@ def state_process_maze(state):
     return state[:-2]
 
 
-def get_goal_calvin():
-    return 
 def state_process_calvin():
     return 
 
-def goal_transform_calvin():
-    return 
-def goal_checker_calvin():
-    return 
+def state_process_carla(state):
+    return np.concatenate((state[:14], state[15:-6]), axis = -1)
+
+
+
 
 # --------------------------- Distribution --------------------------- #
 
@@ -189,21 +212,27 @@ class StateProcessor:
 
         self.__get_goals__ = {
             "kitchen" : get_goal_kitchen,
-            "maze"    : get_goal_maze
+            "maze"    : get_goal_maze,
+            "carla" : get_goal_carla
         }
 
         self.__goal_checkers__ = {
             "kitchen" : goal_checker_kitchen,
-            "maze"  : goal_checker_maze
+            "maze"  : goal_checker_maze,
+            "carla" : goal_transform_carla
+
         }
 
         self.__state2goals__ = {
             "kitchen" : goal_transform_kitchen,
-            "maze"  : goal_transform_maze
+            "maze"  : goal_transform_maze,
+            "carla"  : goal_transform_carla,
+
         }
         self.__state_processors__ = {
             "kitchen" : state_process_kitchen,
-            "maze"  : state_process_maze         
+            "maze"  : state_process_maze,
+            "carla" : state_process_carla
         }
 
     def get_goals(self, state):

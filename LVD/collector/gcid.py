@@ -83,13 +83,18 @@ class HierarchicalTimeLimitCollector:
 
                 episode.add_step(low_action, data_high_action, state, reward, data_done, info)
             t += 1
-
+            
                 
     
         # print(GOAL_CHECKERS[self.env_name](STATE_PROCESSOR[self.env_name] (state)))
         if verbose:
             print( self.state_processor.state_goal_checker(state, self.env)  )
+        
+        # print(np.array(episode.actions)[:, 0].mean())
+        print(np.mean([info['vel'] for info in episode.infos]))
 
+
+    
 
         return episode, torch.tensor(G, dtype = torch.float32).unsqueeze(0)
 

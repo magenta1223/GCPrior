@@ -43,6 +43,9 @@ seed_everything()
 
 
 
+
+
+
 def render_task(env, env_name, policy, low_actor, tanh):
     imgs = []
     state = env.reset()
@@ -81,7 +84,7 @@ def render_task(env, env_name, policy, low_actor, tanh):
 
 
 
-def train_policy_iter(collector, trainer, episode_i, batch_size, reuse_rate, project_name, precollect):
+def train_policy_iter(collector, trainer, episode_i, batch_size, reuse_rate, project_name, precollect, max_reward):
     # ------------- Initialize log ------------- #
     log = {}
 
@@ -89,7 +92,9 @@ def train_policy_iter(collector, trainer, episode_i, batch_size, reuse_rate, pro
     with trainer.policy.expl(), collector.low_actor.expl() : #, collector.env.step_render():
         episode, G = collector.collect_episode(trainer.policy)
 
-    if np.array(episode.dones).sum() != 0: # success 
+    print(np.array(episode.rewards).sum(), max_reward)
+
+    if np.array(episode.rewards).sum() == max_reward: # success 
         print("success")
 
     trainer.buffer.enqueue(episode.as_high_episode()) 
@@ -146,10 +151,16 @@ def train_single_task(env, env_name, task, task_cls, args):
     buffer_size = 20000
     n_episode = args.n_episode
     # state_dim = env.observation_space.shape[0]
-    if env_name == "kitchen":
-        state_dim = 30
-    else:
-        state_dim =  4 # 4 + image 
+    # if env_name == "kitchen":
+    #     state_dim = 30
+    # else:
+    #     state_dim =  4 # 4 + image 
+
+    # print(args.state_dim)
+    state_dim = args.state_dim
+
+    
+
 
     latent_dim = 10
     try:
@@ -259,7 +270,7 @@ def train_single_task(env, env_name, task, task_cls, args):
 
 
     # config = {'batch_size': 256, 'reuse_rate': 256, "G" : G, "project_name" : args.wandb_project_name}
-    config = {'batch_size': 256, 'reuse_rate': args.reuse_rate, "project_name" : args.wandb_project_name, "precollect" : args.precollect}
+    config = {'batch_size': 256, 'reuse_rate': args.reuse_rate, "project_name" : args.wandb_project_name, "precollect" : args.precollect, "max_reward" : args.max_reward}
 
     task_name = str(task_obj)
 
@@ -271,9 +282,9 @@ def train_single_task(env, env_name, task, task_cls, args):
 
     torch.save({
         "model" : self,
-        "collector" : collector,
-        "task" : task_obj,
-        "env" : env,
+        # "collector" : collector if env_name != "carla" else None,
+        # "task" : task_obj if env_name != "carla" else np.array(task_obj),
+        # "env" : env if env_name != "carla" else None,
     }, f"{weights_path}/{task_name}.bin")   
 
     # ------------- Train RL ------------- #
@@ -303,7 +314,7 @@ def train_single_task(env, env_name, task, task_cls, args):
             if (episode_i + 1) % args.render_period == 0:
                 if env_name == "maze":
                     log[f'policy_vis'] = draw_maze(plt.gca(), env, list(self.buffer.episodes)[-20:])
-                else:
+                elif env_name == "kitchen":
                     imgs = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
                     imgs = np.array(imgs).transpose(0, 3, 1, 2)
                     if args.env_name == "maze":
@@ -315,15 +326,11 @@ def train_single_task(env, env_name, task, task_cls, args):
                 # check success rate by 20 rollout 
                 with self.policy.expl(), collector.low_actor.expl() : #, collector.env.step_render():
                     episode, G = collector.collect_episode(self.policy)
-
-                if np.array(episode.dones).sum() != 0: # success 
+                
+                if np.array(episode.rewards).sum() == args.max_reward: # success 
                     print("success")
 
 
-                # imgs = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
-                # imgs = np.array(imgs).transpose(0, 3, 1, 2)
-                # log[f'{task_name}_rollout'] = wandb.Video(np.array(imgs), fps=32)
-            
             new_log = {}
             for k, v in log.items():
                 new_log[f"{task_name}/{k}"] = v
@@ -346,9 +353,9 @@ def train_single_task(env, env_name, task, task_cls, args):
     
     torch.save({
         "model" : self,
-        "collector" : collector,
-        "task" : task_obj,
-        "env" : env,
+        # "collector" : collector if env_name != "carla" else None,
+        # "task" : task_obj if env_name != "carla" else np.array(task_obj),
+        # "env" : env if env_name != "carla" else None,
     }, f"{weights_path}/{task_name}.bin")      
 
 

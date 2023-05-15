@@ -1,0 +1,43 @@
+vision_size: 224
+vision_fov: 90
+weather: ClearNoon
+frame_skip: 1
+max_steps: 3000
+multiagent: false
+num_vehicles: 10
+lane: 0
+lights: false
+num_routes: 0
+vehicle_type: audi.a2
+mode: ours
+routes: [
+
+  # 86, 79, 2, 120, 4
+  # circulations
+  # left-up
+  [89, 126],
+  # [99, 79],
+  # [99, 2],
+  # [99, 120],
+  # [99, 4],
+
+
+]
+random_route: false
+carla_ip: localhost
+data_path: null
+fps: 20 # 센서 데이터를 불러올 때 사용하는 fps. 
+lidar:
+  upper_fov: 5.0
+  lower_fov: -30.0
+  rotation_frequency: 20.0
+  max_range: 20.0
+  num_theta_bin: 80
+  dropoff_general_rate: 0.1
+  dropoff_intensity_limit: 0.2
+  dropoff_zero_intensity: 0.2
+  points_per_second: 120_000
+visual:
+  draw_path: True
+  draw_velocity: True
+max_total_steps: 1_000_000
