@@ -117,7 +117,7 @@ def train_policy_iter(collector, trainer, episode_i, batch_size, reuse_rate, pro
         print("Warmup Value function")
         trainer.warmup_Q(step_inputs)
 
-
+    print(n_step)
     for i in range(max(n_step, 1)):
         step_inputs = dict(
             batch_size = batch_size,

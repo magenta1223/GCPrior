@@ -91,7 +91,8 @@ class HierarchicalTimeLimitCollector:
             print( self.state_processor.state_goal_checker(state, self.env)  )
         
         # print(np.array(episode.actions)[:, 0].mean())
-        print(np.mean([info['vel'] for info in episode.infos]))
+        # print(np.mean([info['vel'] for info in episode.infos]))
+        print(len(episode))
 
 
     

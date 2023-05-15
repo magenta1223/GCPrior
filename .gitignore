@@ -25,6 +25,6 @@ calvin_eda.ipynb
 maze_eda.ipynb
 test.ipynb
 test.py
-
+evaluate_deprecated.py
 
 train.sh

@@ -55,9 +55,9 @@ class CARLAEnvConfig(BaseDataConfig):
             # RL
             time_limit = 3000, # orig 2000
             n_hidden = 5,
-            target_kl_start  = 50, # orig 1 
-            target_kl_end = 15, # orig 1 
-            init_alpha = 0.005,
+            target_kl_start  = 2, # orig 1 
+            target_kl_end = 2, # orig 1 
+            init_alpha = 0.1,
             only_increase = False,
             auto_alpha = True,
             reuse_rate = 512,
@@ -75,7 +75,7 @@ class CARLAEnvConfig(BaseDataConfig):
             relative = False,
             robotics = True,
 
-            mode = "",
+            mode = None,
 
             max_reward = 100,
 

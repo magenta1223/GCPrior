@@ -27,10 +27,18 @@ class CARLA_Dataset(Dataset):
     def __init__(self, data_dir, data_conf, phase, resolution=None, shuffle=True, dataset_size=-1, *args, **kwargs):
         
         
-        mode = kwargs.get("mode", "_action_integrated")
+        mode = kwargs.get("mode")
+
+        if mode is not None:
+            with open(f"./LVD/data/carla/carla_dataset{mode}.pkl", mode ="rb") as f:
+                self.seqs = pickle.load(f)
+        else:
+            with open(f"./LVD/data/carla/carla_dataset_action_integrated.pkl", mode ="rb") as f:
+                self.seqs = pickle.load(f)           
+
         
-        with open(f"./LVD/data/carla/carla_dataset{mode}.pkl", mode ="rb") as f:
-            self.seqs = pickle.load(f)
+        # with open(f"./LVD/data/carla/carla_dataset{mode}.pkl", mode ="rb") as f:
+        #     self.seqs = pickle.load(f)
 
         
 

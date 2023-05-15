@@ -187,16 +187,34 @@ class CARLA_GC(Simulator):
         # print(self.target_location)
         self.__steps += 1
 
-        if action is not None:
+        # if action is not None:
+        #     acc = float(action[0])
+        #     throttle = max(acc, 0)
+        #     brake = -min(acc, 0)
+        #     steer = float(action[1])
+        #     brake = brake if brake > 0.01 else 0
+        # else:
+        #     throttle = 0
+        #     brake = 0
+        #     steer = 0
+
+        if action is not None and len(action) == 2:
             acc = float(action[0])
             throttle = max(acc, 0)
             brake = -min(acc, 0)
             steer = float(action[1])
             brake = brake if brake > 0.01 else 0
+        elif action is not None and len(action) == 3:
+            acc = float(action[0])
+            throttle, brake, steer = np.array(action).tolist()
+            brake = brake if brake > 0.01 else 0
         else:
             throttle = 0
             brake = 0
             steer = 0
+
+
+
 
         self.ego_vehicle.apply_control(
             carla.VehicleControl(
