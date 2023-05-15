@@ -29,7 +29,6 @@ class Simulator(gym.Env[dict, np.ndarray]):
         from carla_env.simulator.route_manager import RouteManager
         from carla_env.simulator.vehicles.auto_vehicle import AutoVehicle
         from carla_env.simulator.vehicles.ego_vehicle import EgoVehicle
-        from carla_env.simulator.visualizer import Visualizer
 
         self.__config = config
 
@@ -47,7 +46,7 @@ class Simulator(gym.Env[dict, np.ndarray]):
         self.__auto_vehicles: Optional[List[AutoVehicle]] = None
         self.__ego_vehicle: Optional[EgoVehicle] = None
 
-        self.__visualizer = Visualizer(self, config)
+        self.__visualizer = None
 
         self.action_space = gym.spaces.Box(shape=(2,), low=-1, high=1)
         self.observation_space = gym.spaces.Dict(
@@ -66,6 +65,7 @@ class Simulator(gym.Env[dict, np.ndarray]):
         from carla_env.simulator.vehicles.auto_vehicle import AutoVehicle
         from carla_env.simulator.vehicles.ego_vehicle import EgoVehicle
         from carla_env.utils.carla_sync_mode import CarlaSyncMode
+        from carla_env.simulator.visualizer import Visualizer
 
         # Destroy the auto vehicles.
         if self.__auto_vehicles is not None:
@@ -85,6 +85,7 @@ class Simulator(gym.Env[dict, np.ndarray]):
             self.__sync_mode = CarlaSyncMode(
                 self.world, self.ego_vehicle.lidar_sensor, fps=self.__fps
             )
+            self.__visualizer = Visualizer(self, self.config)
         else:
             self.route_manager.select_route()
             self.ego_vehicle.reset()

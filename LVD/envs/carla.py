@@ -8,23 +8,39 @@ from carla_env.utils.config import ExperimentConfigs
 
 
 
+class Location(carla.Location):
+    def __init__(self, transform : carla.Transform, name = None, *args, **kwargs):
+        self.__init_data__ = np.array([transform.location.x, transform.location.y, transform.location.z])
+        self.name = name
+        super().__init__( *self.__init_data__  )
+        
+    def __array__(self):
+        loc = np.array([self.x, self.y, self.z])    
+        # if np.array_equal(loc, self.__init_data__):
+            # print("SMAE !! ")
+        return loc
+    def __repr__(self):
+
+        if self.name is not None:
+            return f"{self.name} {np.array(self).round(2)}"
+        else:
+            return f"CARLA LOCS {np.array(self).round(2)}"
+
 class EgoVehicle_XY(EgoVehicle):
     def get_observation(self):
         return {
-            "acceleration": to_array(self.acceleration),
-            "angular_velocity": to_array(self.angular_velocity)[:2],
+            "acceleration": to_array(self.acceleration)[:2],
+            "angular_velocity": to_array(self.angular_velocity)[2],
             "location": to_array(self.location)[:2],
-            "rotation": to_array(self.rotation)[:2],
-            "forward_vector": to_array(self.rotation.get_forward_vector())[:2],
+            "rotation": to_array(self.rotation)[2],
+            # "forward_vector": to_array(self.rotation.get_forward_vector())[:2],
             "velocity": to_array(self.velocity)[:2],
         }
 
 
-
-
 class CARLA_Task:
     def __init__(self, coordinates) -> None:
-        self.target_location = carla.Location(*coordinates, 0)
+        self.target_location = Location(*coordinates, 0)
 
 
 class CARLA_GC(Simulator):
@@ -202,23 +218,11 @@ meta_train_tasks = np.array([
 ])
 
 
-tasks = np.array([
-    # # Well-aligned, Not missing
-    # [5,6,0,3], # MKBS
-    # [5,0,1,3],  # MBTS
-    # # Mis-aligned, Not missing
-    # [6,0,2,4],  # KBLH
-    # [5,1,2,4],  # MTLH
-    # # Well-algined, Missing
-    # [5,6,0,1],
-    # [5,6,0,2],
-    # # Mis-algined, Missing 
-    # [6,1,2,4],  # KTLH
-    # [5,1,3,4],  # MTSH
-    # # [5,6,0,2],  # MKBL
-])
+tasks = np.array([115, 144, 105, 76, 32, 30, 28, 137, 108, 106, 120])
 
 
 # kitchen_subtasks = np.array(['bottom burner', 'top burner', 'light switch', 'slide cabinet', 'hinge cabinet', 'microwave', 'kettle'])
 # KITCHEN_TASKS = kitchen_subtasks[tasks]
 # KITCHEN_META_TASKS = kitchen_subtasks[meta_train_tasks]
+
+CARLA_TASKS = None

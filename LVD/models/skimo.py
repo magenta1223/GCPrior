@@ -284,7 +284,7 @@ class Skimo_Model(BaseModule):
         inputs = dict(
             states = states,
             G = G,
-            skill = z.clone().detach()
+            skill = z
         )
 
         # skill prior
