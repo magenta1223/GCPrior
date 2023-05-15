@@ -120,7 +120,7 @@ if __name__ == '__main__':
 
 
     env_name_dict = {
-        "maze_size40" : "maze",
+        "maze" : "maze",
         "maze_40t" : "maze",
         "maze_20t" : "maze",
         "kitchen" : "kitchen",
