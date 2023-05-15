@@ -235,7 +235,6 @@ class Maze_AgentCentric_StateConditioned(Dataset):
         # self.seqs = [parse_h5(file_path) for file_path in self.file_paths]
 
         
-        self.relative = kwargs['relative']
     
         # with open("/home/magenta1223/skill-based/SiMPL/proposed/LVD/data/maze/maze_prep/maze_dataset.pkl", mode = "rb") as f:
         #     dataset = pickle.load(f)
@@ -458,7 +457,7 @@ class Maze_AgentCentric_GoalConditioned_Diversity(Maze_AgentCentric_StateConditi
             output = edict(
                 states = states_images[:self.subseq_len],
                 actions = actions[:self.subseq_len-1],
-                G = deepcopy(states_images[-1][:self.n_obj] ),
+                G = deepcopy(states_images[-1][:self.n_obj][:2] ),
                 rollout = False
                 # rollout = True if start_idx < 280 - self.plan_H else False
             )

@@ -630,7 +630,7 @@ def get_loader(
         plan_H = conf.plan_H,
         only_proprioceptive = conf.only_proprioceptive,
         prefix = conf.maze_path,
-        mode = conf.mode
+        dataset_mode = conf.dataset_mode
         # visual = conf.visual if hasattr(conf, "visual") else False,
         # relative = conf.relative if hasattr(conf, "visual") else False,
         

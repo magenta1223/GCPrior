@@ -75,7 +75,7 @@ class CARLAEnvConfig(BaseDataConfig):
             relative = False,
             robotics = True,
 
-            mode = None,
+            dataset_mode = None,
 
             max_reward = 100,
 
@@ -85,7 +85,7 @@ class CARLAEnvConfig(BaseDataConfig):
 
         )
 
-        if config['mode'] is not None:
+        if config['dataset_mode'] is not None:
             config['action_dim'] = 3
             
         self.set_attrs(config)

@@ -56,10 +56,10 @@ class MazeEnvConfig(BaseDataConfig):
             visual = "image",
 
             # Train Schedule 
-            mixin_start = 75,
+            mixin_start = 75, # 75
             mixin_ratio = 0.05,
             plan_H = 100, 
-            epochs = 150, 
+            epochs = 120, 
             warmup_steps = 75,
 
             # Architecture
@@ -106,6 +106,7 @@ class MazeEnvConfig(BaseDataConfig):
             # etc.
             res=128,
             max_reward = 100,
+            dataset_mode = "nonnon"
 
 
         )

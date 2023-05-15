@@ -83,6 +83,7 @@ class KitchenEnvConfig(BaseDataConfig):
 
             max_reward = 4,
 
+            dataset_mode = "None",
 
             # etc.
             res=128,
