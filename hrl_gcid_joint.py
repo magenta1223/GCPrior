@@ -350,7 +350,7 @@ def main():
 
     env_cls = ENV_TASK[args.env_name]['env_cls']
     task_cls = ENV_TASK[args.env_name]['task_cls']
-    ALL_TASKS = ENV_TASK[args.env_name]['tasks']
+    ALL_TASKS = ENV_TASK[args.env_name]['ablation_tasks'] if args.ablation else ENV_TASK[args.env_name]['tasks']
     configure = ENV_TASK[args.env_name]['cfg']
 
     if hasattr(args, "relative") and configure is not None:
