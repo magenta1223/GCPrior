@@ -19,7 +19,7 @@ def process_task(weights_path, task_name):
     rewards = []
 
     load = torch.load(weights_path)
-    agent = load['model'].cpu().eval()
+    agent = load['model'].eval()
     collector = load['collector']
     task_obj = load['task']
     env = load['env']
@@ -30,7 +30,10 @@ def process_task(weights_path, task_name):
         rwds = 0
         with env.set_task(task_obj), agent.policy.expl(), collector.low_actor.expl():
             for i in range(x):
-                episode, G = collector.collect_episode(agent.policy)
+                if "simpl" in weights_path:
+                    episode = collector.collect_episode(agent.policy)
+                else:
+                    episode, G = collector.collect_episode(agent.policy)
                 # rewards.append(sum(episode.rewards))
                 rwds += sum(episode.rewards)
 
@@ -52,7 +55,10 @@ def main(args):
     RWDS = {}
 
     for i, task in enumerate(tqdm(ALL_TASKS, desc="Processing files")):
-        weights_path = f"./weights/{args.env_name}/{args.method}/sac/{task}.bin"
+        if args.method == "simpl":
+            weights_path = f"./weights/{args.env_name}/{args.method}/{task}.bin"
+        else:
+            weights_path = f"./weights/{args.env_name}/{args.method}/sac/{task}.bin"
 
         if not os.path.exists(weights_path):
             print(f"{task} does not exist")

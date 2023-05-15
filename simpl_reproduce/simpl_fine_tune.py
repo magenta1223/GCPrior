@@ -15,8 +15,10 @@ from LVD.contrib.simpl.nn import itemize
 from LVD.contrib.simpl.alg.simpl import ConditionedPolicy, ConditionedQF
 import os
 # from ....rl.vis import visualize
-sys.path.append("/home/magenta1223/skill-based/SiMPL/proposed")
-sys.path.append("/home/magenta1223/skill-based/SiMPL")
+# sys.path.append("/home/magenta1223/skill-based/SiMPL/proposed")
+# sys.path.append("/home/magenta1223/skill-based/SiMPL")
+
+from .maze.maze_vis import draw_maze
 
 def render_task(env, policy, low_actor):
     imgs = []
@@ -168,14 +170,27 @@ if __name__ == '__main__':
             for episode_i in range(config['n_prior_episode']+1, config['n_episode']+1):
                 log = simpl_fine_tune_iter(collector, trainer, **config['train'])
                 log['episode_i'] = episode_i
-                # if episode_i % policy_vis_period == 0:
-                #     plt.close('all')
-                #     plt.figure()
-                #     log['policy_vis'] = visualize_env(plt.gca(), env, list(buffer.episodes)[-20:])
-                
-                # time_step = render_task(env, high_policy, spirl_low_policy)
-                # steps.append(time_step)
-                # visualize(imgs = imgs, task_name = "->".join(task.subtasks))
+                if episode_i % policy_vis_period == 0:
+                    plt.close('all')
+                    # n_row = int(np.ceil(len(train_tasks)/10))
+                    # fig, axes = plt.subplots(n_row, 10, figsize=(20, 2*n_row))
+
+                    # visualize_env(axes[task_idx//10][task_idx%10], env, list(buffer.episodes)[-20:])
+                    # log['policy_vis'] = fig
+
+                    log[f'policy_vis'] = draw_maze(plt.gca(), env, list(trainer.buffer.episodes)[-20:])
+
+
+                    save_filepath = f"./weights/{args.domain}/simpl/{str(task)}_{episode_i}.bin"
+    
+
+            
+                    torch.save({
+                        "model" : trainer,
+                        "collector" : collector,
+                        "task" : task,
+                        "env" : env,
+                    }, save_filepath)   
                 wandb.log(log)
 
             # import pandas as pd

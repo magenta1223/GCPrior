@@ -1,6 +1,7 @@
 import numpy as np
 from contextlib import contextmanager
-from carla.carla_env.base import BaseCarlaEnvironment
+from carla_env.base import BaseCarlaEnvironment
+
 
 
 class CARLA_Task:

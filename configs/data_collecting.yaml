@@ -1,0 +1,61 @@
+vision_size: 224
+vision_fov: 90
+weather: ClearNoon
+frame_skip: 1
+max_steps: 3000
+multiagent: false
+num_vehicles: 10
+lane: 0
+lights: false
+num_routes: 0
+vehicle_type: audi.a2
+mode: ours
+routes: [
+  # circulations
+  # left-up
+    [141,  111],
+    [95,  103],
+    [99,  138],
+    [89,  126],
+    # right-up
+    [52,  47],
+    [134,  45],
+    [146, 147],
+    # [72,  151], # 멈춤
+    # # left-down 
+    # [106,  6], # 하자 있음
+    [24,  26],
+    # [8,  75], # 멈춤
+    # [68,  108], # 루트가 이상
+    # # right-down
+    # [87,  42], # 좌회전을 안함 (?)
+    # [40,  19], # 좌회전을 안함 (?)
+    [70,  128],
+    [17,  23],
+    # # traverse
+    # # bottom to top
+    [10, 120],
+    [28, 11],
+    [45, 137],
+    [126, 106],
+    [94, 1],
+
+]
+random_route: false
+carla_ip: localhost
+data_path: null
+fps: 20
+lidar:
+  upper_fov: 5.0
+  lower_fov: -30.0
+  rotation_frequency: 20.0
+  max_range: 20.0
+  num_theta_bin: 80
+  dropoff_general_rate: 0.1
+  dropoff_intensity_limit: 0.2
+  dropoff_zero_intensity: 0.2
+  points_per_second: 120_000
+visual:
+  draw_path: True
+  draw_velocity: True
+max_total_steps: 1_000_000
