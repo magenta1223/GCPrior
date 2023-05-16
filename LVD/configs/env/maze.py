@@ -59,7 +59,7 @@ class MazeEnvConfig(BaseDataConfig):
             mixin_start = 75, # 75
             mixin_ratio = 0.05,
             plan_H = 100, 
-            epochs = 120, 
+            epochs = 150, 
             warmup_steps = 75,
 
             # Architecture
