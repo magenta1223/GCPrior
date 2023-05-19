@@ -9,6 +9,7 @@ from copy import deepcopy
 
 # from proposed.utils import get_dist
 from ..utils import get_dist
+from typing import Dict
 
 
 import math
@@ -32,6 +33,11 @@ class BaseModule(nn.Module):
                 for k, v in config.items():
                     setattr(self, k, deepcopy(v))           
 
+    def get(self, name):
+        if not name : #name is None or not name:
+            return None
+        return getattr(self, name)
+
     def forward(self, x):
         return NotImplementedError
 
@@ -40,20 +46,49 @@ class BaseModule(nn.Module):
         return self._device.device
 
 
-
 class SequentialBuilder(BaseModule):
-    def __init__(self, config):
+    def __init__(self, config : Dict[str, None]):
         super().__init__(config)
-        self.build(config)
+        self.build()
         self.explore = None
 
-    def build(self, config):
+    def get(self, name):
+        if not name : #name is None or not name:
+            return None
+        return getattr(self, name)
+
+    def layerbuild(self, attr_list, repeat = None):
+        build =  [[ self.get(attr_nm) for attr_nm in attr_list  ]]
+        if repeat is not None:
+            build = build * repeat
+        return build 
+
+    def get_build(self):
+        if self.module_type == "rnn":
+            build = self.layerbuild(["linear_cls", "in_feature", "hidden_dim", None, "act_cls", "bias"])
+            build += self.layerbuild(["rnn_cls", "hidden_dim", "hidden_dim", "n_blocks", "bias", "batch_first", "dropout"])
+            build += self.layerbuild(["linear_cls", "hidden_dim", "out_dim", None, None, "false"])
+
+        elif self.module_type == "linear":
+            build = self.layerbuild(["linear_cls", "in_feature", "hidden_dim", None, "act_cls", "bias", "dropout"])
+            build += self.layerbuild(["linear_cls", "hidden_dim", "hidden_dim", "norm_cls", "act_cls"], self.get("n_blocks"))
+            build += self.layerbuild(["linear_cls", "hidden_dim", "out_dim", None, None,  "bias", "dropout"])
+        else:
+            build = NotImplementedError
+
+        return build
+
+    def build(self):
+        build = self.get_build()
         layers = []
-        for args in config.build:
+        for args in build:
             cls, args = args[0], args[1:]
             layers.append(cls(*args))
         self.layers = nn.ModuleList(layers)
 
+
+    # -------------------- mdoelign -------------------- # 
+    
     def forward(self, x, *args, **kwargs):
         out = x 
         for layer in self.layers:
@@ -71,29 +106,6 @@ class SequentialBuilder(BaseModule):
         else:
             return get_dist(result, tanh = self.tanh)
 
-
-
-    # @contextmanager
-    # def turn_off_tracking_running_stat(self):
-    #     """
-    #     for bn
-    #     """
-    #     def _tracking_running_stat(layer, status):
-    #         if isinstance(layer, nn.BatchNorm1d):
-    #             layer.track_running_stats = status
-    #         elif hasattr(layer, "layers"): 
-    #             for _layer in layer.layers:
-    #                 _tracking_running_stat(_layer, status)
-    #         else:
-    #             pass      
-    #     for layer in self.layers:
-    #         _tracking_running_stat(layer, False)
-    #     yield
-    #     for layer in self.layers:
-    #         _tracking_running_stat(layer, True)
-
-
-    
     # from simpl
     @contextmanager
     def no_expl(self):

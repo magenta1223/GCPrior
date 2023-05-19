@@ -362,7 +362,7 @@ def train_single_task(env, env_name, tasks, task_cls, args):
 
 
             wandb.log(new_log)
-
+            plt.cla()
 
 
     torch.save({

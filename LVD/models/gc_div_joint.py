@@ -40,13 +40,18 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         env_cls = ENV_TASK[self.env_name]['env_cls']
         configure = ENV_TASK[self.env_name]['cfg']
 
-        if configure is not None:
-            self.env = env_cls(**configure)
+        if self.env_name != "carla":
+        
+            if configure is not None:
+                self.env = env_cls(**configure)
+            else:
+                self.env = env_cls()
+
+
+            self.render_funcs = RENDER_FUNCS[self.env_name]
         else:
-            self.env = env_cls()
-
-
-        self.render_funcs = RENDER_FUNCS[self.env_name]
+            self.env = None
+            self.render_funcs = None
 
 
         self.joint_learn = True
@@ -581,7 +586,7 @@ class GoalConditioned_Diversity_Joint_Model(BaseModule):
         recon_state = self.loss_fn('recon')(self.outputs['states_hat'], self.outputs['states']) # ? 
         z_tilde = self.outputs['states_repr']
         z = self.outputs['states_fixed_dist']
-        mmd_loss = compute_mmd(z_tilde, z)
+        mmd_loss = compute_mmd(z_tilde, z) * self.wae_coef
         loss = loss + recon_state + mmd_loss
 
 

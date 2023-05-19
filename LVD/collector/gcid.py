@@ -29,11 +29,16 @@ class HierarchicalTimeLimitCollector:
 
         # G = GOAL_TRANSFORM[self.env_name](state)
         # state = STATE_PROCESSOR[self.env_name](state)
-        
+
+
+
         G = self.state_processor.get_goals(state)
         state = self.state_processor.state_process(state)
 
-        # print(f"G : {self.state_processor.goal_checker(G)}")
+        # print(state.shape)
+
+
+        print(f"G : {self.state_processor.goal_checker(G)}")
 
         episode = HierarchicalEpisode(state)
         low_actor.eval()
@@ -92,7 +97,7 @@ class HierarchicalTimeLimitCollector:
         
         # print(np.array(episode.actions)[:, 0].mean())
         # print(np.mean([info['vel'] for info in episode.infos]))
-        print(len(episode))
+        # print(len(episode))
 
 
     

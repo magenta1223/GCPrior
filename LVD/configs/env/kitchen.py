@@ -57,6 +57,8 @@ class KitchenEnvConfig(BaseDataConfig):
             hidden_dim = 128,
             reg_beta = 0.0005,
             prior_state_dim = 30,
+            wae_coef = 1,
+
 
             # RL
             time_limit = 280, # orig 2000
@@ -83,7 +85,8 @@ class KitchenEnvConfig(BaseDataConfig):
 
             max_reward = 4,
 
-            dataset_mode = "None",
+            # dataset_mode = "None",
+            normalize = False,
 
             # etc.
             res=128,

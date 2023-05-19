@@ -92,7 +92,7 @@ def train_policy_iter(collector, trainer, episode_i, batch_size, reuse_rate, pro
     with trainer.policy.expl(), collector.low_actor.expl() : #, collector.env.step_render():
         episode, G = collector.collect_episode(trainer.policy)
 
-    print(np.array(episode.rewards).sum(), max_reward)
+    # print(np.array(episode.rewards).sum(), max_reward)
 
     if np.array(episode.rewards).sum() == max_reward: # success 
         print("success")
@@ -212,7 +212,7 @@ def train_single_task(env, env_name, task, task_cls, args):
 
     # ------------- Buffers & Collectors ------------- #
     buffer = Buffer_modified(state_dim, latent_dim, buffer_size, tanh = model.tanh)
-    collector = LowFixedHierarchicalTimeLimitCollector(env, env_name, low_actor, horizon=10, time_limit=args.time_limit, tanh = model.tanh)
+    collector = LowFixedHierarchicalTimeLimitCollector(env, env_name, low_actor, horizon=args.subseq_len, time_limit=args.time_limit, tanh = model.tanh)
 
     
     # ------------- Goal setting ------------- #

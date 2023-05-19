@@ -15,8 +15,6 @@ MODE_DICT = {
 }
 
 
-
-
 class MazeEnvConfig(BaseDataConfig):
 
     def __init__(self, structure = "sc"):
@@ -70,6 +68,7 @@ class MazeEnvConfig(BaseDataConfig):
             hidden_dim = 128,
             # reg_beta = 0.01,
             reg_beta = 0.01,
+            wae_coef = 1,
 
             
 
@@ -106,7 +105,8 @@ class MazeEnvConfig(BaseDataConfig):
             # etc.
             res=128,
             max_reward = 100,
-            dataset_mode = "nonnon"
+            dataset_mode = "nonnon",
+            normalize = False,
 
 
         )

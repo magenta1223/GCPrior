@@ -148,9 +148,7 @@ class Simulator(gym.Env[dict, np.ndarray]):
             "target_location": to_array(self.route_manager.target_transform.location),
         }
     
-        for k, v in next_observation.items():
-            print(k, v.shape)
-        assert 1==0, "DOPne!"
+
 
         
         info = {
@@ -287,10 +285,12 @@ def calculate_reward(
 
     def get_lane_invasion_done():
         lane_invasion = simulator.ego_vehicle.lane_invasion_sensor.lane_types
-        return (
-            carla.LaneMarkingType.Solid in lane_invasion
-            or carla.LaneMarkingType.SolidSolid in lane_invasion
-        )
+
+        return carla.LaneMarkingType.SolidSolid in lane_invasion # only 중앙선
+        # return (
+        #     carla.LaneMarkingType.Solid in lane_invasion
+        #     or carla.LaneMarkingType.SolidSolid in lane_invasion
+        # )
 
     def get_reached_map_steps():
         return simulator.steps >= simulator.config.max_steps

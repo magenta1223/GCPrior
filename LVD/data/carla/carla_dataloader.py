@@ -29,12 +29,24 @@ class CARLA_Dataset(Dataset):
         
         mode = kwargs.get("mode")
 
-        if mode is not None:
-            with open(f"./LVD/data/carla/carla_dataset{mode}.pkl", mode ="rb") as f:
+        # if mode is not None:
+        #     with open(f"./LVD/data/carla/carla_dataset{mode}.pkl", mode ="rb") as f:
+        #         self.seqs = pickle.load(f)
+        # else:
+        #     with open(f"./LVD/data/carla/carla_dataset_action_integrated.pkl", mode ="rb") as f:
+        #         self.seqs = pickle.load(f)           
+        
+        print(kwargs)
+
+        self.normalize = kwargs.get("normalize")
+
+        
+        if self.normalize:
+            with open(f"./LVD/data/carla/carla_dataset_normalized.pkl", mode ="rb") as f:
                 self.seqs = pickle.load(f)
         else:
-            with open(f"./LVD/data/carla/carla_dataset_action_integrated.pkl", mode ="rb") as f:
-                self.seqs = pickle.load(f)           
+            with open(f"./LVD/data/carla/carla_dataset.pkl", mode ="rb") as f:
+                self.seqs = pickle.load(f)        
 
         
         # with open(f"./LVD/data/carla/carla_dataset{mode}.pkl", mode ="rb") as f:
@@ -146,10 +158,8 @@ class CARLA_Dataset_Diversity(CARLA_Dataset):
             "with_buffer" : self.__skill_learning_with_buffer__,
         }
 
-        if self.visual == "visual_feature":
-            self.buffer_dim = self.state_dim
-        else:
-            self.buffer_dim = self.state_dim #+ 1024
+        self.buffer_dim = self.state_dim
+
 
         # 10 step 이후에 skill dynamics로 추론해 error 누적 최소화 
         self.buffer_prev = Offline_Buffer(state_dim= self.buffer_dim, action_dim= self.action_dim, trajectory_length = 19, max_size= 1024)
@@ -214,7 +224,7 @@ class CARLA_Dataset_Diversity(CARLA_Dataset):
             output = edict(
                 states = states_images[:self.subseq_len],
                 actions = actions[:self.subseq_len-1],
-                G = deepcopy(states_images[-1][:self.n_obj] ),
+                G = deepcopy(states_images[-1][:self.n_obj][12:14]),
                 rollout = False
                 # rollout = True if start_idx < 280 - self.plan_H else False
             )

@@ -48,8 +48,11 @@ from carla_env.utils.config import ExperimentConfigs
 
 
 class CARLA_Task:
-    def __init__(self, transform):
-        self.target_location = transform.location
+    def __init__(self, index):
+        self.target_location = index
+    
+    def __repr__(self):
+        return f"CARLA Task Index : {self.target_location}"
 
 
 class CARLA_GC(Simulator):
@@ -105,6 +108,9 @@ class CARLA_GC(Simulator):
         )
 
 
+        self.spawn_points = self.__world.map.get_spawn_points()
+
+        self.init_transform = self.spawn_points[134]
 
         self.task = CARLA_Task(to_carla_transform([0. ,0. ,0. ,0. ,0. ,0. ]))
         # self.initial_loc = carla.Location(*[0,0,0])
@@ -168,7 +174,7 @@ class CARLA_GC(Simulator):
             # self.ego_vehicle.set_transform(self.initial_loc)
 
         
-        print("Vehicle starts at: %s", to_array(self.ego_vehicle.location))
+        # print("Vehicle starts at: %s", to_array(self.ego_vehicle.location))
         logger.info("Vehicle starts at: %s", to_array(self.ego_vehicle.location))
 
         # Spawn the auto vehicles.
@@ -255,7 +261,6 @@ class CARLA_GC(Simulator):
         # done = any(done_dict.values())
 
         del done_dict['lane_collided_done']
-
         done = any(done_dict.values())
 
         if self.steps % 50 == 0 or done:
@@ -330,7 +335,8 @@ class CARLA_GC(Simulator):
     @property
     def target_location(self):
         """The target location of the ego vehicle."""
-        return self.route_manager.target_transform.location
+        # return self.route_manager.target_transform.location
+        return self.spawn_points[self.task.target_location].location
 
     @property
     def is_multi_agent(self):
@@ -402,12 +408,20 @@ meta_train_tasks = np.array([
 # tasks = np.array([115, 144, 105, 76, 32, 30, 28, 137, 108, 106, 120])
 
 
-tasks = np.array([86, 79, 2, 120, 4])
+# tasks = np.array([86, 79, 2, 120, 4])
+
+tasks = np.array([
+    138, # circulate 
+    86, # corner  
+    8, # right-left (not in data)  
+    70, # 70 
+    ])
+
 
 # tasks = [99]
 
 
-spawn_points = np.load("./LVD/data/carla/spawn_points.npy")
+# spawn_points = np.load("./LVD/data/carla/spawn_points.npy")
 
 # kitchen_subtasks = np.array(['bottom burner', 'top burner', 'light switch', 'slide cabinet', 'hinge cabinet', 'microwave', 'kettle'])
 # KITCHEN_TASKS = kitchen_subtasks[tasks]
@@ -421,4 +435,7 @@ def to_carla_transform(p):
 
 
 # CARLA_TASKS = [  CARLA_Task( Location(position = t))   for t in spawn_points[tasks]]
-CARLA_META_TASKS = CARLA_TASKS = [  to_carla_transform(p)  for p in spawn_points[tasks]]
+# CARLA_META_TASKS = CARLA_TASKS = [  to_carla_transform(p)  for p in spawn_points[tasks]]
+
+
+CARLA_META_TASKS = CARLA_TASKS = tasks

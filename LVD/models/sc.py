@@ -26,7 +26,7 @@ class StateConditioned_Model(BaseModule):
 
         self.use_amp = True
         self.step = 0
-        self.Hsteps = 10
+        self.Hsteps = self.subseq_len -1
         norm_cls = nn.LayerNorm
         act_cls = nn.Mish
         bias = True
@@ -37,7 +37,7 @@ class StateConditioned_Model(BaseModule):
 
 
         ## skill prior module
-
+        print(self.state_dim)
         prior_config = edict(
             n_blocks = self.n_Layers, #self.n_processing_layers,
             in_feature =  self.state_dim, # state_dim + latent_dim 
@@ -46,10 +46,10 @@ class StateConditioned_Model(BaseModule):
             norm_cls = norm_cls,
             act_cls = act_cls,
             block_cls = LinearBlock,
-            true = True,
             tanh = self.tanh,
             bias = bias,
-            dropout = dropout 
+            dropout = dropout ,
+            module_type = "linear",
         )
 
         encoder_config = edict(
@@ -58,15 +58,15 @@ class StateConditioned_Model(BaseModule):
             hidden_dim = self.hidden_dim,
             out_dim = self.latent_dim * 2,
             n_blocks = 1,
-            bias = False,
+            bias = bias,
             batch_first = True,
             dropout = 0,
             linear_cls = LinearBlock,
             rnn_cls = nn.LSTM,
             act_cls = act_cls,
-            # norm_cls = norm_cls,
-            true = True,
-            false = False
+            module_type = "rnn",
+
+
         )
 
         decoder_config = edict(
@@ -81,7 +81,8 @@ class StateConditioned_Model(BaseModule):
             act_cls = act_cls,
             block_cls = LinearBlock,
             bias = bias,
-            dropout = dropout           
+            dropout = dropout,
+            module_type = "linear",
         )
 
         highlevel_policy_config = edict(
@@ -95,7 +96,8 @@ class StateConditioned_Model(BaseModule):
             true = True,
             tanh = False,
             bias = bias,
-            dropout = dropout    
+            dropout = dropout,
+            module_type = "linear",
         )
 
 

@@ -22,10 +22,20 @@ class CARLAEnvConfig(BaseDataConfig):
         config = edict(
             # DATA 
             dataset_class= MODE_DICT[structure],   
+
+            # normalize = True,
+            # action_dim=2, # 3
+            # state_dim=15, # 24
+            # n_obj = 15, # ?
+            # n_env = 0, # ? 
+
+            normalize = False,
             action_dim=2, # 3
             state_dim=17, # 24
             n_obj = 17, # ?
             n_env = 0, # ? 
+
+
             n_goal = 2, # ? 
             env_name="carla", 
             env_name_offline="", # 
@@ -46,7 +56,7 @@ class CARLAEnvConfig(BaseDataConfig):
 
             # Architecture
             latent_dim = 10,
-            latent_state_dim  = 32,
+            latent_state_dim  = 128,
             n_Layers = 5,
             hidden_dim = 128,
             reg_beta = 0.0005,
@@ -75,9 +85,12 @@ class CARLAEnvConfig(BaseDataConfig):
             relative = False,
             robotics = True,
 
-            dataset_mode = None,
 
             max_reward = 100,
+
+            # normalize = True,
+
+            wae_coef = 1,
 
 
             # etc.
@@ -85,8 +98,7 @@ class CARLAEnvConfig(BaseDataConfig):
 
         )
 
-        if config['dataset_mode'] is not None:
-            config['action_dim'] = 3
+
             
         self.set_attrs(config)
         self.name = "CARLA Environment Configuration"

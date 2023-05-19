@@ -110,6 +110,7 @@ class HighPolicy_GC(ContextPolicyMixin, SequentialBuilder):
     def act(self, states, G):
         # 환경별로 state를 처리하는 방법이 다름.
         # 여기서 수행하지 말고, collector에서 전처리해서 넣자. 
+
         dist_inputs = dict(
             states = prep_state(states, self.device),
             G = prep_state(G, self.device),

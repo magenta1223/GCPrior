@@ -18,10 +18,6 @@ from ..configs.env import *
 from ..configs.model import *
 
 
-from matplotlib import pyplot as plt
-import seaborn as sns
-
-import gc
 
 
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
@@ -349,32 +345,6 @@ class BaseTrainer:
         #     self.meters['id_count_std'].update(np.std(list(counter.values())), count)
         #     self.model.clear_id_history()
 
-        if "rollout_KL" in loss.keys():
-            plt.figure()
-
-            plt.xlim(right = 100)
-
-            rollout_KL = np.array(rollout_KL)
-            rollout_KL_main = np.array(rollout_KL_main)
-
-            sns.distplot(rollout_KL, color = "blue")
-            sns.distplot(rollout_KL_main, color = "orange")
-
-            q1 = np.quantile(rollout_KL, 0.25)
-            q2 = np.quantile(rollout_KL, 0.5)
-            q3 = np.quantile(rollout_KL, 0.75)
-            plt.vlines(np.array([q1, q2, q3]), 0, 0.1, color = 'red', )
-            
-            q1 = np.quantile(rollout_KL_main, 0.25)
-            q2 = np.quantile(rollout_KL_main, 0.5)
-            q3 = np.quantile(rollout_KL_main, 0.75)
-            plt.vlines(np.array([q1, q2, q3]), 0, 0.1, color = 'yellow', )
-
-            plt.title(f"Q1 {q1:.2f}, Q2 {q2:.2f}, Q3 {q3:.2f}")
-            plt.legend(["rollout_iter_sample", "rollout", "iter_sample_Q", "rollout_Q"])
-
-            plt.savefig(f'imgs/rollout_KL_{e}.png')
-            rollout_KL_prev = deepcopy(rollout_KL)
             
 
 
@@ -504,6 +474,9 @@ def get_loader(
 
 
     env_default_conf = {**env_config.attrs}
+
+    
+
     conf = edict(
         # general 
         optim_cls = torch.optim.Adam,
@@ -630,7 +603,7 @@ def get_loader(
         plan_H = conf.plan_H,
         only_proprioceptive = conf.only_proprioceptive,
         prefix = conf.maze_path,
-        dataset_mode = conf.dataset_mode
+        normalize = conf.normalize
         # visual = conf.visual if hasattr(conf, "visual") else False,
         # relative = conf.relative if hasattr(conf, "visual") else False,
         

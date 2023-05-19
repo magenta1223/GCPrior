@@ -44,7 +44,7 @@ seed_everything()
 
 
 
-def train_policy_iter(collector, trainer, episode_i, batch_size, reuse_rate, project_name, precollect):
+def train_policy_iter(collector, trainer, episode_i, batch_size, reuse_rate, project_name, precollect, max_reward):
     # ------------- Initialize log ------------- #
     log = {}
 
@@ -52,7 +52,7 @@ def train_policy_iter(collector, trainer, episode_i, batch_size, reuse_rate, pro
     with trainer.policy.expl(), collector.low_actor.expl() : #, collector.env.step_render():
         episode, G = collector.collect_episode(trainer.policy)
 
-    if np.array(episode.dones).sum() != 0: # success 
+    if np.array(episode.rewards).sum() == max_reward: # success 
         print("success")
 
     trainer.buffer.enqueue(episode.as_high_episode()) 
@@ -110,10 +110,12 @@ def train_single_task(env, env_name, task, task_cls, args):
     buffer_size = 20000
     n_episode = args.n_episode
     # state_dim = env.observation_space.shape[0]
-    if env_name == "kitchen":
-        state_dim = 30
-    else:
-        state_dim =  4 # 4 + image 
+    # if env_name == "kitchen":
+    #     state_dim = 30
+    # else:
+    #     state_dim =  4 # 4 + image 
+
+    state_dim = args.state_dim
 
     latent_dim = 10
     try:
@@ -138,7 +140,7 @@ def train_single_task(env, env_name, task, task_cls, args):
 
     qf_config = edict(
         n_blocks = args.n_hidden, 
-        in_feature = learned_state_dim + latent_dim if args.use_hidden else state_dim // 2 + latent_dim, # state dim 
+        in_feature = learned_state_dim + latent_dim if args.use_hidden else state_dim + latent_dim, # state dim 
         hidden_dim = args.hidden_dim, # 128
         out_dim = 1, # 10 * 2
         norm_cls = None,
@@ -173,7 +175,7 @@ def train_single_task(env, env_name, task, task_cls, args):
 
     # ------------- Buffers & Collectors ------------- #
     buffer = Buffer_modified(state_dim, latent_dim, buffer_size, tanh = model.tanh)
-    collector = LowFixedHierarchicalTimeLimitCollector(env, env_name, low_actor, horizon=10, time_limit=args.time_limit, tanh = model.tanh)
+    collector = LowFixedHierarchicalTimeLimitCollector(env, env_name, low_actor, horizon=args.subseq_len -1, time_limit=args.time_limit, tanh = model.tanh)
 
     
     # ------------- Goal setting ------------- #
@@ -226,7 +228,8 @@ def train_single_task(env, env_name, task, task_cls, args):
 
 
     # config = {'batch_size': 256, 'reuse_rate': 256, "G" : G, "project_name" : args.wandb_project_name}
-    config = {'batch_size': 256, 'reuse_rate': args.reuse_rate, "project_name" : args.wandb_project_name, "precollect" : args.precollect}
+    # config = {'batch_size': 256, 'reuse_rate': args.reuse_rate, "project_name" : args.wandb_project_name, "precollect" : args.precollect}
+    config = {'batch_size': 256, 'reuse_rate': args.reuse_rate, "project_name" : args.wandb_project_name, "precollect" : args.precollect, "max_reward" : args.max_reward}
 
     # if args.env_name != "maze":
     #     task_name = "-".join([ t[0].upper() for t in tasks])
@@ -243,12 +246,24 @@ def train_single_task(env, env_name, task, task_cls, args):
     weights_path = f"./weights/{args.env_name}/gc_div_joint/sac"
     os.makedirs(weights_path, exist_ok= True)
 
-    torch.save({
-        "model" : self,
-        "collector" : collector,
-        "task" : task_obj,
-        "env" : env,
-    }, f"{weights_path}/{task_name}.bin")
+    if env_name == "carla":
+        torch.save({
+            "model" : self,
+            "low_actor" : low_actor,
+            # "collector" : collector,
+            "task" : task_name,
+            # "env" : env,
+        }, f"{weights_path}/{task_name}.bin")
+
+
+    else:
+
+        torch.save({
+            "model" : self,
+            "collector" : collector,
+            "task" : task_obj,
+            "env" : env,
+        }, f"{weights_path}/{task_name}.bin")
 
 
 
@@ -279,16 +294,10 @@ def train_single_task(env, env_name, task, task_cls, args):
             if (episode_i + 1) % args.render_period == 0:
                 if env_name == "maze":
                     log[f'policy_vis'] = draw_maze(plt.gca(), env, list(self.buffer.episodes)[-20:])
-                else:
-                    imgs, reward = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
+                elif env_name == "kitchen":
+                    imgs = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
                     imgs = np.array(imgs).transpose(0, 3, 1, 2)
-                    if args.env_name == "maze":
-                        fps = 100
-                    else:
-                        fps = 50
-                    log[f'rollout'] = wandb.Video(np.array(imgs), fps=fps, caption= str(reward))
-
-
+                    log[f'rollout'] = wandb.Video(np.array(imgs), fps=100)
 
                 # imgs = render_task(env, env_name, self.policy, low_actor, tanh = model.tanh)
                 # imgs = np.array(imgs).transpose(0, 3, 1, 2)
@@ -315,12 +324,24 @@ def train_single_task(env, env_name, task, task_cls, args):
 
     
     # torch.save(self, f"{weights_path}/{task_name}.bin")
-    torch.save({
-        "model" : self,
-        "collector" : collector,
-        "task" : task_obj,
-        "env" : env,
-    }, f"{weights_path}/{task_name}.bin")
+    if env_name == "carla":
+        torch.save({
+            "model" : self,
+            "low_actor" : low_actor,
+            # "collector" : collector,
+            "task" : task_name,
+            # "env" : env,
+        }, f"{weights_path}/{task_name}.bin")
+
+
+    else:
+
+        torch.save({
+            "model" : self,
+            "collector" : collector,
+            "task" : task_obj,
+            "env" : env,
+        }, f"{weights_path}/{task_name}.bin")
 
         
 def main():
@@ -330,7 +351,6 @@ def main():
     parser.add_argument("-p", "--path", default = "")  
     parser.add_argument("--wandb_project_name", default = "GCPolicy_Level")    
     parser.add_argument("-rp", "--render_period", default = 10, type = int)
-    parser.add_argument("--env", type = str, default = "simpl", choices= ['simpl', 'gc'])    
     parser.add_argument("-qwu", "--q_warmup", default = 5000, type =int)
     parser.add_argument("-qwe", "--q_weight", default = 1, type =int)
     parser.add_argument("-pc", "--precollect", default = 10, type = int)
@@ -350,17 +370,20 @@ def main():
 
     env_cls = ENV_TASK[args.env_name]['env_cls']
     task_cls = ENV_TASK[args.env_name]['task_cls']
-    ALL_TASKS = ENV_TASK[args.env_name]['ablation_tasks'] if args.ablation else ENV_TASK[args.env_name]['tasks']
+    ALL_TASKS = ENV_TASK[args.env_name]['tasks'] if not args.ablation else ENV_TASK[args.env_name]['ablation_tasks'] 
     configure = ENV_TASK[args.env_name]['cfg']
 
-    if hasattr(args, "relative") and configure is not None:
-        configure['relative'] = args.relative
+    # if hasattr(args, "relative") and configure is not None:
+    #     configure['relative'] = args.relative
 
 
-    if configure is not None:
-        env = env_cls(**configure)
+    if args.env_name == "carla":
+        env = env_cls(configure)
     else:
-        env = env_cls()
+        if configure is not None:
+            env = env_cls(**configure)
+        else:
+            env = env_cls()
 
     run_name = f"p:{args.path}_plr:{args.policy_lr}_a:{args.init_alpha}_qw:{args.q_warmup}{args.q_weight}"
 
