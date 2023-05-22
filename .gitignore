@@ -21,16 +21,13 @@ LVD/weights/
 LVD/rl/results/
 LVD/rl/wandb/
 
-calvin_eda.ipynb
-maze_eda.ipynb
-test.ipynb
+
 test.py
 evaluate_deprecated.py
-
 train.sh
 
 
-
+task_prob_missing.csv
 
 *.pyc
 __pycache__/
