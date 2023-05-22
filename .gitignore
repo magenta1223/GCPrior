@@ -28,3 +28,13 @@ test.py
 evaluate_deprecated.py
 
 train.sh
+
+
+
+
+*.pyc
+__pycache__/
+
+results.csv
+
+*.ipynb
