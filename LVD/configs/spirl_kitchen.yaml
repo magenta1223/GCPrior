@@ -1,0 +1,5 @@
+defaults:
+  - model/spirl
+
+# 'a' 값을 오버라이드
+a: 42
