@@ -28,7 +28,6 @@ class GoalConditioned_Diversity_Joint_Prior(BaseModule):
             "train" : self.__train__,
             "eval" : self.__eval__,
             "rollout" : self.__rollout__,
-            "rollout2" : self.__rollout2__,
             "finetune" : self.__finetune__,
             "prior" : self.__prior__,
             "finetune_f" : self.__finetune_f__,

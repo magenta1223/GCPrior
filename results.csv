@@ -11,3 +11,5 @@ kitchen,simpl,M-K-B-T,0.0 +- 0.0,2.9 +- 0.12,./weights/kitchen/simpl/sac/M-K-B-T
 kitchen,simpl,M-K-B-L,0.0 +- 0.0,2.88 +- 0.07,./weights/kitchen/simpl/sac/M-K-B-L.bin
 kitchen,simpl,K-T-L-H,1.29 +- 1.58,1.86 +- 0.07,./weights/kitchen/simpl/sac/K-T-L-H.bin
 kitchen,simpl,M-T-S-H,0.0 +- 0.0,1.74 +- 0.11,./weights/kitchen/simpl/sac/M-T-S-H.bin
+kitchen,gc_div_joint,M-K-B-S,83.87 +- 9.12,3.66 +- 0.18,./weights/kitchen/gc_div_joint/sac/M-K-B-S.bin
+kitchen,gc_div_joint,M-B-T-S,5.81 +- 1.29,1.91 +- 0.07,./weights/kitchen/gc_div_joint/sac/M-B-T-S.bin

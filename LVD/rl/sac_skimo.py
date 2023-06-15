@@ -35,7 +35,7 @@ class SAC(BaseModule):
         # finetune : state_encoder, dynamics, reward function 
         self.others_optim = torch.optim.Adam(
             [
-                { "params" : self.policy.state_encoder.parameters()}, # 보상최대화하는 subgoal 뽑기. 
+                # { "params" : self.policy.state_encoder.parameters()}, # 보상최대화하는 subgoal 뽑기. 
                 { "params" : self.policy.dynamics.parameters()}, # 보상최대화하는 subgoal 뽑기. 
                 { "params" : self.policy.reward_function.parameters()}, # 보상최대화하는 subgoal 뽑기. 
             ],
